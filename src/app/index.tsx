@@ -1,98 +1,77 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Logo } from '@/components/ui/Brand';
+import { Button } from '@/components/ui/Button';
+import { Alert } from '@/components/ui/Feedback';
+import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/Text';
+import { useAuth } from '@/lib/auth';
+import { colors, radius } from '@/theme';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+const promises = [
+  { icon: 'shield-checkmark-outline', title: 'ID checked by a person', text: 'Every companion passes ID, a live selfie and manual review.' },
+  { icon: 'location-outline', title: 'Public venues only', text: 'Meetings happen at approved cafés, venues and events.' },
+  { icon: 'card-outline', title: 'Pay only on Sydecrew', text: 'Never pay anyone by QR or bank transfer outside the app.' },
+  { icon: 'headset-outline', title: '24×7 safety desk', text: 'Help is one tap away before, during and after a meeting.' },
+] as const;
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+/** First screen for signed-out users. */
+export default function Welcome() {
+  const router = useRouter();
+  const { offline, retry } = useAuth();
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
-
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+    <Screen
+      footer={
+        <View style={{ gap: 10 }}>
+          <Button onPress={() => router.push('/signup')}>Create an account</Button>
+          <Button variant="secondary" onPress={() => router.push('/login')}>
+            Log in
+          </Button>
+          <Text variant="caption" color={colors.fog500} style={{ textAlign: 'center', marginTop: 4 }}>
+            For adults 18+. Platonic social companionship only.
+          </Text>
+        </View>
+      }
+    >
+      <Logo />
+      {offline ? (
+        <Alert action={<Text variant="small" weight="600" color={colors.lime300} onPress={retry} accessibilityRole="button">Try again</Text>}>
+          We could not reach Sydecrew to restore your session. Check your connection.
+        </Alert>
+      ) : null}
+      <View style={{ gap: 6, marginTop: 24 }}>
+        <Text variant="display" color={colors.fog50}>Good company.</Text>
+        <Text variant="display" color={colors.lavender300} style={styles.accent}>Your way.</Text>
+        <Text color={colors.fog300} style={{ marginTop: 10 }}>
+          Verified, strictly platonic companions for weddings, events, city days and quiet afternoons in Ahmedabad.
+        </Text>
+      </View>
+      <View style={{ gap: 10 }}>
+        {promises.map((p) => (
+          <View key={p.title} style={styles.card}>
+            <Ionicons name={p.icon} size={20} color={colors.lime400} />
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text variant="small" weight="600" color={colors.fog50}>{p.title}</Text>
+              <Text variant="caption" color={colors.fog400}>{p.text}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
+  accent: { fontStyle: 'italic', fontWeight: '400', fontFamily: 'serif' },
+  card: {
     flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+    gap: 14,
+    alignItems: 'flex-start',
+    padding: 14,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.divider,
+    backgroundColor: 'rgba(255,255,255,0.03)',
   },
 });
