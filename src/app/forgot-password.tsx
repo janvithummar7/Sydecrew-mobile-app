@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,21 +22,26 @@ export default function ForgotPassword() {
   const [error, setError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Keyboard "Go" can fire submit twice before the button disables itself.
+  const submitting = useRef(false);
   const [sent, setSent] = useState<{ devLink?: string } | null>(null);
 
   const submit = async () => {
+    if (submitting.current) return;
     setFormError(null);
     if (!isEmail(email)) {
       setError('Enter the email you signed up with.');
       return;
     }
     setBusy(true);
+    submitting.current = true;
     try {
       const res = await authApi.forgotPassword(email.trim());
       setSent({ devLink: res.dev_link });
     } catch (err) {
       setFormError(err instanceof ApiError ? err.message : 'Something went wrong. Please try again.');
     } finally {
+      submitting.current = false;
       setBusy(false);
     }
   };

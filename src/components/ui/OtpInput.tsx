@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View, type TextInputInstance } from 'react-native';
 import { colors, radius } from '@/theme';
 import { Text } from './Text';
@@ -10,15 +10,20 @@ type Props = {
   length?: number;
   invalid?: boolean;
   disabled?: boolean;
+  /** Change this number to put the cursor back in the field (e.g. after a wrong code). */
+  focusSignal?: number;
 };
 
 /**
  * One real text input drawn as six boxes. A single input keeps SMS autofill
  * (iOS one-time-code, Android sms-otp), paste and screen readers simple.
  */
-export function OtpInput({ value, onChange, onComplete, length = 6, invalid, disabled }: Props) {
+export function OtpInput({ value, onChange, onComplete, length = 6, invalid, disabled, focusSignal = 0 }: Props) {
   const ref = useRef<TextInputInstance>(null);
   const [focused, setFocused] = useState(false);
+  useEffect(() => {
+    if (focusSignal > 0) ref.current?.focus();
+  }, [focusSignal]);
 
   return (
     <Pressable onPress={() => ref.current?.focus()} accessible={false} style={styles.wrap}>
@@ -37,10 +42,12 @@ export function OtpInput({ value, onChange, onComplete, length = 6, invalid, dis
       <TextInput
         ref={ref}
         value={value}
-        editable={!disabled}
         autoFocus
+        // Not `editable={!disabled}`: that would dismiss the Android keyboard while a code is checked.
         onChangeText={(text) => {
+          if (disabled) return;
           const clean = text.replace(/\D/g, '').slice(0, length);
+          if (clean === value) return; // autofill can fire twice with the same text
           onChange(clean);
           if (clean.length === length) onComplete?.(clean);
         }}

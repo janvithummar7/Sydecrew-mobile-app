@@ -39,8 +39,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
       .catch((err) => {
         if (!alive) return;
-        // Unreachable API: keep the token and let the user retry, rather than signing them out.
-        setOffline(!(err instanceof ApiError) || err.status === 0);
+        // Unreachable or failing API (offline, 429, 5xx): keep the token and offer a retry
+        // instead of silently signing the user out. Only a 401 means the session is over.
+        setOffline(!(err instanceof ApiError) || err.status !== 401);
         setStatus('anonymous');
       });
     return () => {

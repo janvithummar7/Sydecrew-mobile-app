@@ -13,7 +13,7 @@ import { useAuth } from '@/lib/auth';
 import type { Challenge } from '@/lib/types';
 import { colors } from '@/theme';
 
-const time = (iso: string) => new Date(iso).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+import { formatTime as time } from '@/lib/format';
 
 /** D2 login: email or mobile + password → one-time code. Five wrong passwords lock the account. */
 export default function Login() {
@@ -24,10 +24,13 @@ export default function Login() {
   const [errors, setErrors] = useState<{ identifier?: string; password?: string }>({});
   const [formError, setFormError] = useState<{ text: string; reset?: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
+  // Keyboard "Go" can fire submit twice before the button disables itself.
+  const submitting = useRef(false);
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const passwordRef = useRef<TextInputInstance>(null);
 
   const submit = async () => {
+    if (submitting.current) return;
     const e: typeof errors = {};
     if (identifier.trim().length < 3) e.identifier = 'Enter your email or mobile number.';
     if (!password) e.password = 'Enter your password.';
@@ -35,6 +38,7 @@ export default function Login() {
     setFormError(null);
     if (Object.keys(e).length) return;
     setBusy(true);
+    submitting.current = true;
     try {
       const { challenge: c } = await authApi.login({ identifier, password });
       setChallenge(c);
@@ -52,6 +56,7 @@ export default function Login() {
       } else if (err.status === 422) setErrors(err.fields);
       else setFormError({ text: err.message });
     } finally {
+      submitting.current = false;
       setBusy(false);
     }
   };

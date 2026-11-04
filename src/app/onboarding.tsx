@@ -1,6 +1,6 @@
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View, type TextInputInstance } from 'react-native';
+import { ActivityIndicator, BackHandler, Pressable, StyleSheet, View, type TextInputInstance } from 'react-native';
 import { BackBar } from '@/components/account/BackBar';
 import { Button, TextButton } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Feedback';
@@ -9,6 +9,7 @@ import { Screen } from '@/components/ui/Screen';
 import { Text, Title } from '@/components/ui/Text';
 import { ApiError, authApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { ageFrom, toIsoDate } from '@/lib/dates';
 import type { OnboardingInput, OnboardingOptions } from '@/lib/types';
 import { colors, radius } from '@/theme';
 
@@ -21,23 +22,6 @@ const RULES = [
 ];
 
 type Errors = Record<string, string | undefined>;
-
-/** Builds YYYY-MM-DD from three fields, or null if it is not a real date. */
-function toIsoDate(d: string, m: string, y: string): string | null {
-  const day = Number(d), month = Number(m), year = Number(y);
-  if (!day || !month || y.length !== 4) return null;
-  const date = new Date(Date.UTC(year, month - 1, day));
-  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return null;
-  return `${y}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-}
-
-function ageFrom(iso: string) {
-  const [y, m, d] = iso.split('-').map(Number) as [number, number, number];
-  const now = new Date();
-  let age = now.getFullYear() - y;
-  if (now.getMonth() + 1 < m || (now.getMonth() + 1 === m && now.getDate() < d)) age -= 1;
-  return age;
-}
 
 const shortName = (full: string) => {
   const parts = full.trim().split(/\s+/);
@@ -78,6 +62,16 @@ export default function Onboarding() {
       .catch((err) => setLoadError(err instanceof ApiError ? err.message : 'Could not load the form.'));
   };
   useEffect(load, []);
+
+  // Android back goes to the previous step (on the first step it leaves, as usual).
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (step === 0) return false;
+      setStep(step - 1);
+      return true;
+    });
+    return () => sub.remove();
+  }, [step]);
 
   const patch = (p: Partial<typeof form>) => {
     setForm((f) => ({ ...f, ...p }));
@@ -124,6 +118,9 @@ export default function Onboarding() {
       else if (err instanceof ApiError && err.status === 422) {
         setErrors(err.fields);
         const keys = Object.keys(err.fields);
+        const shown = ['dob', 'confirm_18_plus', 'zone_id', 'consents.terms', 'consents.privacy', 'consents.community_guidelines', 'consents.dpdp_data_processing'];
+        const unshown = keys.filter((k) => !shown.includes(k)).map((k) => err.fields[k]);
+        if (unshown.length || keys.length === 0) setFormError(unshown[0] ?? err.message);
         setStep(keys.some((k) => k === 'dob' || k === 'confirm_18_plus') ? 0 : keys.some((k) => k === 'zone_id' || k === 'city_id') ? 1 : step);
       } else setFormError(err instanceof ApiError ? err.message : 'Something went wrong. Please try again.');
     } finally {
@@ -241,7 +238,11 @@ export default function Onboarding() {
                 </Pressable>
               );
             })}
-            {errors.zone_id ? <Text variant="caption" color={colors.red300}>{errors.zone_id}</Text> : null}
+            {errors.zone_id ? (
+              <Text variant="caption" color={colors.red300} accessibilityRole="alert" accessibilityLiveRegion="polite">
+                {errors.zone_id}
+              </Text>
+            ) : null}
           </View>
         </>
       ) : null}

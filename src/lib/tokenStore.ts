@@ -12,7 +12,13 @@ const KEY = 'sydecrew.refresh_token';
 
 export async function getRefreshToken(): Promise<string | null> {
   if (Platform.OS === 'web') return globalThis.localStorage?.getItem(KEY) ?? null;
-  return SecureStore.getItemAsync(KEY);
+  try {
+    return await SecureStore.getItemAsync(KEY);
+  } catch {
+    // Keystore/Keychain entry unreadable (e.g. after a device restore): forget it and sign in again.
+    await SecureStore.deleteItemAsync(KEY).catch(() => undefined);
+    return null;
+  }
 }
 
 export async function setRefreshToken(token: string | null): Promise<void> {

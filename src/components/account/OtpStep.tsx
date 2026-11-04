@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { BackHandler, View } from 'react-native';
 import { Button, TextButton } from '@/components/ui/Button';
 import { Alert, DevHint } from '@/components/ui/Feedback';
 import { OtpInput } from '@/components/ui/OtpInput';
@@ -9,7 +9,7 @@ import type { Challenge, SessionResponse } from '@/lib/types';
 import { colors } from '@/theme';
 import { BackBar } from './BackBar';
 
-const time = (iso: string) => new Date(iso).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+import { formatTime as time } from '@/lib/format';
 
 function useSecondsUntil(iso: string) {
   const [now, setNow] = useState(() => Date.now());
@@ -31,15 +31,30 @@ export function OtpStep({ challenge: initial, onVerified, onBack }: Props) {
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [blocked, setBlocked] = useState(false);
+  const [blockedUntil, setBlockedUntil] = useState<string | null>(null);
+  const blockedFor = useSecondsUntil(blockedUntil ?? new Date(0).toISOString());
+  const blocked = blockedUntil !== null && blockedFor > 0;
   const resendIn = useSecondsUntil(challenge.resend_available_at);
+  const inFlight = useRef(false);
+  const [focusSignal, setFocusSignal] = useState(0);
+
+  // Android back returns to the previous step instead of leaving the screen.
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      onBack();
+      return true;
+    });
+    return () => sub.remove();
+  }, [onBack]);
 
   const verify = async (value: string) => {
-    if (busy || blocked) return;
+    // A ref, not state: autofill can deliver the code twice before React re-renders.
+    if (inFlight.current || blocked) return;
     if (value.length !== 6) {
       setFieldError('Enter the 6-digit code.');
       return;
     }
+    inFlight.current = true;
     setBusy(true);
     setFieldError(null);
     setError(null);
@@ -51,11 +66,13 @@ export function OtpStep({ challenge: initial, onVerified, onBack }: Props) {
       if (!(err instanceof ApiError)) setError('Something went wrong. Please try again.');
       else if (err.code === 'OTP_INVALID') setFieldError(err.message);
       else if (err.code === 'OTP_LOCKED' || err.code === 'OTP_COOLDOWN') {
-        setBlocked(true);
-        const at = err.details?.retry_at as string | undefined;
-        setError(at ? `Too many wrong codes. You can try again after ${time(at)}.` : err.message);
+        const at = (err.details?.retry_at as string | undefined) ?? new Date(Date.now() + 30 * 60_000).toISOString();
+        setBlockedUntil(at);
+        setError(`Too many wrong codes. You can try again after ${time(at)}.`);
       } else setError(err.message);
+      setFocusSignal((n) => n + 1);
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   };
@@ -68,6 +85,8 @@ export function OtpStep({ challenge: initial, onVerified, onBack }: Props) {
       const { challenge: next } = await authApi.resendCode(challenge.otp_id);
       setChallenge(next);
       setCode('');
+      setBlockedUntil(null);
+      setFocusSignal((n) => n + 1);
       setNotice(`A new code is on its way to ${next.destination}.`);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Could not send a new code.');
@@ -100,8 +119,14 @@ export function OtpStep({ challenge: initial, onVerified, onBack }: Props) {
           onComplete={(v) => void verify(v)}
           invalid={!!fieldError}
           disabled={busy || blocked}
+          focusSignal={focusSignal}
         />
-        <Text variant="caption" color={fieldError ? colors.red300 : colors.fog400} accessibilityLiveRegion="polite">
+        <Text
+          variant="caption"
+          color={fieldError ? colors.red300 : colors.fog400}
+          accessibilityLiveRegion="polite"
+          accessibilityRole={fieldError ? 'alert' : undefined}
+        >
           {fieldError ?? `The code expires at ${time(challenge.expires_at)}. Never share it with anyone, including companions.`}
         </Text>
       </View>

@@ -11,9 +11,16 @@ import type { Challenge, Me, OnboardingInput, OnboardingOptions, SessionResponse
  * On TOKEN_EXPIRED a request is retried once after a silent refresh.
  */
 
-/** The Android emulator reaches the host machine at 10.0.2.2. Set EXPO_PUBLIC_API_URL for a phone on Wi-Fi. */
-const fallbackUrl = Platform.OS === 'android' ? 'http://10.0.2.2:4000' : 'http://localhost:4000';
-export const API_URL = (process.env.EXPO_PUBLIC_API_URL || fallbackUrl).replace(/\/$/, '');
+/**
+ * In development the Android emulator reaches the host at 10.0.2.2. Release
+ * builds have NO fallback: EXPO_PUBLIC_API_URL must be set (eas.json), or every
+ * request fails with CONFIG_MISSING instead of silently calling a dev machine.
+ */
+const devFallback = Platform.OS === 'android' ? 'http://10.0.2.2:4000' : 'http://localhost:4000';
+export const API_URL = (process.env.EXPO_PUBLIC_API_URL || (__DEV__ ? devFallback : '')).replace(/\/$/, '');
+
+/** Requests that take longer than this fail as NETWORK_ERROR (Android's default is no timeout at all). */
+const TIMEOUT_MS = 15_000;
 
 export type ApiErrorBody = {
   code: string;
@@ -49,9 +56,13 @@ export const setSessionLostHandler = (fn: (() => void) | null) => {
 type Options = { method?: 'GET' | 'POST'; body?: unknown; noRetry?: boolean };
 
 async function raw<T>(path: string, { method = 'GET', body }: Options): Promise<T> {
+  if (!API_URL) throw new ApiError(0, { code: 'CONFIG_MISSING', message: 'This build is not configured. Please update the app.' });
   let res: Response;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
     res = await fetch(`${API_URL}/api/v1${path}`, {
+      signal: controller.signal,
       method,
       headers: {
         'x-client': 'mobile',
@@ -66,6 +77,8 @@ async function raw<T>(path: string, { method = 'GET', body }: Options): Promise<
       code: 'NETWORK_ERROR',
       message: 'We could not reach Sydecrew. Check your connection and try again.',
     });
+  } finally {
+    clearTimeout(timer);
   }
   if (res.status === 204) return undefined as T;
   const text = await res.text();
@@ -88,7 +101,11 @@ export async function storeSession(session: SessionResponse) {
   if (session.refresh_token) await setRefreshToken(session.refresh_token);
 }
 
+/** Bumped on every sign-out, so a refresh that finishes afterwards cannot store its token. */
+let generation = 0;
+
 export async function clearSession() {
+  generation += 1;
   accessToken = null;
   await setRefreshToken(null);
 }
@@ -99,8 +116,10 @@ export function refreshSession(): Promise<SessionResponse | null> {
   refreshing = (async () => {
     const token = await getRefreshToken();
     if (!token) return null;
+    const startedIn = generation;
     try {
       const session = await raw<SessionResponse>('/auth/refresh', { method: 'POST', body: { refresh_token: token } });
+      if (startedIn !== generation) return null; // signed out meanwhile: drop it
       await storeSession(session);
       return session;
     } catch (err) {
@@ -119,11 +138,13 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
     return await raw<T>(path, options);
   } catch (err) {
     if (!(err instanceof ApiError) || err.status !== 401 || options.noRetry) throw err;
+    const hadSession = accessToken !== null || err.code === 'TOKEN_EXPIRED';
     if (err.code === 'TOKEN_EXPIRED') {
-      const session = await refreshSession().catch(() => null);
+      // Temporary refresh failures (offline, 429, 5xx) are rethrown and keep the session.
+      const session = await refreshSession();
       if (session) return raw<T>(path, options);
     }
-    if (accessToken) {
+    if (hadSession) {
       await clearSession();
       onSessionLost?.();
     }
@@ -141,6 +162,7 @@ export const authApi = {
   resendCode: (otp_id: string) => api<{ challenge: Challenge }>('/auth/otp/resend', { method: 'POST', body: { otp_id } }),
   me: () => api<{ user: Me }>('/auth/me'),
   logout: async () => {
+    await refreshing?.catch(() => undefined); // let an in-flight refresh settle first
     const token = await getRefreshToken();
     await raw<void>('/auth/logout', { method: 'POST', body: { refresh_token: token ?? '' } }).catch(() => undefined);
     await clearSession();

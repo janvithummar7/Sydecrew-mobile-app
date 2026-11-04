@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Logo } from '@/components/ui/Brand';
-import { Button } from '@/components/ui/Button';
+import { Button, TextButton } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Feedback';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
@@ -36,7 +36,7 @@ export default function Welcome() {
     >
       <Logo />
       {offline ? (
-        <Alert action={<Text variant="small" weight="600" color={colors.lime300} onPress={retry} accessibilityRole="button">Try again</Text>}>
+        <Alert action={<TextButton onPress={retry}>Try again</TextButton>}>
           We could not reach Sydecrew to restore your session. Check your connection.
         </Alert>
       ) : null}

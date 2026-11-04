@@ -26,6 +26,8 @@ export default function SignUp() {
   const [errors, setErrors] = useState<Errors>({});
   const [formError, setFormError] = useState<{ text: string; exists?: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
+  // Keyboard "Go" can fire submit twice before the button disables itself.
+  const submitting = useRef(false);
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const email = useRef<TextInputInstance>(null);
   const phone = useRef<TextInputInstance>(null);
@@ -37,6 +39,7 @@ export default function SignUp() {
   };
 
   const submit = async () => {
+    if (submitting.current) return;
     const e: Errors = {};
     if (f.full_name.trim().length < 2) e.full_name = 'Enter your full name.';
     if (!isEmail(f.email)) e.email = 'Enter a valid email address.';
@@ -46,6 +49,7 @@ export default function SignUp() {
     setFormError(null);
     if (Object.keys(e).length) return;
     setBusy(true);
+    submitting.current = true;
     try {
       const { challenge: c } = await authApi.register({ ...f, email: f.email.trim(), phone: `+91${indianMobile(f.phone)}` });
       setChallenge(c);
@@ -55,6 +59,7 @@ export default function SignUp() {
         setFormError({ text: `An account with this ${err.details?.field === 'phone' ? 'mobile number' : 'email'} already exists.`, exists: true });
       } else setFormError({ text: err instanceof ApiError ? err.message : 'Something went wrong. Please try again.' });
     } finally {
+      submitting.current = false;
       setBusy(false);
     }
   };

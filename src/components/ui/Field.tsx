@@ -113,7 +113,7 @@ export function Checkbox({ checked, onChange, children, error, label }: Checkbox
         <View style={{ flex: 1 }}>{typeof children === 'string' ? <Text variant="small" color={colors.fog100}>{children}</Text> : children}</View>
       </Pressable>
       {error ? (
-        <Text variant="caption" color={colors.red300} style={{ paddingLeft: 32 }}>
+        <Text variant="caption" color={colors.red300} style={{ paddingLeft: 32 }} accessibilityRole="alert" accessibilityLiveRegion="polite">
           {error}
         </Text>
       ) : null}
