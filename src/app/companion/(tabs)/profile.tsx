@@ -1,3 +1,4 @@
+import { limitsOf } from '@/lib/companion/types';
 import { useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -38,7 +39,7 @@ function ProfileForm({ companion, options }: { companion: Companion; options: Co
   const [busy, setBusy] = useState(false);
   const submitting = useRef(false);
 
-  const l = options.limits;
+  const l = limitsOf(options);
   const warning = contactWarning(intro) ?? contactWarning(name);
   const approved = isApproved(companion.status);
 

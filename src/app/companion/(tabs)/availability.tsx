@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { Card, Chip, ChipRow, Section, StepHeader } from '@/components/companion/Bits';
-import { Button, TextButton } from '@/components/ui/Button';
+import { Button, IconButton, TextButton } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Feedback';
 import { TextField } from '@/components/ui/Field';
 import { Screen } from '@/components/ui/Screen';
@@ -131,9 +130,7 @@ export default function Setup() {
                   <View style={{ flex: 1 }}>
                     <TextField label="To" value={r.end_time} onChangeText={(t) => setRule(i, { end_time: t })} placeholder="14:00" keyboardType="numbers-and-punctuation" maxLength={5} />
                   </View>
-                  <Pressable onPress={() => setRules(rules.filter((_, j) => j !== i))} accessibilityRole="button" accessibilityLabel={`Remove ${day} slot`} hitSlop={8} style={{ paddingBottom: 14 }}>
-                    <Ionicons name="trash-outline" size={20} color={colors.fog300} />
-                  </Pressable>
+                  <IconButton icon="trash-outline" label={`Remove ${day} slot`} onPress={() => setRules(rules.filter((_, j) => j !== i))} />
                 </View>
                 {errors[`rules.${i}`] ? <Text variant="caption" color={colors.red300} accessibilityRole="alert">{errors[`rules.${i}`]}</Text> : null}
               </View>

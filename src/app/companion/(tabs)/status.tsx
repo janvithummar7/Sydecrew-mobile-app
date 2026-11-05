@@ -1,7 +1,6 @@
 import { useCallback, useEffect } from 'react';
-import { View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { StatusTimeline } from '@/components/ui/Misc';
 import { Card, LinkRow, LoadState, Pill, Section, StepHeader, dateIn } from '@/components/companion/Bits';
 import { Button, TextButton } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Feedback';
@@ -43,18 +42,11 @@ export default function Status() {
 
   return (
     <Screen footer={footer}>
-      <StepHeader title="Your application" />
+      <StepHeader title="Your application" back={false} />
       {error ? <Alert action={<TextButton onPress={refresh}>Try again</TextButton>}>{error}</Alert> : null}
       <Card>
         <Pill label={statusLabel(companion.status)} tone={companion.status === 'REJECTED' || companion.status === 'SUSPENDED' ? 'warn' : isApproved(companion.status) ? 'ok' : 'info'} />
-        <View style={{ gap: 10 }} accessibilityRole="list">
-          {stages.map((s) => (
-            <View key={s.label} style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }} accessible accessibilityLabel={`${s.label}: ${s.done ? 'done' : s.current ? 'in progress' : 'not yet'}`}>
-              <Ionicons name={s.done ? 'checkmark-circle' : s.current ? 'time-outline' : 'ellipse-outline'} size={20} color={s.done ? colors.lime400 : s.current ? colors.lavender300 : colors.fog500} />
-              <Text color={s.done || s.current ? colors.fog50 : colors.fog400}>{s.label}</Text>
-            </View>
-          ))}
-        </View>
+        <StatusTimeline stages={stages} />
         {waiting ? <Text variant="small" color={colors.fog300}>{`${companion.review_sla_text}. We will email you when there is a decision.`}</Text> : null}
         {companion.submitted_at ? <Text variant="caption" color={colors.fog400}>{`Submitted ${dateIn(companion.submitted_at)}`}</Text> : null}
       </Card>

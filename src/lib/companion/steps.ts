@@ -1,22 +1,13 @@
 import type { Href } from 'expo-router';
+import type { CompanionNextStep, CompanionStatus as ContractCompanionStatus } from '../contract/enums';
 
 /**
  * Where each part of the companion application lives in the app. The API
  * names steps (GET /auth/me companion.next_step, fix_items[].step,
  * checklist.missing); the app turns them into screens.
  */
-export type CompanionStatus =
-  | 'DRAFT'
-  | 'SUBMITTED'
-  | 'IN_REVIEW'
-  | 'NEEDS_CHANGES'
-  | 'APPROVED'
-  | 'SETUP'
-  | 'LIVE'
-  | 'PAUSED'
-  | 'REVERIFICATION_REQUIRED'
-  | 'SUSPENDED'
-  | 'REJECTED';
+/** Generated from the API contract (never copied by hand). */
+export type CompanionStatus = ContractCompanionStatus;
 
 /** Companion screens. Typed as Href for navigation; the literal list documents them. */
 export type CompanionPath =
@@ -28,16 +19,19 @@ export type CompanionPath =
   | '/companion/identity'
   | '/companion/review'
   | '/companion/status'
-  | '/companion/setup'
+  | '/companion/availability'
   | '/companion/rates'
+  | '/companion/earnings'
   | '/companion/go-live'
-  | '/companion/dashboard';
+  | '/companion/dashboard'
+  | '/companion/preview';
 
 export type CompanionRoute = Href;
 const as = (p: CompanionPath): CompanionRoute => p as unknown as Href;
 export const COMPANION_HOME = as('/companion');
 
-const STEP_ROUTES: Record<string, CompanionPath> = {
+/** Every companion.next_step value has a screen (checked by test/routing.test.ts). */
+export const STEP_ROUTES: Record<CompanionNextStep, CompanionPath> = {
   PROFILE: '/companion/profile',
   PHOTOS: '/companion/photos',
   CATEGORIES: '/companion/categories',
@@ -48,14 +42,15 @@ const STEP_ROUTES: Record<string, CompanionPath> = {
   COOLDOWN: '/companion/status',
   REJECTED: '/companion/status',
   SUSPENDED: '/companion/status',
-  SETUP: '/companion/setup',
+  SETUP: '/companion/availability',
   GO_LIVE: '/companion/go-live',
   LIVE: '/companion/dashboard',
   PAUSED: '/companion/dashboard',
 };
 
 /** Screen for an API step name (unknown steps go to the status screen). */
-export const routeForStep = (step: string | null | undefined): CompanionRoute => as(step ? (STEP_ROUTES[step] ?? '/companion/status') : '/companion');
+export const routeForStep = (step: string | null | undefined): CompanionRoute =>
+  as(step ? (STEP_ROUTES[step as CompanionNextStep] ?? '/companion/status') : '/companion');
 
 /** The application steps in order, as shown on the review screen. */
 export const APPLICATION_STEPS = [
@@ -115,4 +110,39 @@ export function timelineStages(status: string) {
   };
   const n = reached[status] ?? 0;
   return order.map((label, i) => ({ label, done: i < n, current: i === n }));
+}
+
+/**
+ * The status-driven screen state of a companion (content/companion.ts has one
+ * title, body and call to action per key). COOLDOWN is NEEDS_CHANGES (or
+ * DRAFT / REVERIFICATION_REQUIRED) while automatic checks are paused.
+ */
+export function companionStateKey(status: CompanionStatus, nextStep: string | null | undefined) {
+  if (nextStep === 'COOLDOWN') return 'COOLDOWN' as const;
+  return status;
+}
+
+/** Where the dashboard's call to action goes for each state. */
+export function ctaRoute(status: CompanionStatus, nextStep: string | null | undefined, fixStep?: string | null): CompanionRoute | null {
+  switch (companionStateKey(status, nextStep)) {
+    case 'DRAFT':
+    case 'REVERIFICATION_REQUIRED':
+      return routeForStep(nextStep);
+    case 'NEEDS_CHANGES':
+      return routeForStep(fixStep ?? nextStep);
+    case 'SUBMITTED':
+    case 'IN_REVIEW':
+    case 'COOLDOWN':
+    case 'REJECTED':
+      return as('/companion/status');
+    case 'APPROVED':
+    case 'SETUP':
+      return routeForStep(nextStep);
+    case 'LIVE':
+      return as('/companion/preview');
+    case 'PAUSED':
+      return null; // the dashboard's Resume button acts in place
+    default:
+      return null; // SUSPENDED: no self-service action
+  }
 }
