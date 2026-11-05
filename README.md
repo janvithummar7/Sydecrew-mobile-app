@@ -1,6 +1,6 @@
-# Sydecrew mobile
+# sydecrew mobile
 
-The React Native app for Sydecrew (Android and iOS), built with Expo SDK 58 and Expo Router. It uses the same API as the website (`../Sydecrew-backend`) and the same brand: dark ink, lavender and lime.
+The React Native app for Sydecrew (Android and iOS), built with Expo SDK 58 and Expo Router. It uses the same API contract (`contracts/openapi.json`), the same design tokens (`design/tokens.json`) and the same component names as the website.
 
 ## Run it
 
@@ -13,7 +13,7 @@ cp .env.example .env.local   # optional, see "API address" below
 npx expo start               # then press "a" for the Android emulator, or scan the QR code with Expo Go
 ```
 
-**API address** (`EXPO_PUBLIC_API_URL`):
+**API address** (`EXPO_PUBLIC_API_URL`, see `.env.example`):
 
 | Where the app runs | Value |
 | --- | --- |
@@ -21,82 +21,67 @@ npx expo start               # then press "a" for the Android emulator, or scan 
 | iOS simulator, web preview | leave empty (uses `http://localhost:4000`) |
 | Real phone on Wi-Fi | your computer's LAN IP, e.g. `http://192.168.1.20:4000` |
 
-`npx expo start --web` runs a browser preview of the same screens. It's handy for quick checks; add its origin (`http://localhost:8081`) to the API's `WEB_APP_URL`.
+In development the app warns in the console when Android is pointed at `localhost`.
 
-Before finishing any change, run `npx tsc --noEmit`, `npx expo lint` and `npx expo-doctor`.
+## Checks
 
-## Feature 1: account (flows D2 and D5)
-
-| Screen | File |
+| Command | What it does |
 | --- | --- |
-| Welcome | `src/app/index.tsx` |
-| Sign up: details → SMS code | `src/app/signup.tsx` |
-| Log in: email or mobile + password → code. Five wrong passwords lock the account | `src/app/login.tsx` |
-| Forgot password (the reset link opens the website) | `src/app/forgot-password.tsx` |
-| Onboarding: date of birth and 18+ → area → interests and privacy → consents | `src/app/onboarding.tsx` |
-| Home | `src/app/home.tsx` |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run lint` | `expo lint`, the copy check (`scripts/check-copy.js`: src, app.json, this README, `.maestro`) and the colour check (`scripts/check-hex.js`: no hex or rgb literals outside `src/theme/`) |
+| `npm run tokens:check` | `src/theme/tokens.ts` matches `design/tokens.json`, and every contrast pair is at least 4.5:1 |
+| `npm run contract:check` | `src/lib/contract/*` matches `contracts/openapi.json` and `contracts/errors.json` |
+| `npm test` | unit tests (`test/*.test.ts`, Node's test runner) |
+| `npx expo-doctor` | Expo dependency and config checks |
 
-**Navigation:** `src/app/_layout.tsx` uses `Stack.Protected` to switch between three route sets: signed out, onboarding, and signed in. When the session changes, Expo Router redirects by itself, so screens never navigate after login or logout.
+## One design system, one contract
 
-**Sessions:**
-- Every request sends `X-Client: mobile`. The API then returns the refresh token in the response body rather than as a cookie.
-- The refresh token is stored in the iOS Keychain or Android Keystore through `expo-secure-store` (`src/lib/tokenStore.ts`).
-- The 15-minute access token stays in memory.
-- At launch, `AuthProvider` exchanges the stored token for a new session. If the API is unreachable, the token is kept and the welcome screen offers "Try again".
+- **Tokens.** `design/tokens.json` is shared with the web. `npm run tokens:gen` writes `src/theme/tokens.ts`; `src/theme.ts` only derives from it (no literal colours anywhere else).
+- **Fonts.** Geist (text) and Instrument Serif (accents), loaded with `expo-font`; the splash screen stays up until they load.
+- **Components** (`src/components/ui/`), same names as web: `Button` (primary, secondary, ghost, danger), `IconButton`, `TextField`, `Select`, `Chip`, `Card`, `Badge` (verified, pending, needs-changes, live, paused, suspended), `StatusTimeline`, `Stepper`, `EmptyState`, `ErrorState`, `OfflineBanner`, `Skeleton`, `Sheet`, `Modal`, `Toast`, `Avatar`, `PriceTag`, `SafetyCallout`, `PlaceholderNotice`, `Logo` / `Wordmark`. Every target is at least 44 pt, has an accessibility label, and animations respect reduced motion.
+- **Brand assets.** The app icon, Android adaptive icon layers, splash image and favicon are generated from `design/brand/symbol.svg` by `npm run brand:gen`.
+- **API types.** `npm run contract:gen` writes `src/lib/contract/schema.ts` (openapi-typescript), `enums.ts` and `errors.ts`. `src/lib/types.ts` and `src/lib/companion/types.ts` are aliases over it; `src/lib/api.ts` is the only HTTP client.
+- **Helpers.** `errorView()` (`src/lib/errors.ts`) turns any error into the user-facing message from `contracts/errors.json`; `formatINR(paise)` (`src/lib/money.ts`); IST dates and times (`src/lib/time.ts`); `track()` is a no-op for now (`src/lib/track.ts`).
+- **Copy** lives in `src/content/*.ts`, with the public category names Crew, Plus-One, Crew Care and Crew Events.
 
-## Feature 2: become a companion (flows D3 and D4)
+## Routes
 
-Screens live in `src/app/companion/`; `_layout.tsx` guards them by `user.companion.status` from `/auth/me`
-(landing and apply: any signed-in user, no customer onboarding needed; the application: once applied;
-setup, rates, go-live, dashboard: once approved). Entry point: the "Become a companion" card on Home.
+`src/app/_layout.tsx` guards route groups with `Stack.Protected`; `routeFor(user)` (`src/lib/routing.ts`) picks the landing screen for every account state.
 
-| Screen | File |
+**Signed out:** `/` welcome, `/login`, `/signup`, `/forgot-password`. **Any time:** `/verify-email?token=…`, `/reset-password?token=…` (from `sydecrew://` links; links opened before sign-in are replayed after it).
+
+**Customer tabs** (`(customer)/`): Home, Discover, Bookings, Messages, Profile (`account.tsx`: details, Become a companion, Settings and legal, role switch, log out). New accounts go through `/onboarding` first.
+
+**Companion tabs** (`companion/(tabs)/`): Dashboard (one screen state and call to action per status), Profile, Availability and Rates (once approved), Status (timeline and fix list), Earnings (once approved; placeholder). Application screens: `companion/index`, `apply`, `photos`, `categories`, `identity`, `capture`, `review`, `go-live`, and `companion/preview` ("Preview your public profile").
+
+| `next_step` | Screen |
 | --- | --- |
-| Landing (platonic, public venues only, 18+, what you need) | `companion/index.tsx` |
-| Terms and 7 consents (DOB and area only if missing) | `companion/apply.tsx` |
-| Profile basics (live counter, contact-detail warning, languages, area, radius) | `companion/profile.tsx` |
-| Photos (pick, 4:5 crop, reorder, delete, moderation state) | `companion/photos.tsx` |
-| Categories, activities, boundaries | `companion/categories.tsx` |
-| Identity: document type, ID photos, selfie, Aadhaar via DigiLocker | `companion/identity.tsx`, `companion/capture.tsx` |
-| Review and submit | `companion/review.tsx` |
-| Application status (timeline, fix list deep links, rejection, cooldown) | `companion/status.tsx` |
-| Availability, rates (price band shown), go live, dashboard (pause / resume) | `companion/setup.tsx`, `rates.tsx`, `go-live.tsx`, `dashboard.tsx` |
+| PROFILE / PHOTOS / CATEGORIES | `/companion/profile`, `/companion/photos`, `/companion/categories` |
+| DOCUMENTS | `/companion/identity` (also `sydecrew://companion/identity`, the web "continue on phone" QR) |
+| SUBMIT | `/companion/review` |
+| WAITING / FIX_REQUIRED / COOLDOWN / REJECTED / SUSPENDED | `/companion/status` |
+| SETUP | `/companion/availability` |
+| GO_LIVE | `/companion/go-live` |
+| LIVE / PAUSED | `/companion/dashboard` |
 
-- **Uploads** (`src/lib/uploads/`): each image is re-encoded on the phone as JPEG (HEIC included; the API accepts
-  only JPEG, PNG and WebP), hashed with SHA-256, saved in the app's document directory and queued in
-  `uploads/queue.json`. The queue survives backgrounding, restarts and lost connections: it retries with the
-  **same `asset_id`** (the API re-issues the URL), with back-off, and resumes when the app returns to the foreground.
-- **Money** is integer paise (`src/lib/money.ts`): typed in rupees, sent as paise, shown as `₹1,500`.
-- Every request sends `X-Device-Id` (random per install, in SecureStore) and `X-Platform`.
-- Staff accounts are refused with a message: the admin (TOTP sign-in) is web only.
-- The web "continue on phone" QR opens `sydecrew://companion/identity`.
-- In development, the identity screen offers the mock KYC outcome (`PASS`, `FAKE_DOCUMENT` ...) and a test
-  DigiLocker consent (`MOCK_OK`). A real provider's liveness SDK (`liveness/session` mode `SDK`) needs a
-  development build and is not wired yet.
-- New native modules: expo-camera, expo-image-picker, expo-image-manipulator, expo-file-system, expo-crypto.
-  Expo Go includes them; store builds pick up the permission texts from `app.json`.
-- Maestro flows for later device runs: `.maestro/README.md`.
-- `npm run lint` also runs the copy check (`scripts/check-copy.js`: no "rent a …", dating, escort, RENDER).
+Accounts with both roles start in the customer shell and switch with "Switch to companion" / "Switch to customer" (remembered on the device). Staff accounts see `/staff`: the admin is web only.
 
-## Layout
+**Design previews** (`preview/`): sample companion profile, booking details, review and pay, booking day and check-in, SOS. They use the one fixture file `src/content/samples.ts`, show "Coming soon — not bookable yet", and make no booking or payment calls. The SOS preview's emergency call (112) is real.
 
-```
-src/
-  app/                 screens (Expo Router)
-  components/ui/       Screen, Text, Button, TextField, PasswordField, Checkbox, OtpInput, Alert, Logo
-  components/account/  OtpStep, BackBar, PasswordRules
-  components/companion/ Chip, StepHeader, Section, Card, Pill, LinkRow, LoadState
-  lib/                 api.ts (client + endpoints), auth.tsx (session), tokenStore.ts, types.ts, validation.ts,
-                       device.ts, money.ts, contentWarning.ts
-  lib/companion/       api.ts, context.tsx (shared state), types.ts, steps.ts, availability.ts
-  lib/uploads/         queue.ts (pure retry logic), uploader.ts (prepare, upload, confirm)
-  theme.ts             colours, type scale, radii (matches Sydecrew-web)
-```
+**Settings** (`/settings`): terms, privacy, refunds and community guidelines open on the website (`EXPO_PUBLIC_SITE_URL`), marked "Draft — pending legal review", plus a grievance officer placeholder.
 
-## Still placeholders
+## Companion details
 
-- App icon and splash image are Expo's defaults. Replace the files in `assets/images/`.
-- Bundle IDs are `com.sydecrew.app` (`app.json`). Change them before the first store build.
+- **Uploads** (`src/lib/uploads/`): each image is re-encoded on the phone as JPEG (HEIC included; the API accepts only JPEG, PNG and WebP), hashed with SHA-256, saved in the app's document directory and queued in `uploads/queue.json`. The queue survives backgrounding, restarts and lost connections, retrying with the **same `asset_id`** with back-off.
+- **Money** is integer paise: typed in rupees, sent as paise, shown as `₹1,500`.
+- Every request sends `X-Client: mobile`, `X-Device-Id` (random per install, in SecureStore) and `X-Platform`. The refresh token is kept in the Keychain / Keystore; the access token stays in memory.
+- In development, the identity screen offers the mock KYC outcome (`PASS`, `FAKE_DOCUMENT` ...) and a test DigiLocker consent (`MOCK_OK`). A real provider's liveness SDK needs a development build and is not wired yet.
+- Maestro flows for device runs: `.maestro/README.md`.
+
+## Still to do
+
+- Discovery, booking, payment, messages and earnings are design previews only.
+- Universal / app links are not configured: email links open the website; the app handles `sydecrew://` links.
+- Bundle IDs are `com.sydecrew.app` (`app.json`). Release builds: EAS (`npx eas-cli@latest build`); no `eas.json` yet.
 - There's no SMS provider yet, so codes are shown on screen in development only.
-- The legal documents behind the consents aren't published yet.
-- Release builds: use EAS (`npx eas-cli@latest build`). No `eas.json` yet.
+- The legal documents are drafts pending legal review.

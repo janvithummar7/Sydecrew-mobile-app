@@ -1,4 +1,4 @@
-# Maestro flows (companion, Feature 2)
+# Maestro flows
 
 Written for later runs on a device or emulator; they are not run in CI yet.
 
@@ -15,6 +15,12 @@ maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maest
 maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/needs-changes-resubmit.yaml
 # On the web admin: approve it.
 maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/setup-go-live.yaml
+```
+
+Customer shell smoke test (tabs, design previews, settings and legal), with an onboarded customer account:
+
+```bash
+maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/navigation.yaml
 ```
 
 The OTP is shown on screen by the development API (dev hint); pass the current code each run.

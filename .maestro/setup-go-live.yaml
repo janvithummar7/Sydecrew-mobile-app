@@ -15,9 +15,12 @@ appId: com.sydecrew.app
       - inputText: ${PASSWORD}
       - tapOn: "Continue"
       - inputText: ${OTP}
-- scrollUntilVisible:
-    element: "Your companion profile"
-- tapOn: "Your companion profile"
+# Users with both roles land on the customer Home; companion-only users land on Availability.
+- runFlow:
+    when:
+      visible: "Your companion profile"
+    commands:
+      - tapOn: "Your companion profile"
 - assertVisible: "When you are available"
 - tapOn: "Add a Monday slot"
 - tapOn: "Add a Wednesday slot"
@@ -30,8 +33,8 @@ appId: com.sydecrew.app
 - tapOn: "Save rates"
 - tapOn: "Next: go live"
 - tapOn: "Go live"
-- assertVisible: "Customers can find and book you."
+- assertVisible: "You are live"
 - tapOn: "Pause my profile"
 - assertVisible: "Paused"
-- tapOn: "Go live again"
+- tapOn: "Resume"
 - assertVisible: "Live"

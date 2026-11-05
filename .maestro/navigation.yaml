@@ -1,0 +1,35 @@
+# Customer shell smoke test: tabs, design-preview placeholders, settings and legal.
+# Needs: an onboarded customer account (EMAIL / PASSWORD below) and a dev API.
+# Run: maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/navigation.yaml
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+# Discover: sample profiles only, clearly marked, nothing bookable.
+- tapOn: "Discover"
+- assertVisible: "Coming soon — not bookable yet"
+- assertVisible: "Sample — design preview only"
+# Bookings: booking details and booking-day previews.
+- tapOn: "Bookings"
+- assertVisible: "Coming soon — not bookable yet"
+- tapOn: "Messages"
+- assertVisible: "Messages"
+# Profile -> Settings and legal: draft legal pages and the grievance officer placeholder.
+- tapOn: "Profile"
+- assertVisible: "Become a companion"
+- scrollUntilVisible:
+    element: "Settings and legal"
+- tapOn: "Settings and legal"
+- assertVisible: "Terms of use"
+- assertVisible: "Draft — pending legal review"
+- assertVisible: "Grievance officer"

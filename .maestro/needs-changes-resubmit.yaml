@@ -18,9 +18,12 @@ appId: com.sydecrew.app
       - inputText: ${PASSWORD}
       - tapOn: "Continue"
       - inputText: ${OTP}
-- scrollUntilVisible:
-    element: "Your companion profile"
-- tapOn: "Your companion profile"
+# Users with both roles land on the customer Home; companion-only users land on Status.
+- runFlow:
+    when:
+      visible: "Your companion profile"
+    commands:
+      - tapOn: "Your companion profile"
 - assertVisible: "Changes needed"
 - assertVisible: "What to fix"
 - tapOn: "Rewrite your intro"
