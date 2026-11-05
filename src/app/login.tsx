@@ -42,7 +42,7 @@ export default function Login() {
     try {
       const res = await authApi.login({ identifier, password });
       setPassword('');
-      if (res.mfa_required) {
+      if ('mfa_required' in res) {
         // Staff accounts use an authenticator app, which only the web admin supports.
         setFormError({ text: 'Staff accounts sign in on the web at the Sydecrew admin. The app is for customers and companions.' });
         return;

@@ -1,17 +1,22 @@
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, BackHandler, Pressable, StyleSheet, View, type TextInputInstance } from 'react-native';
+import { ActivityIndicator, BackHandler, StyleSheet, View, type TextInputInstance } from 'react-native';
 import { BackBar } from '@/components/account/BackBar';
 import { Button, TextButton } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Feedback';
 import { Checkbox, TextField } from '@/components/ui/Field';
+import { Chip, OptionCard } from '@/components/ui/Chip';
 import { Screen } from '@/components/ui/Screen';
 import { Text, Title } from '@/components/ui/Text';
 import { ApiError, authApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { ageFrom, toIsoDate } from '@/lib/dates';
 import type { OnboardingInput, OnboardingOptions } from '@/lib/types';
-import { colors, radius } from '@/theme';
+
+import { colors, radius, alpha } from '@/theme';
+
+/** Form state: the same fields as the request, before the required boxes are ticked. */
+type OnboardingForm = Omit<OnboardingInput, 'dob' | 'confirm_18_plus' | 'consents'> & { confirm_18_plus: boolean; consents: Record<keyof OnboardingInput['consents'], boolean> };
 
 const STEPS = ['About you', 'Your area', 'Interests', 'Agreements'] as const;
 const RULES = [
@@ -40,7 +45,7 @@ export default function Onboarding() {
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [ineligible, setIneligible] = useState(false);
-  const [form, setForm] = useState<Omit<OnboardingInput, 'dob'>>({
+  const [form, setForm] = useState<OnboardingForm>({
     confirm_18_plus: false,
     city_id: '',
     zone_id: '',
@@ -111,7 +116,8 @@ export default function Onboarding() {
     setBusy(true);
     try {
       // The API makes the final age check and blocks the account if under 18 (D5).
-      const { user: updated } = await authApi.completeOnboarding({ ...form, dob: isoDob! });
+      // The checks above make every required consent true; the API type requires the literal.
+      const { user: updated } = await authApi.completeOnboarding({ ...form, dob: isoDob! } as OnboardingInput);
       setUser(updated); // the route guard now moves to /home
     } catch (err) {
       if (err instanceof ApiError && err.code === 'INELIGIBLE_AGE') setIneligible(true);
@@ -212,7 +218,7 @@ export default function Onboarding() {
           {options.cities.length > 1 ? (
             <View style={styles.wrapRow} accessibilityRole="radiogroup">
               {options.cities.map((c) => (
-                <Chip key={c.id} label={c.name} on={form.city_id === c.id} radio onPress={() => patch({ city_id: c.id, zone_id: '' })} />
+                <Chip key={c.id} label={c.name} selected={form.city_id === c.id} radio onPress={() => patch({ city_id: c.id, zone_id: '' })} />
               ))}
             </View>
           ) : (
@@ -224,18 +230,15 @@ export default function Onboarding() {
               const soon = z.status === 'COMING_SOON';
               const selected = form.zone_id === z.id;
               return (
-                <Pressable
+                <OptionCard
                   key={z.id}
-                  onPress={() => patch({ zone_id: z.id })}
+                  title={z.name}
+                  detail={soon ? 'Coming next' : 'Live now'}
+                  selected={selected}
                   disabled={soon}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: selected, disabled: soon }}
+                  onPress={() => patch({ zone_id: z.id })}
                   accessibilityLabel={`${z.name}, ${soon ? 'coming next' : 'live now'}`}
-                  style={[styles.zone, selected && styles.zoneOn, soon && { opacity: 0.45 }]}
-                >
-                  <Text weight="600" color={colors.fog50}>{z.name}</Text>
-                  <Text variant="caption" color={selected ? colors.lime300 : colors.fog400}>{soon ? 'Coming next' : 'Live now'}</Text>
-                </Pressable>
+                />
               );
             })}
             {errors.zone_id ? (
@@ -260,7 +263,7 @@ export default function Onboarding() {
                 <Chip
                   key={i.id}
                   label={i.name}
-                  on={on}
+                  selected={on}
                   disabled={full}
                   onPress={() => patch({ interest_ids: on ? form.interest_ids.filter((x) => x !== i.id) : [...form.interest_ids, i.id] })}
                 />
@@ -322,27 +325,12 @@ function Heading({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Chip({ label, on, onPress, disabled, radio }: { label: string; on: boolean; onPress: () => void; disabled?: boolean; radio?: boolean }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      accessibilityRole={radio ? 'radio' : 'checkbox'}
-      accessibilityState={{ checked: on, disabled }}
-      style={[styles.chip, on && styles.chipOn, disabled && { opacity: 0.4 }]}
-    >
-      <Text variant="small" weight={on ? '600' : '400'} color={on ? colors.ink950 : colors.fog100}>
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
 
 const styles = StyleSheet.create({
   progressWrap: { paddingHorizontal: 24, paddingTop: 8, gap: 12, width: '100%', maxWidth: 528, alignSelf: 'center' },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 28 },
   progress: { flexDirection: 'row', gap: 6 },
-  bar: { flex: 1, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.1)' },
+  bar: { flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.border },
   barOn: { backgroundColor: colors.lime400 },
   dobRow: { flexDirection: 'row', gap: 10 },
   wrapRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
@@ -353,9 +341,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: colors.surface,
   },
-  zoneOn: { borderColor: 'rgba(212,255,79,0.7)', backgroundColor: 'rgba(212,255,79,0.07)' },
+  zoneOn: { borderColor: alpha(colors.lime400, 0.7), backgroundColor: alpha(colors.lime400, 0.07) },
   chip: {
     minHeight: 40,
     justifyContent: 'center',
@@ -363,9 +351,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: colors.surface,
   },
   chipOn: { backgroundColor: colors.lime400, borderColor: colors.lime400 },
-  panel: { gap: 12, padding: 18, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, backgroundColor: 'rgba(255,255,255,0.03)' },
+  panel: { gap: 12, padding: 18, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.lime400, marginTop: 8 },
 });

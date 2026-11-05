@@ -1,3 +1,4 @@
+import { limitsOf } from '@/lib/companion/types';
 import { useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -101,7 +102,7 @@ function CategoriesForm({ companion, options }: { companion: Companion; options:
       </Section>
 
       {chosen.length ? (
-        <Section title="Activities" hint={`Up to ${options.limits.max_activities}.`}>
+        <Section title="Activities" hint={`Up to ${limitsOf(options).max_activities}.`}>
           {chosen.map((c) => (
             <View key={c.id} style={{ gap: 8 }}>
               <Text variant="small" color={colors.fog300}>{c.name}</Text>
@@ -129,7 +130,7 @@ function CategoriesForm({ companion, options }: { companion: Companion; options:
             key={i}
             label={`Your boundary ${i + 1}`}
             value={text}
-            maxLength={options.limits.boundary_text_max_chars}
+            maxLength={limitsOf(options).boundary_text_max_chars}
             error={errors[`custom.${i}`]}
             onChangeText={(v) => setCustom(custom.map((c, j) => (j === i ? v : c)))}
             trailing={<TextButton onPress={() => setCustom(custom.filter((_, j) => j !== i))}>Remove</TextButton>}

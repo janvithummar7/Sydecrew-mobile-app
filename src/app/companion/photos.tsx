@@ -1,17 +1,19 @@
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Alert as NativeAlert, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert as NativeAlert, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { LoadState, Pill, StepHeader } from '@/components/companion/Bits';
-import { Button, TextButton } from '@/components/ui/Button';
+import { Card as UiCard } from '@/components/ui/Card';
+import { Button, IconButton, TextButton } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Feedback';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 import { ApiError } from '@/lib/api';
 import { companionApi } from '@/lib/companion/api';
 import { useCompanion } from '@/lib/companion/context';
+import { limitsOf } from '@/lib/companion/types';
 import { isApproved } from '@/lib/companion/steps';
 import type { CompanionPhoto } from '@/lib/companion/types';
 import { dismissFailure, enqueue, retryAll } from '@/lib/uploads/uploader';
@@ -30,7 +32,7 @@ export default function Photos() {
   if (!companion || !options) {
     return <Screen><StepHeader title="Photos" /><LoadState loading={loading} error={error} onRetry={refresh} /></Screen>;
   }
-  const { photos_min: min, photos_max: max, photo_min_px: minPx } = options.limits;
+  const { photos_min: min, photos_max: max, photo_min_px: minPx } = limitsOf(options);
   const photos = companion.photos;
   const pending = uploads.items.filter((i) => i.kind === 'PHOTO');
   const failures = uploads.failures.filter((f) => f.kind === 'PHOTO');
@@ -120,9 +122,9 @@ export default function Photos() {
               {p.is_primary ? <Pill label="Main photo" tone="ok" /> : null}
               <Pill label={MODERATION[p.moderation_status][0]} tone={MODERATION[p.moderation_status][1]} />
               <View style={styles.actions}>
-                <IconButton name="arrow-back" label="Move earlier" onPress={() => move(i, -1)} disabled={i === 0 || !!busy} />
-                <IconButton name="arrow-forward" label="Move later" onPress={() => move(i, 1)} disabled={i === photos.length - 1 || !!busy} />
-                <IconButton name="trash-outline" label="Delete photo" onPress={() => del(p)} disabled={!!busy} />
+                <IconButton icon="arrow-back" label="Move earlier" onPress={() => move(i, -1)} disabled={i === 0 || !!busy} />
+                <IconButton icon="arrow-forward" label="Move later" onPress={() => move(i, 1)} disabled={i === photos.length - 1 || !!busy} />
+                <IconButton icon="trash-outline" label="Delete photo" onPress={() => del(p)} disabled={!!busy} />
               </View>
             </View>
           </View>
@@ -137,10 +139,10 @@ export default function Photos() {
           </View>
         ))}
         {count < max ? (
-          <Pressable onPress={add} accessibilityRole="button" accessibilityLabel="Add a photo" style={({ pressed }) => [styles.tile, styles.add, pressed && { opacity: 0.7 }]}>
+          <UiCard onPress={add} accessibilityLabel="Add a photo" style={[styles.tile, styles.add]}>
             <Ionicons name="add" size={32} color={colors.lime400} />
             <Text variant="small" color={colors.fog300}>Add photo</Text>
-          </Pressable>
+          </UiCard>
         ) : null}
       </View>
       <Text variant="caption" color={colors.fog400}>{`${count} of ${max}. The first photo is your main photo. Every photo is checked by our team.`}</Text>
@@ -148,13 +150,6 @@ export default function Photos() {
   );
 }
 
-function IconButton({ name, label, onPress, disabled }: { name: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void; disabled?: boolean }) {
-  return (
-    <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" accessibilityLabel={label} hitSlop={8} style={{ opacity: disabled ? 0.35 : 1, padding: 6 }}>
-      <Ionicons name={name} size={18} color={colors.fog100} />
-    </Pressable>
-  );
-}
 
 const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },

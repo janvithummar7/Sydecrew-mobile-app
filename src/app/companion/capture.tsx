@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Feedback';
 import { Text } from '@/components/ui/Text';
 import { enqueue } from '@/lib/uploads/uploader';
-import { colors, radius } from '@/theme';
+import { colors, radius, alpha } from '@/theme';
 
 type Side = 'FRONT' | 'BACK' | 'SELFIE';
 const COPY: Record<Side, { title: string; tip: string }> = {
@@ -86,5 +86,5 @@ const styles = StyleSheet.create({
   // ID-1 card ratio (85.6 × 54 mm).
   card: { width: '86%', aspectRatio: 1.586, borderRadius: radius.md, borderWidth: 3, borderColor: colors.lime400 },
   oval: { width: '68%', aspectRatio: 0.78, borderRadius: 999, borderWidth: 3, borderColor: colors.lime400 },
-  chrome: { flex: 1, justifyContent: 'space-between', padding: 24, backgroundColor: 'rgba(8,7,12,0.25)' },
+  chrome: { flex: 1, justifyContent: 'space-between', padding: 24, backgroundColor: alpha(colors.ink950, 0.25) },
 });
