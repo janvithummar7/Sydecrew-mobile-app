@@ -20,6 +20,13 @@ import type { Challenge, LoginResponse, Me, OnboardingInput, OnboardingOptions, 
 const devFallback = Platform.OS === 'android' ? 'http://10.0.2.2:4000' : 'http://localhost:4000';
 export const API_URL = (process.env.EXPO_PUBLIC_API_URL || (__DEV__ ? devFallback : '')).replace(/\/$/, '');
 
+// Development: on Android "localhost" is the phone itself, not your computer.
+if (__DEV__ && Platform.OS === 'android' && /localhost|127\.0\.0\.1/.test(API_URL)) {
+  console.warn(
+    "EXPO_PUBLIC_API_URL points at localhost, which Android cannot reach. Use http://10.0.2.2:4000 (emulator) or your computer's LAN IP, and set the API's PUBLIC_API_URL to the same address.",
+  );
+}
+
 /** Requests that take longer than this fail as NETWORK_ERROR (Android's default is no timeout at all). */
 const TIMEOUT_MS = 15_000;
 
@@ -177,4 +184,7 @@ export const authApi = {
     api<{ message: string; dev_link?: string }>('/auth/password/forgot', { method: 'POST', body: { email } }),
   onboardingOptions: () => api<OnboardingOptions>('/onboarding/options'),
   completeOnboarding: (body: OnboardingInput) => api<{ user: Me }>('/onboarding/complete', { method: 'POST', body }),
+  /** Email links (sydecrew://verify-email?token=…, sydecrew://reset-password?token=…). Work signed in or out. */
+  verifyEmail: (token: string) => raw<{ verified: true }>('/auth/email/verify', { method: 'POST', body: { token } }),
+  resetPassword: (token: string, password: string) => raw<{ reset: true }>('/auth/password/reset', { method: 'POST', body: { token, password } }),
 };

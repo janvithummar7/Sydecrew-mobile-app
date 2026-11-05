@@ -43,3 +43,6 @@ export function paiseToInput(paise: number | null | undefined): string {
   const rest = paise % 100;
   return rest ? `${Math.floor(paise / 100)}.${String(rest).padStart(2, '0')}` : String(Math.floor(paise / 100));
 }
+
+/** The one money formatter (paise in, rupees out), same name as on web. */
+export const formatINR = formatPaise;
