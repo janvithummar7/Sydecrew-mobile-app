@@ -1,0 +1,58 @@
+/* GENERATED from contracts/*.json by scripts/contract.mjs. Do not edit; run `npm run contract:gen`. */
+
+export const ApprovalStatusValues = ["PENDING","APPROVED","REJECTED","EXPIRED","EXECUTED"] as const;
+export type ApprovalStatus = (typeof ApprovalStatusValues)[number];
+
+export const AutoReasonValues = ["DOCUMENT_NOT_AUTHENTIC","DOCUMENT_UNREADABLE","LIVENESS_FAILED","PHOTO_FACE_MISMATCH","PRIMARY_PHOTO_FACE","UNDERAGE","UNDER_CATEGORY_MIN"] as const;
+export type AutoReason = (typeof AutoReasonValues)[number];
+
+export const CategoryCodeValues = ["FRIEND","PLUS_ONE","COMPANION","CREW_CARE","CREW_EVENTS"] as const;
+export type CategoryCode = (typeof CategoryCodeValues)[number];
+
+export const CategoryStatusValues = ["PENDING","APPROVED","INELIGIBLE","REMOVED"] as const;
+export type CategoryStatus = (typeof CategoryStatusValues)[number];
+
+export const CompanionNextStepValues = ["PROFILE","PHOTOS","CATEGORIES","DOCUMENTS","SUBMIT","WAITING","FIX_REQUIRED","COOLDOWN","SETUP","GO_LIVE","LIVE","PAUSED","REJECTED","SUSPENDED"] as const;
+export type CompanionNextStep = (typeof CompanionNextStepValues)[number];
+
+export const CompanionStatusValues = ["DRAFT","SUBMITTED","IN_REVIEW","NEEDS_CHANGES","APPROVED","SETUP","LIVE","PAUSED","REVERIFICATION_REQUIRED","SUSPENDED","REJECTED"] as const;
+export type CompanionStatus = (typeof CompanionStatusValues)[number];
+
+export const DocumentSideValues = ["FRONT","BACK","SELFIE"] as const;
+export type DocumentSide = (typeof DocumentSideValues)[number];
+
+export const ErrorCodeValues = ["VALIDATION_FAILED","BAD_JSON","INVALID_INPUT","INVALID_REFERENCE","CONFLICT","NOT_FOUND","INTERNAL_ERROR","RATE_LIMITED","INVALID_STATUS_TRANSITION","CONTRACT_MISMATCH","AUTH_REQUIRED","TOKEN_EXPIRED","TOKEN_INVALID","SESSION_ENDED","INVALID_CREDENTIALS","ACCOUNT_LOCKED","ACCOUNT_DISABLED","ACCOUNT_SUSPENDED","ACCOUNT_EXISTS","ACCOUNT_NOT_FOUND","PHONE_NOT_VERIFIED","EMAIL_NOT_VERIFIED","INELIGIBLE_AGE","LINK_INVALID","OTP_INVALID","OTP_EXPIRED","OTP_USED","OTP_LOCKED","OTP_COOLDOWN","OTP_NOT_FOUND","OTP_RESEND_LIMIT","OTP_RESEND_TOO_SOON","OTP_SEND_LIMIT","OTP_SEND_FAILED","STAFF_ONLY","IP_NOT_ALLOWED","PERMISSION_DENIED","ROLE_REQUIRED","MFA_ENROLLMENT_REQUIRED","MFA_REQUIRED","MFA_STEP_UP_REQUIRED","MFA_CODE_INVALID","MFA_TOKEN_INVALID","MFA_ALREADY_ENABLED","MFA_NOT_STARTED","SECOND_APPROVER_REQUIRED","COMPANION_NOT_FOUND","APPLICATION_LOCKED","APPLICATION_INCOMPLETE","PROFILE_LOCKED","REAPPLY_BLOCKED","REAPPLY_COOLDOWN","CONTENT_NOT_ALLOWED","BELOW_CATEGORY_MIN_AGE","ACTIVITY_CATEGORY_MISMATCH","PHOTO_LIMIT","PHOTO_MINIMUM","PHOTO_NOT_FOUND","UPLOAD_NOT_FOUND","UPLOAD_ALREADY_RECEIVED","UPLOAD_MISMATCH","UPLOAD_NOT_PENDING","UPLOAD_MISSING","UPLOAD_CORRUPTED","UPLOAD_URL_EXPIRED","UPLOAD_TYPE_MISMATCH","UPLOAD_TOO_LARGE","UPLOAD_EMPTY","FILE_TOO_LARGE","IMAGE_UNREADABLE","UNSUPPORTED_IMAGE_TYPE","IMAGE_TOO_SMALL","VIEW_URL_EXPIRED","DOCUMENT_TYPE_REQUIRED","DOCUMENT_TYPE_UNAVAILABLE","AADHAAR_IMAGE_NOT_ALLOWED","VERIFICATION_NOT_OPEN","AUTO_CHECK_COOLDOWN","MANUAL_REVIEW_REQUIRED","LIVENESS_BY_UPLOAD","LIVENESS_SESSION_MISMATCH","DIGILOCKER_UNAVAILABLE","DIGILOCKER_NOT_STARTED","DIGILOCKER_FAILED","KYC_PROVIDER_NOT_CONFIGURED","INVALID_SIGNATURE","VERIFICATION_NOT_FOUND","NOT_IN_REVIEW","CLAIMED_BY_OTHER","CLAIM_REQUIRED","NOT_CLAIMED_BY_YOU","BLOCKED_BY_FLAG","FACE_MATCH_REQUIRED","APPROVAL_ALREADY_PENDING","APPROVAL_NOT_FOUND","APPROVAL_NOT_PENDING","APPROVAL_EXPIRED","NOT_AUTO_REJECTED","NEWER_ATTEMPT_EXISTS","DOCUMENT_NOT_FOUND","DOCUMENT_UNAVAILABLE","FLAG_NOT_FOUND","FLAG_NOT_OPEN","NOT_SUSPENDED","NOT_PENDING","CATEGORY_NOT_FOUND","NOT_APPROVED","NOT_READY","SETUP_INCOMPLETE","REVERIFICATION_DUE","NOT_LIVE","NOT_PAUSED","RATE_OUT_OF_BAND","AVAILABILITY_OVERLAP","EXCEPTION_NOT_FOUND"] as const;
+export type ErrorCode = (typeof ErrorCodeValues)[number];
+
+export const FixItemValues = ["DISPLAY_NAME","INTRO","PHOTOS_REPLACE","PRIMARY_PHOTO_FACE","PHOTO_FACE_MISMATCH","CATEGORIES","BOUNDARIES","ID_DOCUMENT_RETAKE","ID_DOCUMENT_OTHER_TYPE","ID_BACK_MISSING","SELFIE_RETAKE","NAME_MATCH"] as const;
+export type FixItem = (typeof FixItemValues)[number];
+
+export const FixStepValues = ["PROFILE","PHOTOS","CATEGORIES","DOCUMENTS"] as const;
+export type FixStep = (typeof FixStepValues)[number];
+
+export const FlagStatusValues = ["OPEN","CLEARED","CONFIRMED"] as const;
+export type FlagStatus = (typeof FlagStatusValues)[number];
+
+export const FlagTypeValues = ["DUPLICATE_FACE","DUPLICATE_ID","DUPLICATE_DEVICE","NAME_MISMATCH","AGE_BORDERLINE","MANUAL"] as const;
+export type FlagType = (typeof FlagTypeValues)[number];
+
+export const IdDocumentTypeValues = ["PAN","PASSPORT","DRIVING_LICENSE","VOTER_ID","AADHAAR"] as const;
+export type IdDocumentType = (typeof IdDocumentTypeValues)[number];
+
+export const ModerationStatusValues = ["PENDING","APPROVED","REJECTED"] as const;
+export type ModerationStatus = (typeof ModerationStatusValues)[number];
+
+export const OnboardingNextStepValues = ["VERIFY_PHONE","PROFILE"] as const;
+export type OnboardingNextStep = (typeof OnboardingNextStepValues)[number];
+
+export const RejectReasonValues = ["UNDERAGE","UNDER_CATEGORY_MIN","FAKE_DOCUMENT","IMPERSONATION","BANNED_MATCH","SAFETY","DUPLICATE_ACCOUNT","POLICY_VIOLATION","OTHER"] as const;
+export type RejectReason = (typeof RejectReasonValues)[number];
+
+export const RoleCodeValues = ["CUSTOMER","COMPANION","SUPER_ADMIN","OPS_MANAGER","SENIOR_OPS","VERIFICATION_EXECUTIVE","FINANCE_EXECUTIVE","TS_AGENT","TS_MANAGER","SUPPORT_EXECUTIVE"] as const;
+export type RoleCode = (typeof RoleCodeValues)[number];
+
+export const UserStatusValues = ["PENDING","ACTIVE","SUSPENDED","BANNED","DEACTIVATED"] as const;
+export type UserStatus = (typeof UserStatusValues)[number];
+
+export const VerificationStatusValues = ["PENDING_UPLOAD","SUBMITTED","AUTO_CHECKING","AUTO_REJECTED","IN_REVIEW","NEEDS_CHANGES","APPROVED","REJECTED","EXPIRED"] as const;
+export type VerificationStatus = (typeof VerificationStatusValues)[number];
