@@ -17,7 +17,14 @@ export type Me = {
   city_id: string | null;
   zone_id: string | null;
   onboarding: { complete: boolean; next_step: 'VERIFY_PHONE' | 'PROFILE' | null };
+  /** Set once the user has applied to become a companion (Feature 2). */
+  companion?: { id: string; status: import('./companion/steps').CompanionStatus; next_step: string } | null;
+  /** Staff only. */
+  mfa?: { enrolled: boolean; session_fresh: boolean } | null;
 };
+
+/** POST /auth/login: a one-time code, or (staff with TOTP) a second step that only the web admin offers. */
+export type LoginResponse = { challenge: Challenge; mfa_required?: undefined } | { mfa_required: true; mfa_token: string; expires_in: number; challenge?: undefined };
 
 /** A one-time code that was just sent. `dev_code` appears only in local development. */
 export type Challenge = {

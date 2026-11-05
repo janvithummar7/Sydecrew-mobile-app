@@ -13,6 +13,7 @@ SplashScreen.preventAutoHideAsync();
  * - signed out: welcome, login, sign-up, forgot password
  * - signed in, onboarding unfinished: onboarding
  * - signed in and onboarded: home
+ * - signed in: companion/* (its own layout guards each screen by user.companion.status)
  * When the session changes, the current screen's guard fails and Expo Router
  * redirects, so screens never navigate after login / logout themselves.
  */
@@ -42,6 +43,10 @@ function RootNavigator() {
       </Stack.Protected>
       <Stack.Protected guard={onboarded} redirectTo={home}>
         <Stack.Screen name="home" />
+      </Stack.Protected>
+      {/* Becoming a companion needs a signed-in account, not customer onboarding (the apply step collects what is missing). */}
+      <Stack.Protected guard={signedIn} redirectTo={home}>
+        <Stack.Screen name="companion" />
       </Stack.Protected>
     </Stack>
   );

@@ -40,9 +40,14 @@ export default function Login() {
     setBusy(true);
     submitting.current = true;
     try {
-      const { challenge: c } = await authApi.login({ identifier, password });
-      setChallenge(c);
+      const res = await authApi.login({ identifier, password });
       setPassword('');
+      if (res.mfa_required) {
+        // Staff accounts use an authenticator app, which only the web admin supports.
+        setFormError({ text: 'Staff accounts sign in on the web at the Sydecrew admin. The app is for customers and companions.' });
+        return;
+      }
+      setChallenge(res.challenge);
     } catch (err) {
       if (!(err instanceof ApiError)) setFormError({ text: 'Something went wrong. Please try again.' });
       else if (err.code === 'ACCOUNT_LOCKED') {

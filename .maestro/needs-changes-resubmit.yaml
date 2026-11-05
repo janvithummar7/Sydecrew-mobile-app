@@ -1,0 +1,35 @@
+# Needs changes -> fix -> resubmit.
+# Before running: the account from apply-submit.yaml is IN_REVIEW, and a reviewer on the web
+# admin asked for changes with the fix item "Rewrite your intro" (INTRO).
+# Run: maestro test -e EMAIL=... -e PASSWORD=... -e OTP=... .maestro/needs-changes-resubmit.yaml
+appId: com.sydecrew.app
+---
+- launchApp
+- tapOn:
+    text: "Log in"
+    optional: true
+- runFlow:
+    when:
+      visible: "Welcome back"
+    commands:
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+- scrollUntilVisible:
+    element: "Your companion profile"
+- tapOn: "Your companion profile"
+- assertVisible: "Changes needed"
+- assertVisible: "What to fix"
+- tapOn: "Rewrite your intro"
+- tapOn: "Intro"
+- eraseText
+- inputText: "Friendly and punctual. I enjoy museums, heritage walks and board games, and I am happy at family functions."
+- tapOn: "Save and continue"
+- back
+- back
+- tapOn: "Continue"
+- tapOn: "Submit for review"
+- assertVisible: "In review"

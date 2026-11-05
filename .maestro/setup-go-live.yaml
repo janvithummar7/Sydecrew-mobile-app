@@ -1,0 +1,37 @@
+# Setup after approval -> go live -> pause -> resume.
+# Before running: the companion was approved on the web admin.
+# Run: maestro test -e EMAIL=... -e PASSWORD=... -e OTP=... .maestro/setup-go-live.yaml
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+- scrollUntilVisible:
+    element: "Your companion profile"
+- tapOn: "Your companion profile"
+- assertVisible: "When you are available"
+- tapOn: "Add a Monday slot"
+- tapOn: "Add a Wednesday slot"
+- scrollUntilVisible:
+    element: "Save availability"
+- tapOn: "Save availability"
+- tapOn: "Next: your rates"
+- tapOn: "Rate per hour (₹)"
+- inputText: "800"
+- tapOn: "Save rates"
+- tapOn: "Next: go live"
+- tapOn: "Go live"
+- assertVisible: "Customers can find and book you."
+- tapOn: "Pause my profile"
+- assertVisible: "Paused"
+- tapOn: "Go live again"
+- assertVisible: "Live"

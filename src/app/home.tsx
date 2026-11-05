@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { COMPANION_HOME, statusLabel } from '@/lib/companion/steps';
 import { Ionicons } from '@expo/vector-icons';
 import { Logo } from '@/components/ui/Brand';
 import { Button, TextButton } from '@/components/ui/Button';
@@ -19,6 +21,7 @@ const formatPhone = (p: string | null) => {
 
 /** Signed-in home. Discovery and bookings plug in here as they are built. */
 export default function Home() {
+  const router = useRouter();
   const { user, signOut } = useAuth();
   const [options, setOptions] = useState<OnboardingOptions | null>(null);
   const [email, setEmail] = useState<{ sending?: boolean; sent?: boolean; error?: string; devLink?: string }>({});
@@ -70,11 +73,18 @@ export default function Home() {
 
       <View style={{ gap: 12 }}>
         <Card icon="compass-outline" title="Discover companions" badge="Next release">
-          {`Browse verified friends, plus-ones and companions near ${zone?.name ?? 'you'}.`}
+          {`Browse verified companions for Crew, Plus-One, Crew Care and Crew Events near ${zone?.name ?? 'you'}.`}
         </Card>
         <Card icon="calendar-outline" title="Your bookings" badge="Next release">
           Upcoming meetings, requests waiting for a reply, and your history.
         </Card>
+        <Pressable onPress={() => router.push(COMPANION_HOME)} accessibilityRole="button" style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}>
+          <Card icon="people-outline" title={user.companion ? 'Your companion profile' : 'Become a companion'} badge={user.companion ? statusLabel(user.companion.status) : undefined}>
+            {user.companion
+              ? 'See your application, setup and availability.'
+              : 'Offer platonic company at approved public venues, set your own hours and rate, and get paid weekly.'}
+          </Card>
+        </Pressable>
         <Card icon="shield-checkmark-outline" title="Safety">
           Every meeting is at an approved public venue, with check-in, a safety ping and one-tap SOS.
         </Card>
