@@ -3953,8 +3953,7 @@
           "email",
           "phone",
           "password"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postAuthLoginBody": {
         "type": "object",
@@ -3973,8 +3972,7 @@
         "required": [
           "identifier",
           "password"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postAuthOtpVerifyBody": {
         "type": "object",
@@ -3992,8 +3990,7 @@
         "required": [
           "otp_id",
           "code"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postAuthOtpResendBody": {
         "type": "object",
@@ -4006,28 +4003,28 @@
         },
         "required": [
           "otp_id"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postAuthMfaLoginBody": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/postAuthMfaVerifyBody"
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{6}$"
           },
-          {
-            "type": "object",
-            "properties": {
-              "mfa_token": {
-                "type": "string",
-                "minLength": 20,
-                "maxLength": 2000
-              }
-            },
-            "required": [
-              "mfa_token"
-            ],
-            "additionalProperties": false
+          "recovery_code": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 20
+          },
+          "mfa_token": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
           }
+        },
+        "required": [
+          "mfa_token"
         ]
       },
       "postAuthMfaTotpActivateBody": {
@@ -4040,8 +4037,7 @@
         },
         "required": [
           "code"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postAuthMfaVerifyBody": {
         "type": "object",
@@ -4055,8 +4051,7 @@
             "minLength": 10,
             "maxLength": 20
           }
-        },
-        "additionalProperties": false
+        }
       },
       "postAuthEmailVerifyBody": {
         "type": "object",
@@ -4069,8 +4064,7 @@
         },
         "required": [
           "token"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postAuthPasswordForgotBody": {
         "type": "object",
@@ -4084,8 +4078,7 @@
         },
         "required": [
           "email"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postAuthPasswordResetBody": {
         "type": "object",
@@ -4112,8 +4105,7 @@
         "required": [
           "token",
           "password"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postOnboardingCompleteBody": {
         "type": "object",
@@ -4156,11 +4148,7 @@
                 "default": true,
                 "type": "boolean"
               }
-            },
-            "required": [
-              "hide_last_name"
-            ],
-            "additionalProperties": false
+            }
           },
           "consents": {
             "type": "object",
@@ -4190,10 +4178,8 @@
               "terms",
               "privacy",
               "community_guidelines",
-              "dpdp_data_processing",
-              "marketing"
-            ],
-            "additionalProperties": false
+              "dpdp_data_processing"
+            ]
           }
         },
         "required": [
@@ -4201,11 +4187,8 @@
           "confirm_18_plus",
           "city_id",
           "zone_id",
-          "interest_ids",
-          "privacy",
           "consents"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postCompanionApplyBody": {
         "type": "object",
@@ -4268,15 +4251,13 @@
               "companion_terms",
               "companion_conduct",
               "kyc_biometric_processing"
-            ],
-            "additionalProperties": false
+            ]
           }
         },
         "required": [
           "confirm_18_plus",
           "consents"
-        ],
-        "additionalProperties": false
+        ]
       },
       "patchCompanionProfileBody": {
         "type": "object",
@@ -4311,8 +4292,7 @@
           "service_radius_km": {
             "type": "number"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "putCompanionCategoriesBody": {
         "type": "object",
@@ -4330,8 +4310,7 @@
         },
         "required": [
           "category_ids"
-        ],
-        "additionalProperties": false
+        ]
       },
       "putCompanionActivitiesBody": {
         "type": "object",
@@ -4349,8 +4328,7 @@
         },
         "required": [
           "activity_ids"
-        ],
-        "additionalProperties": false
+        ]
       },
       "putCompanionBoundariesBody": {
         "type": "object",
@@ -4374,12 +4352,7 @@
               "maxLength": 500
             }
           }
-        },
-        "required": [
-          "option_ids",
-          "custom"
-        ],
-        "additionalProperties": false
+        }
       },
       "postCompanionPhotosUploadUrlBody": {
         "type": "object",
@@ -4411,8 +4384,7 @@
           "mime",
           "bytes",
           "sha256"
-        ],
-        "additionalProperties": false
+        ]
       },
       "putCompanionPhotosOrderBody": {
         "type": "object",
@@ -4430,8 +4402,7 @@
         },
         "required": [
           "photo_ids"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postCompanionVerificationBody": {
         "type": "object",
@@ -4450,8 +4421,7 @@
             "type": "string",
             "maxLength": 40
           }
-        },
-        "additionalProperties": false
+        }
       },
       "postCompanionVerificationDocumentsUploadUrlBody": {
         "type": "object",
@@ -4492,8 +4462,7 @@
           "mime",
           "bytes",
           "sha256"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postCompanionVerificationLivenessCompleteBody": {
         "type": "object",
@@ -4506,8 +4475,7 @@
         },
         "required": [
           "provider_ref"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postCompanionVerificationDigilockerCompleteBody": {
         "type": "object",
@@ -4520,8 +4488,7 @@
         },
         "required": [
           "code"
-        ],
-        "additionalProperties": false
+        ]
       },
       "putCompanionAvailabilityBody": {
         "type": "object",
@@ -4550,8 +4517,7 @@
                 "day_of_week",
                 "start_time",
                 "end_time"
-              ],
-              "additionalProperties": false
+              ]
             }
           },
           "settings": {
@@ -4589,14 +4555,12 @@
               "max_duration_minutes",
               "min_notice_hours",
               "max_advance_days"
-            ],
-            "additionalProperties": false
+            ]
           }
         },
         "required": [
           "rules"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postCompanionAvailabilityExceptionsBody": {
         "type": "object",
@@ -4628,8 +4592,7 @@
         "required": [
           "date",
           "type"
-        ],
-        "additionalProperties": false
+        ]
       },
       "putCompanionRatesBody": {
         "type": "object",
@@ -4665,15 +4628,13 @@
               "required": [
                 "category_id",
                 "hourly_rate_paise"
-              ],
-              "additionalProperties": false
+              ]
             }
           }
         },
         "required": [
           "rates"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postCompanionPauseBody": {
         "type": "object",
@@ -4682,8 +4643,7 @@
             "type": "string",
             "maxLength": 300
           }
-        },
-        "additionalProperties": false
+        }
       },
       "postAdminVerificationsByIdDecisionBody": {
         "oneOf": [
@@ -4701,8 +4661,7 @@
             },
             "required": [
               "decision"
-            ],
-            "additionalProperties": false
+            ]
           },
           {
             "type": "object",
@@ -4749,10 +4708,8 @@
             },
             "required": [
               "decision",
-              "fix_items",
-              "photo_ids"
-            ],
-            "additionalProperties": false
+              "fix_items"
+            ]
           },
           {
             "type": "object",
@@ -4785,8 +4742,7 @@
               "decision",
               "reason_code",
               "note"
-            ],
-            "additionalProperties": false
+            ]
           }
         ]
       },
@@ -4801,8 +4757,7 @@
         },
         "required": [
           "reason"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postAdminVerificationsByIdFlagsBody": {
         "type": "object",
@@ -4818,10 +4773,8 @@
           }
         },
         "required": [
-          "note",
-          "blocks_approval"
-        ],
-        "additionalProperties": false
+          "note"
+        ]
       },
       "postAdminApprovalsByIdDecisionBody": {
         "type": "object",
@@ -4840,8 +4793,7 @@
         },
         "required": [
           "decision"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postAdminVerificationFlagsByIdResolveBody": {
         "type": "object",
@@ -4862,8 +4814,7 @@
         "required": [
           "resolution",
           "note"
-        ],
-        "additionalProperties": false
+        ]
       },
       "postAdminCompanionsByIdRequireReverificationBody": {
         "type": "object",
@@ -4880,10 +4831,34 @@
           }
         },
         "required": [
-          "reason_code",
           "note"
-        ],
-        "additionalProperties": false
+        ]
+      },
+      "postAdminCompanionsByIdSuspendBody": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "postAdminCompanionsByIdLiftSuspensionBody": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "reason"
+        ]
       },
       "postAdminModerationByKindByIdDecisionBody": {
         "type": "object",
@@ -4902,8 +4877,7 @@
         },
         "required": [
           "decision"
-        ],
-        "additionalProperties": false
+        ]
       },
       "patchAdminCategoriesByIdPriceBandBody": {
         "type": "object",
@@ -4928,8 +4902,7 @@
           "min_paise",
           "max_paise",
           "reason"
-        ],
-        "additionalProperties": false
+        ]
       }
     }
   },
@@ -5133,7 +5106,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/postAdminVerificationsByIdReopenBody"
+                "$ref": "#/components/schemas/postAdminCompanionsByIdLiftSuspensionBody"
               }
             }
           }
@@ -5235,7 +5208,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/postAdminVerificationsByIdReopenBody"
+                "$ref": "#/components/schemas/postAdminCompanionsByIdSuspendBody"
               }
             }
           }

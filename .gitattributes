@@ -1,0 +1,7 @@
+# Files the drift checks compare byte for byte (tokens, contract): always LF.
+contracts/*.json text eol=lf
+design/*.json text eol=lf
+src/styles/tokens.* text eol=lf
+src/theme/tokens.ts text eol=lf
+src/lib/api/generated/* text eol=lf
+src/lib/contract/* text eol=lf

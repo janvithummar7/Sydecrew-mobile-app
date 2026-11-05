@@ -1912,7 +1912,9 @@ export interface components {
             /** Format: uuid */
             otp_id: string;
         };
-        postAuthMfaLoginBody: components["schemas"]["postAuthMfaVerifyBody"] & {
+        postAuthMfaLoginBody: {
+            code?: string;
+            recovery_code?: string;
             mfa_token: string;
         };
         postAuthMfaTotpActivateBody: {
@@ -2120,6 +2122,12 @@ export interface components {
             reason_code: string;
             note: string;
         };
+        postAdminCompanionsByIdSuspendBody: {
+            reason: string;
+        };
+        postAdminCompanionsByIdLiftSuspensionBody: {
+            reason: string;
+        };
         postAdminModerationByKindByIdDecisionBody: {
             /** @enum {string} */
             decision: "APPROVE" | "REJECT";
@@ -2251,7 +2259,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["postAdminVerificationsByIdReopenBody"];
+                "application/json": components["schemas"]["postAdminCompanionsByIdLiftSuspensionBody"];
             };
         };
         responses: {
@@ -2321,7 +2329,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["postAdminVerificationsByIdReopenBody"];
+                "application/json": components["schemas"]["postAdminCompanionsByIdSuspendBody"];
             };
         };
         responses: {
