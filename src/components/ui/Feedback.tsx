@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius } from '@/theme';
+import { colors, radius, alpha } from '@/theme';
 import { Text } from './Text';
 
 const tones = {
-  error: { bg: 'rgba(248,113,113,0.08)', border: 'rgba(248,113,113,0.3)', icon: 'alert-circle-outline', color: colors.red300 },
-  success: { bg: 'rgba(212,255,79,0.08)', border: 'rgba(212,255,79,0.3)', icon: 'checkmark-circle-outline', color: colors.lime300 },
-  info: { bg: 'rgba(178,159,255,0.08)', border: 'rgba(178,159,255,0.3)', icon: 'information-circle-outline', color: colors.lavender300 },
+  error: { bg: alpha(colors.red400, 0.08), border: alpha(colors.red400, 0.3), icon: 'alert-circle-outline', color: colors.red300 },
+  success: { bg: alpha(colors.lime400, 0.08), border: alpha(colors.lime400, 0.3), icon: 'checkmark-circle-outline', color: colors.lime300 },
+  info: { bg: alpha(colors.lavender400, 0.08), border: alpha(colors.lavender400, 0.3), icon: 'information-circle-outline', color: colors.lavender300 },
 } as const;
 
 /** Form-level message. Errors are announced to screen readers straight away. */
@@ -42,5 +42,5 @@ export function DevHint({ children }: { children: ReactNode }) {
 
 const styles = StyleSheet.create({
   box: { flexDirection: 'row', gap: 10, borderWidth: 1, borderRadius: radius.lg, paddingHorizontal: 14, paddingVertical: 12 },
-  dev: { borderWidth: 1, borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.15)', borderRadius: radius.sm, padding: 8 },
+  dev: { borderWidth: 1, borderStyle: 'dashed', borderColor: colors.border, borderRadius: radius.sm, padding: 8 },
 });

@@ -1,47 +1,43 @@
 /**
- * Sydecrew design tokens, matching the website (Sydecrew-web/src/app/globals.css):
- * near-black ink, lavender, lime and fog white. Dark UI only.
+ * Theme for the app, derived ONLY from the generated design tokens
+ * (src/theme/tokens.ts <- design/tokens.json, shared with Sydecrew-web).
+ * No colour, size or radius literals live here or in screens:
+ * `npm run lint` fails on raw hex / rgba values outside the token files.
  */
-export const colors = {
-  ink950: '#08070c',
-  ink900: '#0e0c14',
-  ink800: '#1a1723',
-  ink700: '#262230',
-  plum950: '#110d1f',
+import { colors as tokenColors, fonts, motion, radius as tokenRadius, semantic, shadow, space as tokenSpace, touchTarget, type as tokenType, z } from './theme/tokens';
 
-  fog50: '#faf9fc',
-  fog100: '#f3f1f8',
-  fog300: '#c9c4d6',
-  fog400: '#aca6ba',
-  fog500: '#8d879c',
+export const colors = { ...tokenColors, ...semantic } as const;
+export { semantic, shadow, motion, z, touchTarget, fonts };
 
-  lavender300: '#c8baff',
-  lavender400: '#b29fff',
+export const radius = tokenRadius;
 
-  lime300: '#e3ff8a',
-  lime400: '#d4ff4f',
-
-  red300: '#fca5a5',
-  red400: '#f87171',
-
-  /** Translucent white layers used for fields and cards. */
-  surface: 'rgba(255,255,255,0.04)',
-  surfaceStrong: 'rgba(255,255,255,0.07)',
-  border: 'rgba(255,255,255,0.12)',
-  borderStrong: 'rgba(255,255,255,0.25)',
-  divider: 'rgba(255,255,255,0.06)',
+/** Named spacing on the token scale (4-point grid). */
+export const space = {
+  xs: tokenSpace['1'],
+  sm: tokenSpace['2'],
+  md: tokenSpace['3'],
+  lg: tokenSpace['4'],
+  xl: tokenSpace['6'],
+  xxl: tokenSpace['8'],
+  xxxl: tokenSpace['12'],
 } as const;
 
-export const radius = { sm: 10, md: 14, lg: 20, xl: 28, pill: 999 } as const;
+/** Font family for a weight: Geist for text, Instrument Serif for the italic display accent. */
+export function fontFor(weight?: string, serif = false): string {
+  if (serif) return fonts.serif.italic;
+  if (weight === '700' || weight === '600' || weight === 'bold') return fonts.sans.semibold;
+  if (weight === '500') return fonts.sans.medium;
+  return fonts.sans.regular;
+}
 
-export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
+/** The type scale with the brand fonts applied. */
+export const type = Object.fromEntries(
+  Object.entries(tokenType).map(([k, t]) => [k, { ...t, fontFamily: fontFor(t.fontWeight) }]),
+) as { [K in keyof typeof tokenType]: (typeof tokenType)[K] & { fontFamily: string } };
 
-export const type = {
-  display: { fontSize: 34, lineHeight: 38, fontWeight: '600', letterSpacing: -1 },
-  title: { fontSize: 26, lineHeight: 31, fontWeight: '600', letterSpacing: -0.5 },
-  heading: { fontSize: 18, lineHeight: 24, fontWeight: '600' },
-  body: { fontSize: 16, lineHeight: 23 },
-  small: { fontSize: 14, lineHeight: 20 },
-  caption: { fontSize: 13, lineHeight: 18 },
-  eyebrow: { fontSize: 12, lineHeight: 14, fontWeight: '600', letterSpacing: 2, textTransform: 'uppercase' },
-} as const;
+/** A token colour at an opacity, e.g. alpha(colors.lime400, 0.15) for tinted backgrounds. */
+export function alpha(hex: string, opacity: number): string {
+  const n = hex.replace('#', '');
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(n.slice(i, i + 2), 16));
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}

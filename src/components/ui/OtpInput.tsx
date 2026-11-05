@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View, type TextInputInstance } from 'react-native';
-import { colors, radius } from '@/theme';
+import { colors, radius, alpha } from '@/theme';
 import { Text } from './Text';
 
 type Props = {
@@ -79,8 +79,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  boxActive: { borderColor: 'rgba(212,255,79,0.8)', backgroundColor: colors.surfaceStrong },
-  boxError: { borderColor: 'rgba(248,113,113,0.75)' },
+  boxActive: { borderColor: alpha(colors.lime400, 0.8), backgroundColor: colors.surfaceStrong },
+  boxError: { borderColor: alpha(colors.red400, 0.75) },
   digit: { fontVariant: ['tabular-nums'] },
   // Covers the boxes so taps focus it, but is invisible.
   hidden: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.011, color: 'transparent' },
