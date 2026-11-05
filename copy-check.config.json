@@ -1,0 +1,5 @@
+{
+  "include": ["src", "app.json"],
+  "extensions": [".ts", ".tsx", ".js", ".json"],
+  "allowFiles": {}
+}

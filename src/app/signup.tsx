@@ -154,6 +154,7 @@ export default function SignUp() {
       ) : null}
 
       <Text variant="caption" color={colors.fog400}>
+        {/* copy-check-allow: legal disclaimer must name the prohibited services */}
         Sydecrew is for adults 18 and over. It is a platonic social companionship service, not a dating or escort service.
       </Text>
     </Screen>
