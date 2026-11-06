@@ -276,6 +276,7 @@
           "MFA_NOT_STARTED",
           "SECOND_APPROVER_REQUIRED",
           "COMPANION_NOT_FOUND",
+          "PROFILE_UNAVAILABLE",
           "APPLICATION_LOCKED",
           "APPLICATION_INCOMPLETE",
           "PROFILE_LOCKED",
@@ -1348,6 +1349,30 @@
               "additionalProperties": false
             }
           },
+          "interests": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "show_age": {
+            "type": "boolean"
+          },
           "city_id": {
             "type": "string",
             "format": "uuid",
@@ -1724,6 +1749,8 @@
           "display_name",
           "intro",
           "languages",
+          "interests",
+          "show_age",
           "city_id",
           "zone_id",
           "service_radius_km",
@@ -2068,6 +2095,31 @@
               "additionalProperties": false
             }
           },
+          "interests": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "slug"
+              ],
+              "additionalProperties": false
+            }
+          },
           "cities": {
             "type": "array",
             "items": {
@@ -2221,6 +2273,7 @@
           "categories",
           "boundary_options",
           "languages",
+          "interests",
           "cities",
           "document_types",
           "fix_items",
@@ -4472,6 +4525,18 @@
               "null"
             ]
           },
+          "city_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "categories": {
             "type": "array",
             "items": {
@@ -4663,6 +4728,7 @@
         "required": [
           "in_pilot",
           "city",
+          "city_id",
           "categories",
           "languages",
           "interests",
@@ -10458,6 +10524,7 @@
     "MFA_NOT_STARTED": "Start the set-up again.",
     "SECOND_APPROVER_REQUIRED": "A different person must approve this.",
     "COMPANION_NOT_FOUND": "Apply to become a companion first.",
+    "PROFILE_UNAVAILABLE": "This profile is not available.",
     "APPLICATION_LOCKED": "Your application is being reviewed. You can edit it again after the decision.",
     "APPLICATION_INCOMPLETE": "Finish every step before you submit.",
     "PROFILE_LOCKED": "This profile cannot be changed right now.",

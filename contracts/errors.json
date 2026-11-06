@@ -46,6 +46,7 @@
   "MFA_NOT_STARTED": "Start the set-up again.",
   "SECOND_APPROVER_REQUIRED": "A different person must approve this.",
   "COMPANION_NOT_FOUND": "Apply to become a companion first.",
+  "PROFILE_UNAVAILABLE": "This profile is not available.",
   "APPLICATION_LOCKED": "Your application is being reviewed. You can edit it again after the decision.",
   "APPLICATION_INCOMPLETE": "Finish every step before you submit.",
   "PROFILE_LOCKED": "This profile cannot be changed right now.",
