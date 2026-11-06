@@ -42,7 +42,8 @@ export const companionApi = {
     api<Availability & { id: string }>('/companion/availability/exceptions', { method: 'POST', body }),
   deleteException: (id: string) => api<Availability>(`/companion/availability/exceptions/${id}`, { method: 'DELETE' }),
   rates: () => api<{ currency: 'INR'; rates: Rate[] }>('/companion/rates'),
-  putRates: (rates: { category_id: string; activity_id?: string; hourly_rate_paise: number }[]) =>
+  /** `booking_mode`: INSTANT lets customers book and pay straight away (Feature 4); REQUEST needs the companion's yes. */
+  putRates: (rates: { category_id: string; activity_id?: string; hourly_rate_paise: number; booking_mode?: 'INSTANT' | 'REQUEST' }[]) =>
     api<{ currency: 'INR'; rates: Rate[] }>('/companion/rates', { method: 'PUT', body: { rates } }),
   goLive: () => api<{ already_live: boolean; companion: Companion }>('/companion/go-live', { method: 'POST', body: {} }),
   pause: (reason?: string) => api<View>('/companion/pause', { method: 'POST', body: reason ? { reason } : {} }),

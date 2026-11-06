@@ -12,6 +12,7 @@ import { DAYS, normaliseTime, slotErrors, todayIst, type Slot } from '@/lib/comp
 import { companionApi } from '@/lib/companion/api';
 import { useCompanion } from '@/lib/companion/context';
 import type { Availability } from '@/lib/companion/types';
+import { availabilitySettings } from '@/content/companion';
 import { colors } from '@/theme';
 
 type Settings = Availability['settings'];
@@ -21,6 +22,7 @@ const SETTING_FIELDS: [keyof Settings, string, string][] = [
   ['max_advance_days', 'Book up to (days ahead)', '1 to 90 days.'],
   ['min_duration_minutes', 'Shortest booking (minutes)', ''],
   ['max_duration_minutes', 'Longest booking (minutes)', ''],
+  ['max_bookings_per_day', availabilitySettings.maxPerDay, availabilitySettings.maxPerDayHint],
 ];
 
 /** Availability (D3): weekly slots in IST, date exceptions, buffer and booking limits. */

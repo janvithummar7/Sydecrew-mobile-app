@@ -35,3 +35,14 @@ export const companionStates: Record<CompanionStateKey, CompanionStateCopy> = {
   REVERIFICATION_REQUIRED: { badge: 'needs-changes', label: 'Re-verify', title: 'Please re-verify your identity', body: 'Your profile is hidden until you re-verify. Existing bookings are not cancelled automatically.', cta: 'Re-verify now' },
   SUSPENDED: { badge: 'suspended', label: 'Suspended', title: 'Your profile is suspended', body: 'Our Trust & Safety team will contact you. You can appeal by replying to their message.', cta: null },
 };
+
+/** Rates and availability (Feature 4 additions). */
+export const rates = {
+  instant: 'Instant booking',
+  instantHint: 'Customers can book and pay straight away inside your availability. Off: every booking is a request you accept or decline.',
+} as const;
+
+export const availabilitySettings = {
+  maxPerDay: 'Bookings a day (most)',
+  maxPerDayHint: '1 to 10.',
+} as const;
