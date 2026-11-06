@@ -4,6 +4,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { BackBar } from '@/components/account/BackBar';
 import { PolicyCard, PriceLines, Timeline } from '@/components/bookings/Parts';
 import { CancelSheet, IssueSheet, RejectSheet } from '@/components/bookings/Sheets';
+import { CallAndChat } from '@/components/comms/BookingComms';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -25,7 +26,8 @@ import { colors, space } from '@/theme';
  * Booking detail (artboard "Booking details"), for the customer and the
  * companion: status, when and where, money, the timeline and the actions the
  * API allows (`actions`): pay, accept / decline, check-in, cancel with the
- * refund preview, report an issue.
+ * refund preview, report an issue. Feature 5: Message (the booking chat) and,
+ * inside the call window, a masked Call.
  */
 export default function BookingDetail() {
   const router = useRouter();
@@ -143,6 +145,8 @@ export default function BookingDetail() {
           </>
         ) : null}
       </Card>
+
+      <CallAndChat booking={b} now={now} />
 
       {isBookingDay(b) ? <Button variant="secondary" onPress={() => router.push({ pathname: '/booking/[id]/day', params: { id: b.id } })}>{copy.day}</Button> : null}
 

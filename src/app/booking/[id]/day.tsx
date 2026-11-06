@@ -1,8 +1,9 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { BackBar } from '@/components/account/BackBar';
 import { IssueSheet } from '@/components/bookings/Sheets';
+import { CallAndChat, LocationShare, PingPrompt } from '@/components/comms/BookingComms';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -22,11 +23,17 @@ import { colors, space } from '@/theme';
 /**
  * Booking day and check-in (artboard "Booking day and check-in"): check in
  * (a tap, no location) from 30 minutes before to 30 after the start, check
- * out, the agreed boundaries and the venue. SOS stays the existing honest
- * screen with the real 112 call until in-app alerts are built.
+ * out, the agreed boundaries and the venue. Feature 5: message and masked
+ * call, live location sharing with safety contacts (foreground only), the
+ * "Are you OK?" check-in, and SOS (/safety/sos?booking=<id>; Call 112 first).
  */
 export default function BookingDay() {
   const router = useRouter();
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 30_000);
+    return () => clearInterval(t);
+  }, []);
   const toast = useToast();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [b, setB] = useState<Booking | null>(null);
@@ -80,12 +87,14 @@ export default function BookingDay() {
   const mine = b.viewer === 'CUSTOMER' ? { in: b.check_in.customer_in_at, out: b.check_in.customer_out_at } : { in: b.check_in.companion_in_at, out: b.check_in.companion_out_at };
   const theirs = b.viewer === 'CUSTOMER' ? { in: b.check_in.companion_in_at, who: b.companion.display_name } : { in: b.check_in.customer_in_at, who: b.customer.first_name };
   const s = statusView(b.status, b.viewer);
+  const live = b.status === 'CONFIRMED' || b.status === 'IN_PROGRESS';
 
   return (
-    <Screen footer={<Button variant="danger" onPress={() => router.push('/preview/sos')}>{copy.sos}</Button>}>
+    <Screen footer={<Button variant="danger" onPress={() => router.push({ pathname: '/safety/sos', params: { booking: b.id } })}>{copy.sos}</Button>}>
       <BackBar />
       <Title>{copy.title}</Title>
       {error ? <Alert>{error}</Alert> : null}
+      <PingPrompt bookingId={b.id} onHelp={() => router.push({ pathname: '/safety/sos', params: { booking: b.id } })} />
       <Card>
         <Badge kind={s.badge} label={s.label} />
         <Text variant="heading" color={colors.textStrong}>{`${b.activity.name} · ${b.viewer === 'CUSTOMER' ? b.companion.display_name : b.customer.first_name}`}</Text>
@@ -108,6 +117,9 @@ export default function BookingDay() {
         {b.actions.can_check_in ? <Button onPress={() => act('in')} loading={busy === 'in'}>{detailCopy.actions.check_in}</Button> : null}
         {b.actions.can_check_out ? <Button variant="secondary" onPress={() => act('out')} loading={busy === 'out'}>{detailCopy.actions.check_out}</Button> : null}
       </Card>
+
+      {live ? <LocationShare bookingId={b.id} onAddContacts={() => router.push('/safety/contacts')} /> : null}
+      <CallAndChat booking={b} now={now} />
 
       {b.boundaries.length ? (
         <View style={{ gap: space.sm }}>

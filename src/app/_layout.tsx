@@ -9,6 +9,7 @@ import { InstrumentSerif_400Regular, InstrumentSerif_400Regular_Italic } from '@
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastProvider } from '@/components/ui/Misc';
 import { AuthProvider, useAuth } from '@/lib/auth';
+import { RealtimeProvider } from '@/lib/comms/realtime-context';
 import { RoleProvider, useRole } from '@/lib/role';
 import { deepLinkPath, isCustomer, isPublicLink, routeFor } from '@/lib/routing';
 import { colors } from '@/theme';
@@ -24,7 +25,7 @@ SplashScreen.preventAutoHideAsync();
  *  - customer shell (tabs), discovery screens (/companions/*) and making a booking (/book/*): onboarded customers, and anyone who is not a companion
  *  - one booking (/booking/[id]/*): any signed-in non-staff user (the API answers 404 unless they are its customer or companion)
  *  - companion area (its own tabs + application steps): any signed-in non-staff user
- *  - previews of not-yet-built flows (SOS), settings: signed in
+ *  - chat (/chat/[id]), safety (SOS, safety contacts), settings: any signed-in non-staff user
  * When the session changes, the current screen's guard fails and Expo Router
  * redirects to routeFor(user). A deep link opened while signed out is kept and
  * opened after sign-in.
@@ -86,7 +87,8 @@ function RootNavigator() {
       <Stack.Protected guard={signedIn && !staff} redirectTo={home}>
         <Stack.Screen name="companion" />
         <Stack.Screen name="booking" />
-        <Stack.Screen name="preview" />
+        <Stack.Screen name="chat" />
+        <Stack.Screen name="safety" />
         <Stack.Screen name="settings" />
       </Stack.Protected>
     </Stack>
@@ -100,12 +102,14 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <RoleProvider>
-          <ToastProvider>
-            <StatusBar style="light" />
-            <RootNavigator />
-          </ToastProvider>
-        </RoleProvider>
+        <RealtimeProvider>
+          <RoleProvider>
+            <ToastProvider>
+              <StatusBar style="light" />
+              <RootNavigator />
+            </ToastProvider>
+          </RoleProvider>
+        </RealtimeProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

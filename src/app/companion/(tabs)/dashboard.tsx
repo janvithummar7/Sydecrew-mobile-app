@@ -91,6 +91,8 @@ export default function Dashboard() {
         <LinkRow label={nav.previewProfile} detail="This is how customers will see you" onPress={() => router.push('/companion/preview')} />
         <LinkRow label="Photos" onPress={() => router.push('/companion/photos')} />
         <LinkRow label="Categories and boundaries" onPress={() => router.push('/companion/categories')} />
+        <LinkRow label={nav.sos} detail={nav.sosDetail} onPress={() => router.push('/safety/sos')} />
+        <LinkRow label={nav.safetyContacts} detail={nav.safetyContactsDetail} onPress={() => router.push('/safety/contacts')} />
         <LinkRow label={nav.settings} onPress={() => router.push('/settings')} />
       </View>
       <RoleSwitch to="customer" />
