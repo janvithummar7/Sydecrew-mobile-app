@@ -136,6 +136,161 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reports queue (profile reports) */
+        get: operations["getAdminReports"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/reports/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dismiss, warn, or escalate (re-verification / suspension) a profile report */
+        post: operations["postAdminReportsByIdDecision"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/venue-proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Venues proposed by customers and companions */
+        get: operations["getAdminVenueProposals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/venue-proposals/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve or reject a proposed venue */
+        post: operations["postAdminVenueProposalsByIdDecision"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/venues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** All venues (staff view incl. address) */
+        get: operations["getAdminVenues"];
+        put?: never;
+        /** Add a venue (starts PROPOSED) */
+        post: operations["postAdminVenues"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/venues/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Venue detail (staff) */
+        get: operations["getAdminVenuesById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit a venue */
+        patch: operations["patchAdminVenuesById"];
+        trace?: never;
+    };
+    "/api/v1/admin/venues/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve a venue */
+        post: operations["postAdminVenuesByIdApprove"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/venues/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject a venue */
+        post: operations["postAdminVenuesByIdReject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/venues/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suspend a venue */
+        post: operations["postAdminVenuesByIdSuspend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/verification-flags/{id}/resolve": {
         parameters: {
             query?: never;
@@ -835,6 +990,23 @@ export interface paths {
         patch: operations["patchCompanionProfile"];
         trace?: never;
     };
+    "/api/v1/companion/public-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** How customers will see you (works in any status; includes content awaiting approval) */
+        get: operations["getCompanionPublicPreview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/companion/rates": {
         parameters: {
             query?: never;
@@ -1006,6 +1178,143 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/discovery/companions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search LIVE companions (cursor pages; waitlist outside pilot zones) */
+        get: operations["getDiscoveryCompanions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/companions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Public profile of a LIVE companion (404 when hidden or blocked) */
+        get: operations["getDiscoveryCompanionsById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/companions/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Report a profile to Trust & Safety */
+        post: operations["postDiscoveryCompanionsByIdReport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/companions/{id}/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Save a companion */
+        post: operations["postDiscoveryCompanionsByIdSave"];
+        /** Remove a saved companion */
+        delete: operations["deleteDiscoveryCompanionsByIdSave"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Filters available in the customer's city */
+        get: operations["getDiscoveryOptions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/recent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Recently viewed companions (last 50; LIVE and visible only) */
+        get: operations["getDiscoveryRecent"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/saved": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Saved companions (LIVE and visible only) */
+        get: operations["getDiscoverySaved"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discovery/waitlist": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Join the waitlist for a city (and optionally an area / category) */
+        post: operations["postDiscoveryWaitlist"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/onboarding/complete": {
         parameters: {
             query?: never;
@@ -1091,6 +1400,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/venues/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Approved public venues (label, type and area only; no address or coordinates) */
+        get: operations["getVenues"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/venues/proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Propose a public venue for staff approval */
+        post: operations["postVenuesProposals"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/webhooks/kyc/{provider}": {
         parameters: {
             query?: never;
@@ -1149,7 +1492,7 @@ export interface components {
         /** @enum {string} */
         UserStatus: "PENDING" | "ACTIVE" | "SUSPENDED" | "BANNED" | "DEACTIVATED";
         /** @enum {string} */
-        ErrorCode: "VALIDATION_FAILED" | "BAD_JSON" | "INVALID_INPUT" | "INVALID_REFERENCE" | "CONFLICT" | "NOT_FOUND" | "INTERNAL_ERROR" | "RATE_LIMITED" | "INVALID_STATUS_TRANSITION" | "CONTRACT_MISMATCH" | "AUTH_REQUIRED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "SESSION_ENDED" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ACCOUNT_SUSPENDED" | "ACCOUNT_EXISTS" | "ACCOUNT_NOT_FOUND" | "PHONE_NOT_VERIFIED" | "EMAIL_NOT_VERIFIED" | "INELIGIBLE_AGE" | "LINK_INVALID" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_USED" | "OTP_LOCKED" | "OTP_COOLDOWN" | "OTP_NOT_FOUND" | "OTP_RESEND_LIMIT" | "OTP_RESEND_TOO_SOON" | "OTP_SEND_LIMIT" | "OTP_SEND_FAILED" | "STAFF_ONLY" | "IP_NOT_ALLOWED" | "PERMISSION_DENIED" | "ROLE_REQUIRED" | "MFA_ENROLLMENT_REQUIRED" | "MFA_REQUIRED" | "MFA_STEP_UP_REQUIRED" | "MFA_CODE_INVALID" | "MFA_TOKEN_INVALID" | "MFA_ALREADY_ENABLED" | "MFA_NOT_STARTED" | "SECOND_APPROVER_REQUIRED" | "COMPANION_NOT_FOUND" | "APPLICATION_LOCKED" | "APPLICATION_INCOMPLETE" | "PROFILE_LOCKED" | "REAPPLY_BLOCKED" | "REAPPLY_COOLDOWN" | "CONTENT_NOT_ALLOWED" | "BELOW_CATEGORY_MIN_AGE" | "ACTIVITY_CATEGORY_MISMATCH" | "PHOTO_LIMIT" | "PHOTO_MINIMUM" | "PHOTO_NOT_FOUND" | "UPLOAD_NOT_FOUND" | "UPLOAD_ALREADY_RECEIVED" | "UPLOAD_MISMATCH" | "UPLOAD_NOT_PENDING" | "UPLOAD_MISSING" | "UPLOAD_CORRUPTED" | "UPLOAD_URL_EXPIRED" | "UPLOAD_TYPE_MISMATCH" | "UPLOAD_TOO_LARGE" | "UPLOAD_EMPTY" | "FILE_TOO_LARGE" | "IMAGE_UNREADABLE" | "UNSUPPORTED_IMAGE_TYPE" | "IMAGE_TOO_SMALL" | "VIEW_URL_EXPIRED" | "DOCUMENT_TYPE_REQUIRED" | "DOCUMENT_TYPE_UNAVAILABLE" | "AADHAAR_IMAGE_NOT_ALLOWED" | "VERIFICATION_NOT_OPEN" | "AUTO_CHECK_COOLDOWN" | "MANUAL_REVIEW_REQUIRED" | "LIVENESS_BY_UPLOAD" | "LIVENESS_SESSION_MISMATCH" | "DIGILOCKER_UNAVAILABLE" | "DIGILOCKER_NOT_STARTED" | "DIGILOCKER_FAILED" | "KYC_PROVIDER_NOT_CONFIGURED" | "INVALID_SIGNATURE" | "VERIFICATION_NOT_FOUND" | "NOT_IN_REVIEW" | "CLAIMED_BY_OTHER" | "CLAIM_REQUIRED" | "NOT_CLAIMED_BY_YOU" | "BLOCKED_BY_FLAG" | "FACE_MATCH_REQUIRED" | "APPROVAL_ALREADY_PENDING" | "APPROVAL_NOT_FOUND" | "APPROVAL_NOT_PENDING" | "APPROVAL_EXPIRED" | "NOT_AUTO_REJECTED" | "NEWER_ATTEMPT_EXISTS" | "DOCUMENT_NOT_FOUND" | "DOCUMENT_UNAVAILABLE" | "FLAG_NOT_FOUND" | "FLAG_NOT_OPEN" | "NOT_SUSPENDED" | "NOT_PENDING" | "CATEGORY_NOT_FOUND" | "NOT_APPROVED" | "NOT_READY" | "SETUP_INCOMPLETE" | "REVERIFICATION_DUE" | "NOT_LIVE" | "NOT_PAUSED" | "RATE_OUT_OF_BAND" | "AVAILABILITY_OVERLAP" | "EXCEPTION_NOT_FOUND";
+        ErrorCode: "VALIDATION_FAILED" | "BAD_JSON" | "INVALID_INPUT" | "INVALID_REFERENCE" | "CONFLICT" | "NOT_FOUND" | "INTERNAL_ERROR" | "RATE_LIMITED" | "INVALID_STATUS_TRANSITION" | "CONTRACT_MISMATCH" | "AUTH_REQUIRED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "SESSION_ENDED" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ACCOUNT_SUSPENDED" | "ACCOUNT_EXISTS" | "ACCOUNT_NOT_FOUND" | "PHONE_NOT_VERIFIED" | "EMAIL_NOT_VERIFIED" | "INELIGIBLE_AGE" | "LINK_INVALID" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_USED" | "OTP_LOCKED" | "OTP_COOLDOWN" | "OTP_NOT_FOUND" | "OTP_RESEND_LIMIT" | "OTP_RESEND_TOO_SOON" | "OTP_SEND_LIMIT" | "OTP_SEND_FAILED" | "STAFF_ONLY" | "IP_NOT_ALLOWED" | "PERMISSION_DENIED" | "ROLE_REQUIRED" | "MFA_ENROLLMENT_REQUIRED" | "MFA_REQUIRED" | "MFA_STEP_UP_REQUIRED" | "MFA_CODE_INVALID" | "MFA_TOKEN_INVALID" | "MFA_ALREADY_ENABLED" | "MFA_NOT_STARTED" | "SECOND_APPROVER_REQUIRED" | "COMPANION_NOT_FOUND" | "APPLICATION_LOCKED" | "APPLICATION_INCOMPLETE" | "PROFILE_LOCKED" | "REAPPLY_BLOCKED" | "REAPPLY_COOLDOWN" | "CONTENT_NOT_ALLOWED" | "BELOW_CATEGORY_MIN_AGE" | "ACTIVITY_CATEGORY_MISMATCH" | "PHOTO_LIMIT" | "PHOTO_MINIMUM" | "PHOTO_NOT_FOUND" | "UPLOAD_NOT_FOUND" | "UPLOAD_ALREADY_RECEIVED" | "UPLOAD_MISMATCH" | "UPLOAD_NOT_PENDING" | "UPLOAD_MISSING" | "UPLOAD_CORRUPTED" | "UPLOAD_URL_EXPIRED" | "UPLOAD_TYPE_MISMATCH" | "UPLOAD_TOO_LARGE" | "UPLOAD_EMPTY" | "FILE_TOO_LARGE" | "IMAGE_UNREADABLE" | "UNSUPPORTED_IMAGE_TYPE" | "IMAGE_TOO_SMALL" | "VIEW_URL_EXPIRED" | "DOCUMENT_TYPE_REQUIRED" | "DOCUMENT_TYPE_UNAVAILABLE" | "AADHAAR_IMAGE_NOT_ALLOWED" | "VERIFICATION_NOT_OPEN" | "AUTO_CHECK_COOLDOWN" | "MANUAL_REVIEW_REQUIRED" | "LIVENESS_BY_UPLOAD" | "LIVENESS_SESSION_MISMATCH" | "DIGILOCKER_UNAVAILABLE" | "DIGILOCKER_NOT_STARTED" | "DIGILOCKER_FAILED" | "KYC_PROVIDER_NOT_CONFIGURED" | "INVALID_SIGNATURE" | "VERIFICATION_NOT_FOUND" | "NOT_IN_REVIEW" | "CLAIMED_BY_OTHER" | "CLAIM_REQUIRED" | "NOT_CLAIMED_BY_YOU" | "BLOCKED_BY_FLAG" | "FACE_MATCH_REQUIRED" | "APPROVAL_ALREADY_PENDING" | "APPROVAL_NOT_FOUND" | "APPROVAL_NOT_PENDING" | "APPROVAL_EXPIRED" | "NOT_AUTO_REJECTED" | "NEWER_ATTEMPT_EXISTS" | "DOCUMENT_NOT_FOUND" | "DOCUMENT_UNAVAILABLE" | "FLAG_NOT_FOUND" | "FLAG_NOT_OPEN" | "NOT_SUSPENDED" | "NOT_PENDING" | "CATEGORY_NOT_FOUND" | "NOT_APPROVED" | "NOT_READY" | "SETUP_INCOMPLETE" | "REVERIFICATION_DUE" | "NOT_LIVE" | "NOT_PAUSED" | "RATE_OUT_OF_BAND" | "AVAILABILITY_OVERLAP" | "EXCEPTION_NOT_FOUND" | "ONBOARDING_REQUIRED" | "VENUE_NOT_FOUND" | "REPORT_NOT_FOUND" | "REPORT_CLOSED";
         ErrorResponse: {
             error: {
                 /** @description Stable machine code; see ErrorCode and contracts/errors.json */
@@ -1886,6 +2229,246 @@ export interface components {
             max_paise: number;
             offerings_paused: number;
         };
+        /** @enum {string} */
+        ProfileReportReason: "FAKE_PROFILE" | "INAPPROPRIATE_CONTENT" | "OFF_PLATFORM_CONTACT" | "NOT_PLATONIC" | "SAFETY_CONCERN" | "OTHER";
+        /** @enum {string} */
+        VenueType: "CAFE" | "RESTAURANT" | "MALL" | "CINEMA" | "EVENT_VENUE" | "BANQUET_HALL" | "PARK" | "TEMPLE" | "MUSEUM" | "PUBLIC_ROUTE" | "OTHER" | "CORPORATE_VENUE" | "CULTURAL_VENUE" | "PUBLIC_SPACE";
+        /** @enum {string} */
+        VenueStatus: "PROPOSED" | "APPROVED" | "SUSPENDED" | "REJECTED" | "ARCHIVED";
+        /** @enum {string} */
+        TimeWindow: "morning" | "afternoon" | "evening";
+        /** @enum {string} */
+        DiscoverySort: "relevance" | "price_asc" | "price_desc" | "soonest";
+        DiscoveryCard: {
+            /** Format: uuid */
+            id: string;
+            display_name: string;
+            photo_url: string | null;
+            zone: {
+                /** Format: uuid */
+                id: string;
+                name: string | null;
+            } | null;
+            languages: string[];
+            categories: {
+                /** Format: uuid */
+                id: string;
+                code: components["schemas"]["CategoryCode"];
+                name: string;
+            }[];
+            /** @description Money in paise (₹1 = 100) */
+            from_paise: number;
+            next_available_at: string | null;
+            verified: boolean;
+            new_on_sydecrew: boolean;
+        };
+        DiscoveryListResponse: {
+            in_pilot: boolean;
+            city: string | null;
+            waitlist?: {
+                joined: boolean;
+            };
+            items: components["schemas"]["DiscoveryCard"][];
+            next_cursor: string | null;
+        };
+        DiscoveryCardsResponse: {
+            items: components["schemas"]["DiscoveryCard"][];
+        };
+        PublicProfile: {
+            /** Format: uuid */
+            id: string;
+            display_name: string;
+            intro: string | null;
+            /** @description Whole years, only when the companion opted in */
+            age: number | null;
+            zone: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            } | null;
+            city: string | null;
+            languages: string[];
+            interests: string[];
+            photos: {
+                /** Format: uuid */
+                id: string;
+                url: string | null;
+                thumb_url: string | null;
+            }[];
+            categories: {
+                /** Format: uuid */
+                id: string;
+                code: components["schemas"]["CategoryCode"];
+                name: string;
+            }[];
+            offerings: {
+                /** Format: uuid */
+                category_id: string;
+                /** Format: uuid */
+                activity_id: string;
+                activity: string;
+                hourly_rate_paise: number | null;
+                min_hours: number;
+            }[];
+            boundaries: string[];
+            cancellation: {
+                /** Format: uuid */
+                category_id: string;
+                lines: string[];
+                companion_cancels: string;
+            }[];
+            availability: {
+                date: string;
+                morning: boolean;
+                afternoon: boolean;
+                evening: boolean;
+            }[];
+            /** @description YYYY-MM */
+            verified_since: string | null;
+            verified: boolean;
+            new_on_sydecrew: boolean;
+            meeting_rule: string;
+            saved?: boolean;
+            preview?: boolean;
+            status?: components["schemas"]["CompanionStatus"];
+        };
+        SavedResponse: {
+            saved: boolean;
+        };
+        ReportedResponse: {
+            /** @constant */
+            reported: true;
+            already_reported: boolean;
+        };
+        WaitlistResponse: {
+            /** @constant */
+            joined: true;
+            already_joined: boolean;
+        };
+        DiscoveryOptions: {
+            in_pilot: boolean;
+            city: string | null;
+            categories: {
+                /** Format: uuid */
+                id: string;
+                code: components["schemas"]["CategoryCode"];
+                name: string;
+                price_band: {
+                    /** @description Money in paise (₹1 = 100) */
+                    min_paise: number;
+                    /** @description Money in paise (₹1 = 100) */
+                    max_paise: number;
+                };
+                activities: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                    slug: string;
+                }[];
+            }[];
+            languages: {
+                /** Format: uuid */
+                id: string;
+                code: string;
+                name: string;
+            }[];
+            interests: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                slug: string;
+            }[];
+            zones: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                slug: string;
+            }[];
+            time_windows: {
+                key: components["schemas"]["TimeWindow"];
+                start: string;
+                end: string;
+            }[];
+            sorts: components["schemas"]["DiscoverySort"][];
+            report_reasons: components["schemas"]["ProfileReportReason"][];
+            today: string;
+        };
+        VenuesResponse: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                venue_type: components["schemas"]["VenueType"];
+                zone: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string | null;
+                } | null;
+                categories: string[];
+                opening_hours: string | null;
+            }[];
+        };
+        VenueStaff: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            venue_type: components["schemas"]["VenueType"];
+            zone: {
+                /** Format: uuid */
+                id: string;
+                name: string | null;
+            } | null;
+            categories: string[];
+            opening_hours: string | null;
+            internal_name: string;
+            public_label: string | null;
+            address: string;
+            landmark: string | null;
+            latitude: number | null;
+            longitude: number | null;
+            status: components["schemas"]["VenueStatus"];
+            notes: string | null;
+            rejection_reason: string | null;
+            suspended_reason: string | null;
+            proposed_by: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            } | null;
+            reviewed_at: string | null;
+            /** @description ISO 8601 date-time (UTC) */
+            created_at: string;
+        };
+        VenueStaffListResponse: {
+            items: components["schemas"]["VenueStaff"][];
+        };
+        VenueStatusResponse: {
+            /** Format: uuid */
+            id: string;
+            status: components["schemas"]["VenueStatus"];
+            unchanged?: boolean;
+        };
+        ReportsResponse: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                reason_code: string;
+                note: string | null;
+                status: string;
+                priority: string;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                resolution: string | null;
+                resolved_at: string | null;
+                companion: {
+                    /** Format: uuid */
+                    id: string;
+                    display_name: string;
+                    status: components["schemas"]["CompanionStatus"];
+                } | null;
+                total_reports_for_profile: number;
+            }[];
+        };
         WebhookAck: {
             /** @constant */
             received: true;
@@ -2001,6 +2584,8 @@ export interface components {
             /** Format: uuid */
             zone_id?: string;
             service_radius_km?: number;
+            interest_ids?: string[];
+            show_age?: boolean;
         };
         putCompanionCategoriesBody: {
             category_ids: string[];
@@ -2137,6 +2722,79 @@ export interface components {
             min_paise: number;
             max_paise: number;
             reason: string;
+        };
+        postAdminVenuesBody: {
+            name: string;
+            public_label?: string;
+            /** @enum {string} */
+            venue_type: "CAFE" | "RESTAURANT" | "MALL" | "CINEMA" | "EVENT_VENUE" | "BANQUET_HALL" | "PARK" | "TEMPLE" | "MUSEUM" | "PUBLIC_ROUTE" | "OTHER" | "CORPORATE_VENUE" | "CULTURAL_VENUE" | "PUBLIC_SPACE";
+            /** Format: uuid */
+            zone_id: string;
+            address: string;
+            landmark?: string;
+            latitude?: number;
+            longitude?: number;
+            categories?: ("FRIEND" | "PLUS_ONE" | "CREW_CARE" | "CREW_EVENTS")[];
+            opening_hours_text?: string;
+            notes?: string;
+        };
+        patchAdminVenuesByIdBody: {
+            name?: string;
+            public_label?: string;
+            /** @enum {string} */
+            venue_type?: "CAFE" | "RESTAURANT" | "MALL" | "CINEMA" | "EVENT_VENUE" | "BANQUET_HALL" | "PARK" | "TEMPLE" | "MUSEUM" | "PUBLIC_ROUTE" | "OTHER" | "CORPORATE_VENUE" | "CULTURAL_VENUE" | "PUBLIC_SPACE";
+            /** Format: uuid */
+            zone_id?: string;
+            address?: string;
+            landmark?: string;
+            latitude?: number;
+            longitude?: number;
+            categories?: ("FRIEND" | "PLUS_ONE" | "CREW_CARE" | "CREW_EVENTS")[];
+            opening_hours_text?: string;
+            notes?: string;
+        };
+        postAdminVenuesByIdApproveBody: {
+            reason?: string;
+        };
+        postAdminVenuesByIdSuspendBody: {
+            reason?: string;
+        };
+        postAdminVenuesByIdRejectBody: {
+            reason?: string;
+        };
+        postAdminVenueProposalsByIdDecisionBody: {
+            /** @enum {string} */
+            decision: "APPROVE" | "REJECT";
+            reason?: string;
+        };
+        postAdminReportsByIdDecisionBody: {
+            /** @enum {string} */
+            decision: "DISMISS" | "WARN" | "REQUIRE_REVERIFICATION" | "SUSPEND";
+            note: string;
+        };
+        postDiscoveryCompanionsByIdReportBody: {
+            /** @enum {string} */
+            reason_code: "FAKE_PROFILE" | "INAPPROPRIATE_CONTENT" | "OFF_PLATFORM_CONTACT" | "NOT_PLATONIC" | "SAFETY_CONCERN" | "OTHER";
+            note?: string;
+        };
+        postDiscoveryWaitlistBody: {
+            /** Format: uuid */
+            city_id: string;
+            /** Format: uuid */
+            zone_id?: string;
+            /** Format: uuid */
+            category_id?: string;
+        };
+        postVenuesProposalsBody: {
+            name: string;
+            /** @enum {string} */
+            venue_type: "CAFE" | "RESTAURANT" | "MALL" | "CINEMA" | "EVENT_VENUE" | "BANQUET_HALL" | "PARK" | "TEMPLE" | "MUSEUM" | "PUBLIC_ROUTE" | "OTHER" | "CORPORATE_VENUE" | "CULTURAL_VENUE" | "PUBLIC_SPACE";
+            /** Format: uuid */
+            zone_id: string;
+            address: string;
+            /** @default [] */
+            categories: ("FRIEND" | "PLUS_ONE" | "CREW_CARE" | "CREW_EVENTS")[];
+            note?: string;
         };
     };
     responses: never;
@@ -2405,6 +3063,373 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ActionResult"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminReports: {
+        parameters: {
+            query?: {
+                subject?: "PROFILE";
+                status?: "OPEN" | "IN_REVIEW" | "ACTIONED" | "DISMISSED";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminReportsByIdDecision: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminReportsByIdDecisionBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActionResult"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminVenueProposals: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VenueStaffListResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminVenueProposalsByIdDecision: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminVenueProposalsByIdDecisionBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VenueStatusResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminVenues: {
+        parameters: {
+            query?: {
+                status?: "PROPOSED" | "APPROVED" | "SUSPENDED" | "REJECTED" | "ARCHIVED";
+                zone?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VenueStaffListResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminVenues: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminVenuesBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VenueStatusResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminVenuesById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VenueStaff"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    patchAdminVenuesById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["patchAdminVenuesByIdBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VenueStaff"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminVenuesByIdApprove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminVenuesByIdApproveBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VenueStatusResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminVenuesByIdReject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminVenuesByIdRejectBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VenueStatusResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminVenuesByIdSuspend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminVenuesByIdSuspendBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VenueStatusResponse"];
                 };
             };
             /** @description Error */
@@ -3806,6 +4831,35 @@ export interface operations {
             };
         };
     };
+    getCompanionPublicPreview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicProfile"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getCompanionRates: {
         parameters: {
             query?: never;
@@ -4147,6 +5201,297 @@ export interface operations {
             };
         };
     };
+    getDiscoveryCompanions: {
+        parameters: {
+            query?: {
+                category?: string;
+                activity?: string;
+                zone?: string;
+                language?: string | string[];
+                interest?: string | string[];
+                date?: string;
+                time_window?: "morning" | "afternoon" | "evening";
+                duration_minutes?: number;
+                min_paise?: number;
+                max_paise?: number;
+                sort?: "relevance" | "price_asc" | "price_desc" | "soonest";
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiscoveryListResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getDiscoveryCompanionsById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicProfile"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postDiscoveryCompanionsByIdReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postDiscoveryCompanionsByIdReportBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postDiscoveryCompanionsByIdSave: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteDiscoveryCompanionsByIdSave: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getDiscoveryOptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiscoveryOptions"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getDiscoveryRecent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiscoveryCardsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getDiscoverySaved: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DiscoveryCardsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postDiscoveryWaitlist: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postDiscoveryWaitlistBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WaitlistResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     postOnboardingComplete: {
         parameters: {
             query?: never;
@@ -4290,6 +5635,71 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getVenues: {
+        parameters: {
+            query?: {
+                zone?: string;
+                category?: "FRIEND" | "PLUS_ONE" | "CREW_CARE" | "CREW_EVENTS";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VenuesResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postVenuesProposals: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postVenuesProposalsBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VenueStatusResponse"];
+                };
             };
             /** @description Error */
             default: {

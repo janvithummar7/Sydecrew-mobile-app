@@ -116,5 +116,9 @@ export const ERROR_MESSAGES: Record<string, string> = {
   "NOT_PAUSED": "Only a paused profile can be resumed.",
   "RATE_OUT_OF_BAND": "This rate is outside the allowed range for the category.",
   "AVAILABILITY_OVERLAP": "This slot overlaps another slot on the same day.",
-  "EXCEPTION_NOT_FOUND": "Not found."
+  "EXCEPTION_NOT_FOUND": "Not found.",
+  "ONBOARDING_REQUIRED": "Finish setting up your account first.",
+  "VENUE_NOT_FOUND": "Venue not found.",
+  "REPORT_NOT_FOUND": "Report not found.",
+  "REPORT_CLOSED": "This report was already decided."
 };
