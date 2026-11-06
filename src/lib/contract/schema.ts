@@ -5211,6 +5211,8 @@ export interface operations {
                 interest?: string | string[];
                 date?: string;
                 time_window?: "morning" | "afternoon" | "evening";
+                start_time?: string;
+                end_time?: string;
                 duration_minutes?: number;
                 min_paise?: number;
                 max_paise?: number;
