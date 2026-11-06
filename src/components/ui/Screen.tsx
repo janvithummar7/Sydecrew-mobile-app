@@ -31,7 +31,25 @@ export function Screen({ children, footer, header }: Props) {
   );
 }
 
+/**
+ * Full-screen page whose body is a virtualised list (FlatList) instead of a
+ * ScrollView: lists must not be nested in a ScrollView. `header` stays above
+ * the list; the list fills the rest and scrolls by itself.
+ */
+export function ListScreen({ header, children }: { header?: ReactNode; children: ReactNode }) {
+  return (
+    <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
+      <View style={styles.listInner}>
+        {header ? <View style={styles.listHeader}>{header}</View> : null}
+        <View style={styles.flex}>{children}</View>
+      </View>
+    </SafeAreaView>
+  );
+}
+
 const styles = StyleSheet.create({
+  listInner: { flex: 1, width: '100%', maxWidth: 528, alignSelf: 'center' },
+  listHeader: { gap: space.md, paddingHorizontal: space.xl, paddingTop: space.lg, paddingBottom: space.md },
   root: { flex: 1, backgroundColor: colors.ink950 },
   flex: { flex: 1 },
   content: { flexGrow: 1, paddingHorizontal: space.xl, paddingTop: space.lg, paddingBottom: space.xxl },
