@@ -50,9 +50,11 @@ In development the app warns in the console when Android is pointed at `localhos
 
 **Signed out:** `/` welcome, `/login`, `/signup`, `/forgot-password`. **Any time:** `/verify-email?token=…`, `/reset-password?token=…` (from `sydecrew://` links; links opened before sign-in are replayed after it).
 
-**Customer tabs** (`(customer)/`): Home, Discover, Bookings, Messages, Profile (`account.tsx`: details, Become a companion, Settings and legal, role switch, log out). New accounts go through `/onboarding` first.
+**Customer tabs** (`(customer)/`): Home, Discover, Bookings, Messages, Profile (`account.tsx`: details, Saved companions, Recently viewed, Become a companion, Settings and legal, role switch, log out). New accounts go through `/onboarding` first.
 
-**Companion tabs** (`companion/(tabs)/`): Dashboard (one screen state and call to action per status), Profile, Availability and Rates (once approved), Status (timeline and fix list), Earnings (once approved; placeholder). Application screens: `companion/index`, `apply`, `photos`, `categories`, `identity`, `capture`, `review`, `go-live`, and `companion/preview` ("Preview your public profile").
+**Discovery** (Feature 3, customer shell only): `/discover` lists LIVE companions in the customer's city (GET /discovery/companions) with quick category chips and a filters sheet (category, activity, area, languages, interests, date and time of day, duration, price, sort). Filters can be passed as route params (`/discover?category=…`). The list is a FlatList with fixed-height memoised cards (`getItemLayout`, `expo-image` memory + disk cache), cursor infinite scroll and pull-to-refresh. Offline keeps the last results under the offline banner. Outside a pilot area it shows the waitlist. `/companions/[id]` is the public profile: Save, Report, and a disabled "Request to book" ("Booking opens soon"). `/companions/saved` and `/companions/recent` reuse the same list. The pure helpers in `src/lib/discovery/` (filters ⇄ query, paging, list layout and memo) are unit-tested.
+
+**Companion tabs** (`companion/(tabs)/`): Dashboard (one screen state and call to action per status), Profile, Availability and Rates (once approved), Status (timeline and fix list), Earnings (once approved; placeholder). Application screens: `companion/index`, `apply`, `photos`, `categories`, `identity`, `capture`, `review`, `go-live`, and `companion/preview` ("Preview your public profile": GET /companion/public-preview, the same view customers see). Profile editing includes interests and "show my age".
 
 | `next_step` | Screen |
 | --- | --- |
@@ -66,7 +68,7 @@ In development the app warns in the console when Android is pointed at `localhos
 
 Accounts with both roles start in the customer shell and switch with "Switch to companion" / "Switch to customer" (remembered on the device). Staff accounts see `/staff`: the admin is web only.
 
-**Design previews** (`preview/`): sample companion profile, booking details, review and pay, booking day and check-in, SOS. They use the one fixture file `src/content/samples.ts`, show "Coming soon — not bookable yet", and make no booking or payment calls. The SOS preview's emergency call (112) is real.
+**Design previews** (`preview/`): booking details, review and pay, booking day and check-in, SOS. They use the one fixture file `src/content/samples.ts`, show "Coming soon — not bookable yet", and make no booking or payment calls. The SOS preview's emergency call (112) is real.
 
 **Settings** (`/settings`): terms, privacy, refunds and community guidelines open on the website (`EXPO_PUBLIC_SITE_URL`), marked "Draft — pending legal review", plus a grievance officer placeholder.
 
@@ -80,7 +82,7 @@ Accounts with both roles start in the customer shell and switch with "Switch to 
 
 ## Still to do
 
-- Discovery, booking, payment, messages and earnings are design previews only.
+- Booking, payment, messages and earnings are design previews only. Venue pickers (GET /venues) come with booking.
 - Universal / app links are not configured: email links open the website; the app handles `sydecrew://` links.
 - Bundle IDs are `com.sydecrew.app` (`app.json`). Release builds: EAS (`npx eas-cli@latest build`); no `eas.json` yet.
 - There's no SMS provider yet, so codes are shown on screen in development only.
