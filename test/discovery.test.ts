@@ -11,8 +11,12 @@ import {
   priceBuckets,
   queryToFilters,
   toggleIn,
+  exactRange,
+  hourChoices,
   withCategory,
   withDate,
+  withExactTime,
+  withTimeWindow,
   type DiscoveryFilters,
 } from '../src/lib/discovery/filters.ts';
 import { applyPage, emptyPaged, nextCursor } from '../src/lib/discovery/paging.ts';
@@ -39,6 +43,8 @@ const full: DiscoveryFilters = {
   interests: ['int-x'],
   date: '2026-11-07',
   timeWindow: 'evening',
+  startTime: null,
+  endTime: null,
   durationMinutes: 120,
   minPaise: 100000,
   maxPaise: 250000,
@@ -77,9 +83,9 @@ test('route params (useLocalSearchParams shape) parse like a query string', () =
   assert.equal(f.sort, 'price_desc');
 });
 
-test('rules that mirror the API: activity needs a category, window needs a date, ranges ordered', () => {
+test('rules that mirror the API: activity needs a category, ranges ordered', () => {
   assert.equal(filtersToQuery({ ...EMPTY_FILTERS, activity: 'act' }), '');
-  assert.equal(filtersToQuery({ ...EMPTY_FILTERS, timeWindow: 'morning' }), '');
+  assert.equal(filtersToQuery({ ...EMPTY_FILTERS, timeWindow: 'morning' }), '?time_window=morning', 'a window without a date means any day');
   assert.equal(filtersToQuery({ ...EMPTY_FILTERS, minPaise: 300000, maxPaise: 100000 }), '?min_paise=100000&max_paise=300000');
   assert.equal(filtersToQuery({ ...EMPTY_FILTERS, durationMinutes: 10 }), '');
   assert.equal(filtersToQuery({ ...EMPTY_FILTERS, date: '7/11/2026' }), '');
@@ -101,10 +107,9 @@ test('malformed query values fall back to "not set"', () => {
 test('filter helpers: category clears activity, clearing the date clears the window, counts, toggles', () => {
   assert.equal(withCategory(full, 'cat-2').activity, null);
   assert.equal(withCategory(full, 'cat-1').activity, 'act-9');
-  assert.equal(withDate(full, null).timeWindow, null);
-  assert.equal(withDate(full, '2026-11-08').timeWindow, 'evening');
+  assert.equal(withDate(full, null).timeWindow, 'evening', 'a window stays without a date');
   assert.equal(activeFilterCount(EMPTY_FILTERS), 0);
-  assert.equal(activeFilterCount(full), 8);
+  assert.equal(activeFilterCount(full), 9);
   assert.equal(activeFilterCount({ ...EMPTY_FILTERS, sort: 'soonest' }), 0, 'sort is not a filter');
   assert.deepEqual(toggleIn(['a'], 'b'), ['a', 'b']);
   assert.deepEqual(toggleIn(['a', 'b'], 'a'), ['b']);
@@ -127,6 +132,28 @@ test('nextDates counts calendar days across month ends', () => {
   assert.deepEqual(d, ['2026-11-29', '2026-11-30', '2026-12-01', '2026-12-02']);
   assert.equal(nextDates('2026-11-06').length, 14);
   assert.deepEqual(nextDates('bad'), []);
+});
+
+test('exact time: a valid pair only, never with a window, round-trips', () => {
+  const exact = withExactTime(EMPTY_FILTERS, '18:00', '21:00');
+  assert.equal(filtersToQuery(exact), '?start_time=18%3A00&end_time=21%3A00');
+  assert.deepEqual(queryToFilters(filtersToQuery(exact)), exact);
+  assert.equal(activeFilterCount(exact), 1);
+  assert.equal(filtersToQuery(withExactTime(EMPTY_FILTERS, '21:00', '18:00')), '', 'end must be after start');
+  assert.equal(filtersToQuery(withExactTime(EMPTY_FILTERS, '18:00', null)), '', 'both or neither');
+  assert.equal(filtersToQuery(withExactTime(EMPTY_FILTERS, '25:00', '26:00')), '');
+  const w = withTimeWindow(exact, 'morning');
+  assert.deepEqual([w.timeWindow, w.startTime, w.endTime], ['morning', null, null], 'a window clears the exact time');
+  assert.equal(withExactTime(w, '08:00', '10:00').timeWindow, null, 'an exact time clears the window');
+  assert.equal(filtersToQuery({ ...exact, timeWindow: 'evening' }), '?time_window=evening', 'never both');
+  const q = queryToFilters('?time_window=evening&start_time=18:00&end_time=21:00');
+  assert.deepEqual([q.timeWindow, q.startTime, q.endTime], ['evening', null, null]);
+  assert.deepEqual(exactRange('09:30', '10:00'), ['09:30', '10:00']);
+  assert.equal(exactRange('10:00', '10:00'), null);
+  const h = hourChoices('06:00', '23:00');
+  assert.equal(h.length, 18);
+  assert.deepEqual([h[0], h[h.length - 1]], ['06:00', '23:00']);
+  assert.deepEqual(hourChoices('bad', '23:00'), []);
 });
 
 // ── cursor paging ─────────────────────────────────────────────────────────
