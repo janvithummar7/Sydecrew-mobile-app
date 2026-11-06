@@ -1,7 +1,7 @@
 import { forwardRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, TextInput, View, type TextInputInstance, type TextInputProps } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, radius, space } from '@/theme';
+import { colors, radius, space, alpha } from '@/theme';
 import { Text } from './Text';
 
 type FieldProps = Omit<TextInputProps, 'style'> & {
@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.md,
   },
-  boxFocused: { borderColor: 'rgba(212,255,79,0.7)', backgroundColor: colors.surfaceStrong },
-  boxError: { borderColor: 'rgba(248,113,113,0.75)' },
+  boxFocused: { borderColor: alpha(colors.lime400, 0.7), backgroundColor: colors.surfaceStrong },
+  boxError: { borderColor: alpha(colors.red400, 0.75) },
   prefix: { paddingLeft: 16 },
   input: { flex: 1, minHeight: 50, paddingHorizontal: 16, color: colors.fog50, fontSize: 16 },
   eye: { paddingHorizontal: 14, height: 50, justifyContent: 'center' },

@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
+import { deviceHeaders } from './device';
 import { getRefreshToken, setRefreshToken } from './tokenStore';
-import type { Challenge, Me, OnboardingInput, OnboardingOptions, SessionResponse } from './types';
+import type { Challenge, LoginResponse, Me, OnboardingInput, OnboardingOptions, SessionResponse } from './types';
 
 /**
  * Client for the Sydecrew API.
@@ -18,6 +19,13 @@ import type { Challenge, Me, OnboardingInput, OnboardingOptions, SessionResponse
  */
 const devFallback = Platform.OS === 'android' ? 'http://10.0.2.2:4000' : 'http://localhost:4000';
 export const API_URL = (process.env.EXPO_PUBLIC_API_URL || (__DEV__ ? devFallback : '')).replace(/\/$/, '');
+
+// Development: on Android "localhost" is the phone itself, not your computer.
+if (__DEV__ && Platform.OS === 'android' && /localhost|127\.0\.0\.1/.test(API_URL)) {
+  console.warn(
+    "EXPO_PUBLIC_API_URL points at localhost, which Android cannot reach. Use http://10.0.2.2:4000 (emulator) or your computer's LAN IP, and set the API's PUBLIC_API_URL to the same address.",
+  );
+}
 
 /** Requests that take longer than this fail as NETWORK_ERROR (Android's default is no timeout at all). */
 const TIMEOUT_MS = 15_000;
@@ -53,11 +61,13 @@ export const setSessionLostHandler = (fn: (() => void) | null) => {
   onSessionLost = fn;
 };
 
-type Options = { method?: 'GET' | 'POST'; body?: unknown; noRetry?: boolean };
+export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+type Options = { method?: Method; body?: unknown; noRetry?: boolean };
 
 async function raw<T>(path: string, { method = 'GET', body }: Options): Promise<T> {
   if (!API_URL) throw new ApiError(0, { code: 'CONFIG_MISSING', message: 'This build is not configured. Please update the app.' });
   let res: Response;
+  const device = await deviceHeaders().catch(() => ({}) as Record<string, string>);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
@@ -67,6 +77,8 @@ async function raw<T>(path: string, { method = 'GET', body }: Options): Promise<
       headers: {
         'x-client': 'mobile',
         accept: 'application/json',
+        // X-Device-Id / X-Platform: duplicate-device checks during companion verification.
+        ...device,
         ...(body !== undefined ? { 'content-type': 'application/json' } : {}),
         ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}),
       },
@@ -155,8 +167,8 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
 export const authApi = {
   register: (body: { full_name: string; email: string; phone: string; password: string }) =>
     api<{ challenge: Challenge }>('/auth/register', { method: 'POST', body }),
-  login: (body: { identifier: string; password: string }) =>
-    api<{ challenge: Challenge }>('/auth/login', { method: 'POST', body }),
+  /** Staff with two-step sign-in get `mfa_required` instead of a code: they sign in on the web admin. */
+  login: (body: { identifier: string; password: string }) => api<LoginResponse>('/auth/login', { method: 'POST', body }),
   verifyCode: (body: { otp_id: string; code: string }) =>
     api<SessionResponse>('/auth/otp/verify', { method: 'POST', body }),
   resendCode: (otp_id: string) => api<{ challenge: Challenge }>('/auth/otp/resend', { method: 'POST', body: { otp_id } }),
@@ -172,4 +184,7 @@ export const authApi = {
     api<{ message: string; dev_link?: string }>('/auth/password/forgot', { method: 'POST', body: { email } }),
   onboardingOptions: () => api<OnboardingOptions>('/onboarding/options'),
   completeOnboarding: (body: OnboardingInput) => api<{ user: Me }>('/onboarding/complete', { method: 'POST', body }),
+  /** Email links (sydecrew://verify-email?token=…, sydecrew://reset-password?token=…). Work signed in or out. */
+  verifyEmail: (token: string) => raw<{ verified: true }>('/auth/email/verify', { method: 'POST', body: { token } }),
+  resetPassword: (token: string, password: string) => raw<{ reset: true }>('/auth/password/reset', { method: 'POST', body: { token, password } }),
 };

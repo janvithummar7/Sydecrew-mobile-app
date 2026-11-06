@@ -1,0 +1,85 @@
+# Become a companion: apply -> profile -> photos -> categories -> identity -> submit.
+# Needs: a signed-up account with phone AND email verified (EMAIL / PASSWORD below),
+# a dev API with KYC_PROVIDER=mock, and at least 2 photos (>= 800 px) in the device gallery.
+# Run: maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/apply-submit.yaml
+appId: com.sydecrew.app
+---
+- launchApp:
+    clearState: true
+- tapOn: "Log in"
+- tapOn: "Email or mobile number"
+- inputText: ${EMAIL}
+- tapOn: "Password"
+- inputText: ${PASSWORD}
+- tapOn: "Continue"
+# The dev API shows the code on screen (dev hint); pass it with -e OTP=...
+- inputText: ${OTP}
+- scrollUntilVisible:
+    element: "Become a companion"
+- tapOn: "Become a companion"
+- tapOn: "Apply to be a companion"
+- tapOn: "I am 18 or older."
+- tapOn: "I accept the Sydecrew terms of use."
+- tapOn: "I accept the privacy policy."
+- tapOn: "I accept the community guidelines."
+- tapOn:
+    text: "I consent to Sydecrew processing.*"
+- tapOn:
+    text: "I accept the companion terms.*"
+- tapOn:
+    text: "I accept the companion code of conduct.*"
+- tapOn:
+    text: "I consent to identity checks.*"
+- tapOn: "Apply"
+# Profile basics
+- assertVisible: "Profile basics"
+- tapOn: "Intro"
+- inputText: "I am a calm, friendly person who loves heritage walks, good coffee and long conversations about books."
+- tapOn: "English"
+- scrollUntilVisible:
+    element: "Save and continue"
+- tapOn: "Save and continue"
+# Photos (2 from the gallery, cropped 4:5)
+- assertVisible: "Your photos"
+- repeat:
+    times: 2
+    commands:
+      - tapOn: "Add a photo"
+      - tapOn:
+          id: ".*thumbnail.*"
+          index: 0
+          optional: true
+      - tapOn:
+          text: "(Crop|Done|CROP|DONE)"
+          optional: true
+- extendedWaitUntil:
+    visible: "Continue"
+    timeout: 60000
+- tapOn: "Continue"
+# Categories -> activities
+- tapOn: "Crew"
+- tapOn: "Coffee and conversation"
+- tapOn: "Save and continue"
+# Identity: PAN, front photo, selfie
+- assertVisible: "Identity check"
+- tapOn: "PASS"
+- tapOn: "PAN card"
+- tapOn: "Take photo"
+- tapOn:
+    text: "(Allow camera|While using the app|Allow)"
+    optional: true
+- tapOn: "Take photo"
+- scrollUntilVisible:
+    element: "Selfie"
+- tapOn:
+    text: "Take photo"
+    index: 0
+- tapOn: "Take photo"
+- extendedWaitUntil:
+    visible: "Continue"
+    timeout: 60000
+- tapOn: "Continue"
+# Review and submit
+- tapOn: "Submit for review"
+- assertVisible: "Your application"
+- assertVisible: "In review"
