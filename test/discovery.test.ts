@@ -241,3 +241,13 @@ test('display helpers: price, dates in IST, availability labels, verified since'
   assert.equal(verifiedSince('2026-03'), 'March 2026');
   assert.equal(verifiedSince(null), null);
 });
+
+// ── errors ────────────────────────────────────────────────────────────────
+
+test('PROFILE_UNAVAILABLE has its own message (not the companion-applicant one)', async () => {
+  const { errorView } = await import('../src/lib/errors.ts');
+  const v = errorView({ code: 'PROFILE_UNAVAILABLE', message: 'x', status: 404 });
+  assert.equal(v.code, 'PROFILE_UNAVAILABLE');
+  assert.equal(v.message, 'This profile is not available.');
+  assert.equal(v.offline, false);
+});
