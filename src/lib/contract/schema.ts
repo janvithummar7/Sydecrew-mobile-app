@@ -1400,7 +1400,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/venues/": {
+    "/api/v1/venues": {
         parameters: {
             query?: never;
             header?: never;

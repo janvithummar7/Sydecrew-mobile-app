@@ -10251,7 +10251,7 @@
         }
       }
     },
-    "/api/v1/venues/": {
+    "/api/v1/venues": {
       "get": {
         "operationId": "getVenues",
         "summary": "Approved public venues (label, type and area only; no address or coordinates)",
