@@ -11,7 +11,7 @@ import { Text } from '@/components/ui/Text';
 import { call as callCopy, location as locCopy, ping as pingCopy } from '@/content/comms';
 import type { Booking } from '@/lib/bookings/types';
 import { commsApi } from '@/lib/comms/api';
-import { LocationThrottle, PING_PROMPT_INITIAL, callWindow, nextPingPrompt, telUrl } from '@/lib/comms/helpers';
+import { LocationThrottle, PING_PROMPT_INITIAL, callButton, nextPingPrompt, telUrl } from '@/lib/comms/helpers';
 import { foregroundPermission, openLocationSettings, watchForeground } from '@/lib/comms/location';
 import { useRealtimeEvents } from '@/lib/comms/realtime-context';
 import { errorView } from '@/lib/errors';
@@ -21,8 +21,8 @@ import { alpha, colors, space } from '@/theme';
 
 /**
  * Message and masked-call buttons on a booking (Feature 5, D15). The Call
- * button shows only inside the call window (CONFIRMED / IN_PROGRESS, 2 h before
- * the start to 2 h after the end); the API returns a temporary number that
+ * button follows the API's actions.can_call (and hides when call_window
+ * closes while the screen is open); the API returns a temporary number that
  * bridges to the other person, and the phone dialler opens with it.
  */
 export function CallAndChat({ booking, now }: { booking: Booking; now: number }) {
@@ -31,8 +31,7 @@ export function CallAndChat({ booking, now }: { booking: Booking; now: number })
   const other = booking.viewer === 'CUSTOMER' ? booking.companion.display_name : booking.customer.first_name;
   const [calling, setCalling] = useState(false);
   const [number, setNumber] = useState<{ until: string } | null>(null);
-  const w = callWindow(booking, new Date(now));
-  const showCall = ['CONFIRMED', 'IN_PROGRESS'].includes(booking.status);
+  const w = callButton(booking, new Date(now));
 
   const call = async () => {
     setCalling(true);
@@ -59,14 +58,14 @@ export function CallAndChat({ booking, now }: { booking: Booking; now: number })
           {callCopy.message}
         </Button>
       ) : null}
-      {showCall && w.open ? (
+      {w.show ? (
         <Button variant="secondary" onPress={call} loading={calling} icon={<Ionicons name="call-outline" size={18} color={colors.textStrong} />} accessibilityHint={callCopy.hint}>
           {calling ? callCopy.getting : callCopy.button}
         </Button>
       ) : null}
-      {showCall && w.open && number ? <Text variant="caption" color={colors.textMuted}>{callCopy.body(formatTimeIST(number.until))}</Text> : null}
-      {showCall && w.reason === 'NOT_YET' ? <Text variant="caption" color={colors.textMuted}>{callCopy.notYet(formatDateTimeIST(w.opensAt.toISOString()))}</Text> : null}
-      {__DEV__ && showCall && w.open ? (
+      {w.show && number ? <Text variant="caption" color={colors.textMuted}>{callCopy.body(formatTimeIST(number.until))}</Text> : null}
+      {w.reason === 'NOT_YET' ? <Text variant="caption" color={colors.textMuted}>{callCopy.notYet(formatDateTimeIST(w.opensAt.toISOString()))}</Text> : null}
+      {__DEV__ && w.show ? (
         <Button
           variant="ghost"
           onPress={() => commsApi.simulateCall(booking.id).then(() => toast(callCopy.devSimulated), (err) => toast(errorView(err).message, 'error'))}

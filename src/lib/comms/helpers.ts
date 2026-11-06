@@ -69,20 +69,23 @@ export function moderationView(m: Moderation, mine: boolean, copy: { masked: str
 
 // ── Calls ────────────────────────────────────────────────────────────────
 
-const H = 3_600_000;
-export type CallWindow = { open: boolean; opensAt: Date; closesAt: Date; reason: 'NOT_CONFIRMED' | 'NOT_YET' | 'ENDED' | null };
+export type CallButton = { show: boolean; opensAt: Date; closesAt: Date; reason: 'NOT_YET' | 'ENDED' | 'NOT_AVAILABLE' | null };
+type CallBooking = { status: string; actions: { can_call: boolean }; call_window: { opens_at: string; closes_at: string } };
 
 /**
- * Masked calls: CONFIRMED or IN_PROGRESS only, from 2 h before the start until
- * 2 h after the end (half-open, like the API). The API has the final say.
+ * The masked Call button, driven by the API: `actions.can_call` decides
+ * (CONFIRMED / IN_PROGRESS, inside [start - 2 h, end + 2 h), not blocked).
+ * `call_window` only adds what the snapshot cannot know: the window closing
+ * while the screen is open (hidden at closes_at, half-open like the API), and
+ * the "Calls open at …" hint for a confirmed booking before opens_at.
  */
-export function callWindow(b: { status: string; start_at: string; end_at: string }, now = new Date(), beforeH = 2, afterH = 2): CallWindow {
-  const opensAt = new Date(new Date(b.start_at).getTime() - beforeH * H);
-  const closesAt = new Date(new Date(b.end_at).getTime() + afterH * H);
-  if (!['CONFIRMED', 'IN_PROGRESS'].includes(b.status)) return { open: false, opensAt, closesAt, reason: 'NOT_CONFIRMED' };
-  if (now < opensAt) return { open: false, opensAt, closesAt, reason: 'NOT_YET' };
-  if (now >= closesAt) return { open: false, opensAt, closesAt, reason: 'ENDED' };
-  return { open: true, opensAt, closesAt, reason: null };
+export function callButton(b: CallBooking, now = new Date()): CallButton {
+  const opensAt = new Date(b.call_window.opens_at);
+  const closesAt = new Date(b.call_window.closes_at);
+  if (now >= closesAt) return { show: false, opensAt, closesAt, reason: 'ENDED' };
+  if (b.actions.can_call) return { show: true, opensAt, closesAt, reason: null };
+  if (now < opensAt && ['CONFIRMED', 'IN_PROGRESS'].includes(b.status)) return { show: false, opensAt, closesAt, reason: 'NOT_YET' };
+  return { show: false, opensAt, closesAt, reason: 'NOT_AVAILABLE' };
 }
 
 /** "+918000001234" -> "tel:+918000001234" (digits and a leading + only). */

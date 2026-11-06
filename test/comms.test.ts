@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { RealtimeClient, backoffMs, realtimeUrl, type SocketLike } from '../src/lib/comms/realtime.ts';
-import { CLIENT_MESSAGE_ID_RE, LocationThrottle, Outbox, PING_PROMPT_INITIAL, callWindow, mergeMessages, moderationView, newClientMessageId, nextPingPrompt, sosSections, telUrl } from '../src/lib/comms/helpers.ts';
+import { CLIENT_MESSAGE_ID_RE, LocationThrottle, Outbox, PING_PROMPT_INITIAL, callButton, mergeMessages, moderationView, newClientMessageId, nextPingPrompt, sosSections, telUrl } from '../src/lib/comms/helpers.ts';
 import type { Message } from '../src/lib/comms/types.ts';
 
 // ── Fakes ────────────────────────────────────────────────────────────────
@@ -246,18 +246,32 @@ test('chat: moderation labels (held / rejected only shown to the sender)', () =>
 
 // ── Calls ────────────────────────────────────────────────────────────────
 
-test('calls: the Call button only shows inside [start - 2 h, end + 2 h) for CONFIRMED / IN_PROGRESS', () => {
-  const b = { status: 'CONFIRMED', start_at: '2026-11-06T12:00:00Z', end_at: '2026-11-06T14:00:00Z' };
+test('calls: the Call button follows actions.can_call, with the call_window edges', () => {
+  // A booking 12:00-14:00 UTC: the API's window is [10:00, 16:00).
+  const win = { opens_at: '2026-11-06T10:00:00Z', closes_at: '2026-11-06T16:00:00Z', open: true };
+  const b = (status: string, can_call: boolean) => ({ status, actions: { can_call }, call_window: win });
   const at = (iso: string) => new Date(iso);
-  assert.equal(callWindow(b, at('2026-11-06T09:59:59Z')).reason, 'NOT_YET');
-  assert.equal(callWindow(b, at('2026-11-06T10:00:00Z')).open, true, 'opens exactly 2 h before');
-  assert.equal(callWindow({ ...b, status: 'IN_PROGRESS' }, at('2026-11-06T13:00:00Z')).open, true);
-  assert.equal(callWindow(b, at('2026-11-06T15:59:59Z')).open, true);
-  assert.equal(callWindow(b, at('2026-11-06T16:00:00Z')).reason, 'ENDED', 'closed exactly 2 h after the end');
-  for (const status of ['REQUESTED', 'ACCEPTED', 'PAYMENT_PENDING', 'COMPLETED', 'CANCELLED_BY_CUSTOMER', 'DISPUTED']) {
-    assert.equal(callWindow({ ...b, status }, at('2026-11-06T13:00:00Z')).reason, 'NOT_CONFIRMED', status);
+  // Before the window: the API says no; a confirmed booking gets the "Calls open at" hint.
+  assert.deepEqual(
+    { ...callButton(b('CONFIRMED', false), at('2026-11-06T09:59:59Z')), opensAt: undefined, closesAt: undefined },
+    { show: false, reason: 'NOT_YET', opensAt: undefined, closesAt: undefined },
+  );
+  assert.equal(callButton(b('CONFIRMED', false), at('2026-11-06T09:59:59Z')).opensAt.toISOString(), '2026-11-06T10:00:00.000Z');
+  // Opens exactly at opens_at (when the API says can_call), shows to the last second.
+  assert.equal(callButton(b('CONFIRMED', true), at('2026-11-06T10:00:00Z')).show, true);
+  assert.equal(callButton(b('IN_PROGRESS', true), at('2026-11-06T13:00:00Z')).show, true);
+  assert.equal(callButton(b('IN_PROGRESS', true), at('2026-11-06T15:59:59Z')).show, true);
+  // Closed exactly at closes_at, even if the snapshot still says can_call (screen left open).
+  const ended = callButton(b('IN_PROGRESS', true), at('2026-11-06T16:00:00Z'));
+  assert.equal(ended.show, false);
+  assert.equal(ended.reason, 'ENDED');
+  // The API decides: can_call false inside the window (blocked, call limit, not confirmed) hides it.
+  assert.equal(callButton(b('CONFIRMED', false), at('2026-11-06T13:00:00Z')).reason, 'NOT_AVAILABLE');
+  for (const status of ['REQUESTED', 'AWAITING_COMPANION', 'PAYMENT_PENDING', 'COMPLETED', 'CANCELLED_BY_CUSTOMER', 'DISPUTED']) {
+    const r = callButton(b(status, false), at('2026-11-06T09:00:00Z'));
+    assert.equal(r.show, false, status);
+    assert.equal(r.reason, 'NOT_AVAILABLE', `${status}: no "calls open at" hint`);
   }
-  assert.equal(callWindow(b, at('2026-11-06T10:00:00Z')).opensAt.toISOString(), '2026-11-06T10:00:00.000Z');
 });
 
 test('calls: tel: URLs keep only digits and +', () => {
