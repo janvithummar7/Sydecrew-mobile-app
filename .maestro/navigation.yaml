@@ -1,4 +1,4 @@
-# Customer shell smoke test: tabs, Discover, design-preview placeholders, settings and legal.
+# Customer shell smoke test: tabs, Discover, Bookings, Messages, SOS and safety, settings and legal.
 # Needs: an onboarded customer account (EMAIL / PASSWORD below) and a dev API.
 # Run: maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/navigation.yaml
 appId: com.sydecrew.app
@@ -24,11 +24,24 @@ appId: com.sydecrew.app
 - assertVisible: "Upcoming"
 - assertVisible: "Cancelled"
 - assertNotVisible: "Coming soon — not bookable yet"
+# Messages (Feature 5): the real chat list; no placeholder.
 - tapOn: "Messages"
-- assertVisible: "Messages"
+- runFlow:
+    when:
+      visible: "Turn on notifications?"
+    commands:
+      - tapOn: "Not now"
+- assertVisible: "One chat per booking.*"
+- assertNotVisible: "Coming soon — not bookable yet"
 # Profile -> Settings and legal: draft legal pages and the grievance officer placeholder.
 - tapOn: "Profile"
 - assertVisible: "Become a companion"
+# SOS and safety (Feature 5): reachable without a booking; Call 112 first.
+- scrollUntilVisible:
+    element: "SOS and safety"
+- tapOn: "SOS and safety"
+- assertVisible: "Call 112 \\(emergency\\)"
+- back
 - scrollUntilVisible:
     element: "Settings and legal"
 - tapOn: "Settings and legal"

@@ -17,7 +17,7 @@ maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maest
 maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/setup-go-live.yaml
 ```
 
-Customer shell smoke test (tabs, design previews, settings and legal), with an onboarded customer account:
+Customer shell smoke test (tabs, Messages, SOS and safety, settings and legal), with an onboarded customer account:
 
 ```bash
 maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/navigation.yaml
@@ -45,6 +45,22 @@ maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maest
 ```
 
 Check-in opens 30 minutes before the start, so those steps run only when "Check in" is shown.
+
+Chat, masked calls and safety (Feature 5). Development build, the API with `CALL_PROVIDER=mock`:
+
+```bash
+# Messages tab -> a booking chat -> send -> masked number -> report -> block
+maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/chat.yaml
+# Booking detail -> Call (number hidden) inside the call window (a CONFIRMED booking starting within 2 hours)
+maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/call.yaml
+# Booking day -> share my location (foreground only) -> off. Needs an accepted safety contact and a mock location
+maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/location-sharing.yaml
+# Profile -> SOS and safety: Call 112 first -> alert the desk -> I'm safe; add and remove a safety contact
+maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/sos.yaml
+```
+
+The SOS flow never taps "Call 112" (it would dial the real emergency number). These flows are written but have
+not been run on a device yet.
 
 The OTP is shown on screen by the development API (dev hint); pass the current code each run.
 The gallery picker and crop screen differ between Android versions: the photo steps use optional

@@ -1,0 +1,64 @@
+# SOS (Feature 5): from the Profile tab without a booking -> "Call 112" is the first action -> alert the safety desk
+# with location -> "Help is on the way" -> "I'm safe". Also checks safety contacts (add, pending, remove).
+# Needs: any signed-in customer; the API running (the desk sees the alert on the web admin).
+#   maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/sos.yaml
+# The flow does NOT tap "Call 112" (it would dial the real emergency number); it only checks it comes first.
+# Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+- tapOn: "Profile"
+- scrollUntilVisible:
+    element: "SOS and safety"
+- tapOn: "SOS and safety"
+- assertVisible: "If you are in danger, call 112 first.*"
+# Call 112 comes before the in-app alert.
+- assertVisible:
+    text: "Call 112 \\(emergency\\)"
+    above: "Alert the Sydecrew safety desk"
+- assertVisible: "Share my location with the safety desk"
+- tapOn: "Alert the Sydecrew safety desk"
+- runFlow:
+    when:
+      visible: "While using the app"
+    commands:
+      - tapOn: "While using the app"
+- extendedWaitUntil:
+    visible: "Help is on the way"
+    timeout: 20000
+# Still first after the alert.
+- assertVisible:
+    text: "Call 112 \\(emergency\\)"
+    above: "Help is on the way"
+- tapOn: "I’m safe"
+- tapOn: "Yes, I’m safe"
+- assertVisible: "You told us you are safe.*"
+# Safety contacts: add one (pending until they accept by SMS), then remove it.
+- tapOn: "Safety contacts"
+- assertVisible: "Up to 3 people you trust.*"
+- runFlow:
+    when:
+      visible: "Send invitation"
+    commands:
+      - tapOn: "Name"
+      - inputText: "Maestro Contact"
+      - tapOn: "Mobile number"
+      - inputText: "9876500001"
+      - tapOn: "Send invitation"
+      - assertVisible: "Invitation sent"
+      - tapOn: "Remove Maestro Contact"
+      - tapOn:
+          text: "Remove"
+          index: 1
+      - assertVisible: "Safety contact removed."

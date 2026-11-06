@@ -1,0 +1,37 @@
+# Masked calls (Feature 5): booking detail -> "Call (number hidden)" only inside the call window -> the dialler opens
+# with a temporary number (never the other person's number). Development builds also offer "Simulate a call".
+# Needs: a CONFIRMED booking starting within 2 hours (or in progress), the API with CALL_PROVIDER=mock.
+#   maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/call.yaml
+# Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+- tapOn: "Bookings"
+- tapOn: "Upcoming"
+- tapOn:
+    text: ".*Confirmed.*"
+    index: 0
+- assertVisible: "Message"
+- assertVisible: "Call \\(number hidden\\)"
+# Development builds: log a simulated bridged call first (no dialler).
+- runFlow:
+    when:
+      visible: "Simulate a call \\(development\\)"
+    commands:
+      - tapOn: "Simulate a call \\(development\\)"
+      - assertVisible: "Simulated call logged."
+- tapOn: "Call \\(number hidden\\)"
+# The system dialler opens with the virtual number; come back to the app.
+- back
+- assertVisible: "Calls use a temporary number.*"

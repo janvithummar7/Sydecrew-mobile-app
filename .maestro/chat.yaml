@@ -1,0 +1,59 @@
+# Chat (Feature 5): Messages tab -> a booking chat -> send a message -> a masked phone number -> report -> block.
+# Needs: an account with at least one booking (any status that has a chat: requested, confirmed, or ended < 24 h ago).
+#   maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/chat.yaml
+# The other person must have sent at least one message for the report step (optional otherwise).
+# Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+- tapOn: "Messages"
+- assertVisible: "One chat per booking.*"
+- assertNotVisible: "Coming soon — not bookable yet"
+# First open: our own explanation before the system notification prompt.
+- runFlow:
+    when:
+      visible: "Turn on notifications?"
+    commands:
+      - tapOn: "Not now"
+- tapOn:
+    id: "conversation-.*"
+    index: 0
+- assertVisible: "Message"
+- tapOn: "Message"
+- inputText: "Hello from Maestro, see you at the venue"
+- tapOn: "Send"
+- assertVisible: "Hello from Maestro, see you at the venue"
+# Contact details are masked by the API, and the sender is told.
+- tapOn: "Message"
+- inputText: "call me on 98765 43210"
+- tapOn: "Send"
+- assertVisible: "Contact details were hidden.*"
+# Report a message from the other person (long-press), if there is one.
+- runFlow:
+    when:
+      visible: "Long-press to report"
+    commands:
+      - longPressOn: "Long-press to report"
+      - assertVisible: "Report this message"
+      - tapOn: "Asked to talk or pay outside Sydecrew"
+      - tapOn: "Send report"
+      - assertVisible: "Report sent.*|You already reported this message."
+# Block from the menu: the composer is replaced by the closed state.
+- tapOn: "More options"
+- assertVisible: "View booking"
+- tapOn: "Block this chat"
+- assertVisible: "Block this chat?"
+- tapOn: "Block"
+- assertVisible: "This chat is blocked"
+- assertNotVisible: "Send"
