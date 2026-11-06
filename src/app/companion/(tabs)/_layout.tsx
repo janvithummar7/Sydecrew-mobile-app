@@ -6,7 +6,7 @@ import { nav } from '@/content/common';
 
 /**
  * Companion shell (integration pass §4): Dashboard, Profile, Status, and once
- * approved Availability, Rates, Earnings* (* = placeholder until payouts).
+ * approved Bookings (Feature 4), Availability, Rates, Earnings* (* = placeholder until payouts).
  */
 export default function CompanionTabs() {
   const { user } = useAuth();
@@ -15,6 +15,9 @@ export default function CompanionTabs() {
   return (
     <Tabs screenOptions={tabScreenOptions}>
       <Tabs.Screen name="dashboard" options={{ title: t.dashboard, tabBarIcon: tabIcon('grid-outline'), tabBarAccessibilityLabel: t.dashboard }} />
+      <Tabs.Protected guard={approved}>
+        <Tabs.Screen name="bookings" options={{ title: t.bookings, tabBarIcon: tabIcon('calendar-outline'), tabBarAccessibilityLabel: t.bookings }} />
+      </Tabs.Protected>
       <Tabs.Screen name="profile" options={{ title: t.profile, tabBarIcon: tabIcon('person-outline'), tabBarAccessibilityLabel: t.profile }} />
       <Tabs.Protected guard={approved}>
         <Tabs.Screen name="availability" options={{ title: t.availability, tabBarIcon: tabIcon('time-outline'), tabBarAccessibilityLabel: t.availability }} />

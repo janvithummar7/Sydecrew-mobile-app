@@ -15,15 +15,6 @@ export const customerHome = {
   companionTitleExisting: 'Your companion profile',
   companionBodyNew: 'Offer platonic company at approved public venues, set your own hours and rate, and get paid weekly.',
   companionBodyExisting: 'See your application, setup and availability.',
-  comingSoon: 'Coming soon',
-} as const;
-
-export const bookings = {
-  title: 'Bookings',
-  subtitle: 'Your upcoming meetings and history will appear here.',
-  sampleUpcoming: 'Sample upcoming booking',
-  openDetails: 'Booking details',
-  openDay: 'Booking day and check-in',
 } as const;
 
 export const messages = {
@@ -44,39 +35,14 @@ export const account = {
   logOut: 'Log out',
 } as const;
 
+/** Screens for flows that are not built yet (Feature 4 replaced booking, pay and booking day; SOS remains). */
 export const previews = {
-  booking: {
-    title: 'Booking details',
-    occasion: 'Occasion',
-    date: 'Date and time',
-    duration: 'Duration',
-    venue: 'Venue (approved public venues only)',
-    notes: 'Notes for your companion',
-    continue: 'Continue to review',
-  },
-  pay: {
-    title: 'Review and pay',
-    breakdown: 'Price breakdown',
-    total: 'Total',
-    protected: 'Your payment is protected',
-    protectedBody: 'Pay only inside Sydecrew. Never by QR or bank transfer to anyone.',
-    pay: 'Pay securely',
-    disabled: 'Payments are not open yet.',
-  },
-  day: {
-    title: 'Booking day and check-in',
-    arrived: 'Arrived at the venue?',
-    checkIn: 'Check in',
-    boundaries: 'Agreed boundaries',
-    shareTrip: 'Share trip with a trusted contact',
-    chat: 'Chat',
-    call: 'Masked call',
-    sos: 'Need help? Open SOS',
-  },
   sos: {
     title: 'Safety SOS',
-    body: 'In an emergency, call 112 now. Our 24×7 safety desk and in-app SOS alerts open with bookings.',
+    body: 'In an emergency, call 112 now. In-app SOS alerts to our 24×7 safety desk open in a later update.',
     leave: 'End the meeting and leave',
     leaveBody: 'You never have to stay. Walk to a staffed public area and call 112 or someone you trust.',
+    noticeTitle: 'In-app SOS alerts to our safety desk open in a later update',
+    noticeBody: 'Until then, call 112 in an emergency. This screen sends nothing to Sydecrew.',
   },
 } as const;

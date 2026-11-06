@@ -70,8 +70,8 @@ export default function Home() {
           <Text variant="heading" color={colors.textStrong}>{copy.discoverTitle}</Text>
           <Text variant="small" color={colors.textMuted}>{copy.discoverBody(zone?.name ?? 'you')}</Text>
         </Card>
-        <Card onPress={() => router.push('/bookings')} accessibilityLabel={`${copy.bookingsTitle}, ${copy.comingSoon}`}>
-          <Row icon="calendar-outline" badge={copy.comingSoon} />
+        <Card onPress={() => router.push('/bookings')} accessibilityLabel={copy.bookingsTitle}>
+          <Row icon="calendar-outline" />
           <Text variant="heading" color={colors.textStrong}>{copy.bookingsTitle}</Text>
           <Text variant="small" color={colors.textMuted}>{copy.bookingsBody}</Text>
         </Card>

@@ -10,7 +10,7 @@ const copy = previews.sos;
 
 /**
  * Safety SOS (PLACEHOLDER, artboard "Safety SOS"). The in-app alert to the
- * safety desk opens with bookings; the one-tap 112 call is real and works now.
+ * safety desk is a later feature; the one-tap 112 call is real and works now.
  */
 export default function SosPreview() {
   return (
@@ -23,7 +23,7 @@ export default function SosPreview() {
         <Text weight="600" color={colors.textStrong}>{copy.leave}</Text>
         <Text variant="small" color={colors.textMuted}>{copy.leaveBody}</Text>
       </Card>
-      <PlaceholderNotice title="SOS alerts to our safety desk open with bookings" body="Until then, call 112 in an emergency. This screen sends nothing to Sydecrew." />
+      <PlaceholderNotice title={copy.noticeTitle} body={copy.noticeBody} />
     </Screen>
   );
 }
