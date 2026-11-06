@@ -2,7 +2,7 @@
  * Pure chat / call / safety helpers (Feature 5). No React Native imports, so
  * they run under `node --test`.
  */
-import type { Message, Moderation } from './types';
+import type { Message, Moderation, PendingPing } from './types';
 
 // ── Chat ─────────────────────────────────────────────────────────────────
 
@@ -110,6 +110,29 @@ export class LocationThrottle {
   reset() {
     this.last = -Infinity;
   }
+}
+
+// ── Safety ping ("Are you OK?") ─────────────────────────────────────────
+
+/** Which ping the prompt shows (null = hidden), and the pings already answered on this device. */
+export type PingPromptState = { pingId: string | null; answered: string[] };
+export type PingPromptEvent =
+  | { type: 'fetched'; res: PendingPing } // GET /bookings/:id/safety-ping (screen open, app resume)
+  | { type: 'realtime'; pingId: string } // safety.ping over the socket
+  | { type: 'answered' }; // POST /bookings/:id/safety-ping succeeded
+
+export const PING_PROMPT_INITIAL: PingPromptState = { pingId: null, answered: [] };
+
+/**
+ * The prompt shows when the API says a ping is pending (also after opening the
+ * app from the push) or one arrives over realtime, and hides once answered.
+ * An answered ping never comes back, even if a stale fetch still reports it.
+ */
+export function nextPingPrompt(s: PingPromptState, e: PingPromptEvent): PingPromptState {
+  if (e.type === 'answered') return { pingId: null, answered: s.pingId ? [...s.answered, s.pingId] : s.answered };
+  const id = e.type === 'realtime' ? e.pingId : e.res.pending && e.res.ping ? e.res.ping.id : null;
+  if (id && s.answered.includes(id)) return { ...s, pingId: null };
+  return { ...s, pingId: id };
 }
 
 // ── SOS ──────────────────────────────────────────────────────────────────

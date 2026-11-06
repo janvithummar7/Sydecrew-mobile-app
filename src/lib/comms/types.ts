@@ -23,6 +23,7 @@ export type SosCurrent = S['SosCurrentResponse'];
 export type SosIncident = Sos['incident'];
 export type SosInput = S['postSafetySosBody'];
 export type PingAnswered = S['PingAnsweredResponse'];
+export type PendingPing = S['PendingPingResponse'];
 export type TrustedContacts = S['TrustedContactsResponse'];
 export type TrustedContact = TrustedContacts['items'][number];
 export type TrustedContactInput = S['postSafetyTrustedContactsBody'];

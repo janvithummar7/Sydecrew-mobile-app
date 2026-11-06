@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import { AppState, Linking, Switch, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,33 +11,13 @@ import { Text } from '@/components/ui/Text';
 import { call as callCopy, location as locCopy, ping as pingCopy } from '@/content/comms';
 import type { Booking } from '@/lib/bookings/types';
 import { commsApi } from '@/lib/comms/api';
-import { LocationThrottle, callWindow, telUrl } from '@/lib/comms/helpers';
+import { LocationThrottle, PING_PROMPT_INITIAL, callWindow, nextPingPrompt, telUrl } from '@/lib/comms/helpers';
 import { foregroundPermission, openLocationSettings, watchForeground } from '@/lib/comms/location';
 import { useRealtimeEvents } from '@/lib/comms/realtime-context';
 import { errorView } from '@/lib/errors';
 import { formatDateTimeIST, formatTimeIST } from '@/lib/time';
 import { alpha, colors, space } from '@/theme';
 
-/** Opens the booking's chat (looked up from GET /conversations). */
-export function useOpenChat(booking: Pick<Booking, 'id'>) {
-  const router = useRouter();
-  const toast = useToast();
-  const [busy, setBusy] = useState(false);
-  const open = async () => {
-    setBusy(true);
-    try {
-      const { items } = await commsApi.conversations();
-      const c = items.find((x) => x.booking.id === booking.id);
-      if (!c) return toast(errorView({ code: 'CONVERSATION_NOT_FOUND' }).message, 'error');
-      router.push({ pathname: '/chat/[id]', params: { id: c.id, name: c.other_party } });
-    } catch (err) {
-      toast(errorView(err).message, 'error');
-    } finally {
-      setBusy(false);
-    }
-  };
-  return { open, busy };
-}
 
 /**
  * Message and masked-call buttons on a booking (Feature 5, D15). The Call
@@ -47,7 +27,8 @@ export function useOpenChat(booking: Pick<Booking, 'id'>) {
  */
 export function CallAndChat({ booking, now }: { booking: Booking; now: number }) {
   const toast = useToast();
-  const chat = useOpenChat(booking);
+  const router = useRouter();
+  const other = booking.viewer === 'CUSTOMER' ? booking.companion.display_name : booking.customer.first_name;
   const [calling, setCalling] = useState(false);
   const [number, setNumber] = useState<{ until: string } | null>(null);
   const w = callWindow(booking, new Date(now));
@@ -68,9 +49,16 @@ export function CallAndChat({ booking, now }: { booking: Booking; now: number })
 
   return (
     <View style={{ gap: space.sm }}>
-      <Button variant="secondary" onPress={() => void chat.open()} loading={chat.busy} icon={<Ionicons name="chatbubble-outline" size={18} color={colors.textStrong} />} accessibilityHint={callCopy.messageHint}>
-        {callCopy.message}
-      </Button>
+      {booking.conversation_id ? (
+        <Button
+          variant="secondary"
+          onPress={() => router.push({ pathname: '/chat/[id]', params: { id: booking.conversation_id!, name: other } })}
+          icon={<Ionicons name="chatbubble-outline" size={18} color={colors.textStrong} />}
+          accessibilityHint={callCopy.messageHint}
+        >
+          {callCopy.message}
+        </Button>
+      ) : null}
       {showCall && w.open ? (
         <Button variant="secondary" onPress={call} loading={calling} icon={<Ionicons name="call-outline" size={18} color={colors.textStrong} />} accessibilityHint={callCopy.hint}>
           {calling ? callCopy.getting : callCopy.button}
@@ -239,22 +227,33 @@ export function LocationShare({ bookingId, onAddContacts }: { bookingId: string;
 }
 
 /**
- * "Are you OK?" check-in during a meeting (safety.ping over realtime). "I need
+ * "Are you OK?" check-in during a meeting. Shown when GET
+ * /bookings/:id/safety-ping reports a pending ping (fetched when the screen
+ * opens and whenever the app comes back to the foreground, so opening the app
+ * from the push works) or when safety.ping arrives over realtime. "I need
  * help" answers the ping AND raises an SOS (the API does both), then opens SOS.
  */
 export function PingPrompt({ bookingId, onHelp }: { bookingId: string; onHelp: () => void }) {
   const toast = useToast();
-  const [asked, setAsked] = useState(false);
+  const [prompt, dispatch] = useReducer(nextPingPrompt, PING_PROMPT_INITIAL);
   const [busy, setBusy] = useState<'ok' | 'help' | null>(null);
+  const check = useCallback(() => {
+    commsApi.pendingPing(bookingId).then((res) => dispatch({ type: 'fetched', res }), () => undefined);
+  }, [bookingId]);
+  useFocusEffect(check);
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (s) => s === 'active' && check());
+    return () => sub.remove();
+  }, [check]);
   useRealtimeEvents((e) => {
-    if (e.type === 'safety.ping' && e.payload.booking_id === bookingId) setAsked(true);
+    if (e.type === 'safety.ping' && e.payload.booking_id === bookingId) dispatch({ type: 'realtime', pingId: e.payload.ping_id });
   });
-  if (!asked) return null;
+  if (!prompt.pingId) return null;
   const answer = async (ok: boolean) => {
     setBusy(ok ? 'ok' : 'help');
     try {
       await commsApi.answerPing(bookingId, ok);
-      setAsked(false);
+      dispatch({ type: 'answered' });
       if (ok) toast(pingCopy.thanks);
       else onHelp();
     } catch (err) {

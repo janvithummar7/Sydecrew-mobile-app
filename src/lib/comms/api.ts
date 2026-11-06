@@ -5,6 +5,7 @@ import type {
   LocationSharing,
   MessageSent,
   MessagesPage,
+  PendingPing,
   PingAnswered,
   ReportInput,
   Reported,
@@ -41,6 +42,8 @@ export const commsApi = {
   setLocationSharing: (bookingId: string, enabled: boolean) => api<LocationSharing>(`/bookings/${enc(bookingId)}/location-sharing`, { method: 'POST', body: { enabled } }),
   sendLocation: (bookingId: string, p: { latitude: number; longitude: number; accuracy_meters?: number }) =>
     api<{ stored: true }>(`/bookings/${enc(bookingId)}/location`, { method: 'POST', body: p }),
+  /** The unanswered "Are you OK?" check-in for this booking, if any (opening the app from the push). */
+  pendingPing: (bookingId: string) => api<PendingPing>(`/bookings/${enc(bookingId)}/safety-ping`),
   answerPing: (bookingId: string, ok: boolean) => api<PingAnswered>(`/bookings/${enc(bookingId)}/safety-ping`, { method: 'POST', body: { ok } }),
 
   sos: (body: SosInput & { booking_id?: string | null }) => {

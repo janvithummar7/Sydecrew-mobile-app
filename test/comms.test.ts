@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { RealtimeClient, backoffMs, realtimeUrl, type SocketLike } from '../src/lib/comms/realtime.ts';
-import { CLIENT_MESSAGE_ID_RE, LocationThrottle, Outbox, callWindow, mergeMessages, moderationView, newClientMessageId, sosSections, telUrl } from '../src/lib/comms/helpers.ts';
+import { CLIENT_MESSAGE_ID_RE, LocationThrottle, Outbox, PING_PROMPT_INITIAL, callWindow, mergeMessages, moderationView, newClientMessageId, nextPingPrompt, sosSections, telUrl } from '../src/lib/comms/helpers.ts';
 import type { Message } from '../src/lib/comms/types.ts';
 
 // ── Fakes ────────────────────────────────────────────────────────────────
@@ -287,6 +287,28 @@ test('location: at most one point every 30 s', () => {
   t.reset();
   assert.equal(t.due(150_001), true, 'reset when sharing is turned on again');
   assert.equal(new LocationThrottle().waitMs(0), 0, "nothing sent yet: no wait");
+});
+
+// ── Safety ping ──────────────────────────────────────────────────────────
+
+test('ping: a pending ping from GET /bookings/:id/safety-ping shows the prompt (app opened from the push)', () => {
+  const s = nextPingPrompt(PING_PROMPT_INITIAL, { type: 'fetched', res: { pending: true, ping: { id: 'p1', sent_at: '2026-11-06T13:00:00Z' } } });
+  assert.equal(s.pingId, 'p1');
+  assert.equal(nextPingPrompt(PING_PROMPT_INITIAL, { type: 'fetched', res: { pending: false, ping: null } }).pingId, null, 'nothing pending: hidden');
+  assert.equal(nextPingPrompt(s, { type: 'fetched', res: { pending: false, ping: null } }).pingId, null, 'answered elsewhere / timed out: hidden on resume');
+});
+
+test('ping: realtime shows it too; once answered it stays hidden even if a stale fetch still reports it', () => {
+  let s = nextPingPrompt(PING_PROMPT_INITIAL, { type: 'realtime', pingId: 'p1' });
+  assert.equal(s.pingId, 'p1');
+  s = nextPingPrompt(s, { type: 'answered' });
+  assert.equal(s.pingId, null);
+  assert.deepEqual(s.answered, ['p1']);
+  s = nextPingPrompt(s, { type: 'fetched', res: { pending: true, ping: { id: 'p1', sent_at: '2026-11-06T13:00:00Z' } } });
+  assert.equal(s.pingId, null, 'stale pending p1 ignored');
+  s = nextPingPrompt(s, { type: 'realtime', pingId: 'p2' });
+  assert.equal(s.pingId, 'p2', 'a new ping shows');
+  assert.deepEqual(nextPingPrompt(PING_PROMPT_INITIAL, { type: 'answered' }), PING_PROMPT_INITIAL);
 });
 
 // ── SOS ──────────────────────────────────────────────────────────────────
