@@ -21,7 +21,7 @@ SplashScreen.preventAutoHideAsync();
  *  - token links (verify email, reset password): always reachable
  *  - staff: the "sign in on the web" screen only
  *  - customer onboarding unfinished (and not a companion applicant): onboarding
- *  - customer shell (tabs): onboarded customers, and anyone who is not a companion
+ *  - customer shell (tabs) and discovery screens (/companions/*): onboarded customers, and anyone who is not a companion
  *  - companion area (its own tabs + application steps): any signed-in non-staff user
  *  - previews of not-yet-built flows, settings: signed in
  * When the session changes, the current screen's guard fails and Expo Router
@@ -78,6 +78,7 @@ function RootNavigator() {
       </Stack.Protected>
       <Stack.Protected guard={customerShell} redirectTo={home}>
         <Stack.Screen name="(customer)" />
+        <Stack.Screen name="companions" />
       </Stack.Protected>
       {/* Becoming a companion needs a signed-in account, not customer onboarding (the apply step collects what is missing). */}
       <Stack.Protected guard={signedIn && !staff} redirectTo={home}>

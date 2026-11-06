@@ -7,7 +7,7 @@ import { formatPaise } from '../money';
 import type { AvailabilityDay, DiscoveryCard, DiscoveryList } from './types';
 
 /** Every card has exactly this height (single-line texts), so the list never measures rows. */
-export const CARD_HEIGHT = 132;
+export const CARD_HEIGHT = 140;
 export const CARD_GAP = 12;
 export const ROW_HEIGHT = CARD_HEIGHT + CARD_GAP;
 

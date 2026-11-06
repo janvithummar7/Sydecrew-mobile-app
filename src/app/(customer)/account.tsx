@@ -15,6 +15,7 @@ import { useAuth } from '@/lib/auth';
 import { COMPANION_HOME } from '@/lib/companion/steps';
 import type { OnboardingOptions } from '@/lib/types';
 import { account as copy } from '@/content/customer';
+import { lists } from '@/content/discovery';
 import { nav } from '@/content/common';
 import { colors, space } from '@/theme';
 
@@ -24,7 +25,7 @@ const formatPhone = (p: string | null) => {
   return m ? `+91 ${m[1]} ${m[2]}` : (p ?? '—');
 };
 
-/** Customer Profile tab: account details, "Become a companion", settings and legal, log out. */
+/** Customer Profile tab: account details, saved and recently viewed companions, "Become a companion", settings and legal, log out. */
 export default function Account() {
   const router = useRouter();
   const { user, signOut } = useAuth();
@@ -58,6 +59,8 @@ export default function Account() {
       </View>
 
       <View>
+        <LinkRow label={lists.savedTitle} detail={lists.savedDetail} onPress={() => router.push('/companions/saved')} />
+        <LinkRow label={lists.recentTitle} detail={lists.recentDetail} onPress={() => router.push('/companions/recent')} />
         <LinkRow label={user.companion ? nav.companion.dashboard : nav.becomeCompanion} detail={user.companion ? undefined : 'Platonic company at approved public venues, on your own hours.'} onPress={() => router.push(COMPANION_HOME)} />
         <LinkRow label={nav.settings} onPress={() => router.push('/settings')} />
       </View>
