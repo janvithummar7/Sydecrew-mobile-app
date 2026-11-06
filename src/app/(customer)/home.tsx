@@ -65,8 +65,8 @@ export default function Home() {
       {email.devLink ? <DevHint>{email.devLink}</DevHint> : null}
 
       <View style={{ gap: space.md }}>
-        <Card onPress={() => router.push('/discover')} accessibilityLabel={`${copy.discoverTitle}, ${copy.comingSoon}`}>
-          <Row icon="compass-outline" badge={copy.comingSoon} />
+        <Card onPress={() => router.push('/discover')} accessibilityLabel={copy.discoverTitle}>
+          <Row icon="compass-outline" />
           <Text variant="heading" color={colors.textStrong}>{copy.discoverTitle}</Text>
           <Text variant="small" color={colors.textMuted}>{copy.discoverBody(zone?.name ?? 'you')}</Text>
         </Card>
