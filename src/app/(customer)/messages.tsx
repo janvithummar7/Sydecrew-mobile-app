@@ -1,16 +1,6 @@
-import { EmptyState } from '@/components/ui/States';
-import { PlaceholderNotice } from '@/components/ui/Misc';
-import { Screen } from '@/components/ui/Screen';
-import { Title } from '@/components/ui/Text';
-import { messages as copy } from '@/content/customer';
+import { ConversationsList } from '@/components/comms/ConversationsList';
 
-/** Messages (PLACEHOLDER): chat opens with bookings. No messaging API. */
+/** Messages tab (Feature 5): the customer's booking chats from GET /conversations. */
 export default function Messages() {
-  return (
-    <Screen>
-      <Title>{copy.title}</Title>
-      <PlaceholderNotice />
-      <EmptyState icon="chatbubbles-outline" title={copy.emptyTitle} body={copy.emptyBody} />
-    </Screen>
-  );
+  return <ConversationsList viewer="CUSTOMER" />;
 }

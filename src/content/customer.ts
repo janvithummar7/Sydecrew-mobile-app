@@ -17,12 +17,6 @@ export const customerHome = {
   companionBodyExisting: 'See your application, setup and availability.',
 } as const;
 
-export const messages = {
-  title: 'Messages',
-  emptyTitle: 'No messages yet',
-  emptyBody: 'Chat opens after a booking is confirmed. Phone numbers and links are hidden for your safety.',
-} as const;
-
 export const account = {
   title: 'Profile',
   details: 'Account details',
@@ -33,16 +27,4 @@ export const account = {
   verified: 'Verified',
   notVerified: 'Not verified',
   logOut: 'Log out',
-} as const;
-
-/** Screens for flows that are not built yet (Feature 4 replaced booking, pay and booking day; SOS remains). */
-export const previews = {
-  sos: {
-    title: 'Safety SOS',
-    body: 'In an emergency, call 112 now. In-app SOS alerts to our 24×7 safety desk open in a later update.',
-    leave: 'End the meeting and leave',
-    leaveBody: 'You never have to stay. Walk to a staffed public area and call 112 or someone you trust.',
-    noticeTitle: 'In-app SOS alerts to our safety desk open in a later update',
-    noticeBody: 'Until then, call 112 in an emergency. This screen sends nothing to Sydecrew.',
-  },
 } as const;

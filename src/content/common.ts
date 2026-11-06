@@ -46,12 +46,16 @@ export const placeholders = {
 
 export const nav = {
   customer: { home: 'Home', discover: 'Discover', bookings: 'Bookings', messages: 'Messages', profile: 'Profile' },
-  companion: { dashboard: 'Dashboard', bookings: 'Bookings', profile: 'Profile', availability: 'Availability', rates: 'Rates', status: 'Status', earnings: 'Earnings' },
+  companion: { dashboard: 'Dashboard', bookings: 'Bookings', messages: 'Messages', profile: 'Profile', availability: 'Availability', rates: 'Rates', status: 'Status', earnings: 'Earnings' },
   switchToCompanion: 'Switch to companion',
   switchToCustomer: 'Switch to customer',
   becomeCompanion: 'Become a companion',
   previewProfile: 'Preview your public profile',
   settings: 'Settings and legal',
+  sos: 'SOS and safety',
+  sosDetail: 'Call 112, alert our 24×7 safety desk',
+  safetyContacts: 'Safety contacts',
+  safetyContactsDetail: 'People who can follow your meetings',
 } as const;
 
 export const legal = {
