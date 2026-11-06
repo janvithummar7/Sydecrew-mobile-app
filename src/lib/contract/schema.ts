@@ -170,6 +170,193 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/incidents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Safety desk queue (live; ack countdown) */
+        get: operations["getAdminIncidents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/incidents/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Incident: booking, parties, location, timeline, transcript, call metadata */
+        get: operations["getAdminIncidentsById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/incidents/{id}/ack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Acknowledge (one agent wins) */
+        post: operations["postAdminIncidentsByIdAck"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/incidents/{id}/call-contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Masked call to the reporter's trusted contact */
+        post: operations["postAdminIncidentsByIdCallContact"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/incidents/{id}/call-user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Masked call between the desk and the reporter (or the other party) */
+        post: operations["postAdminIncidentsByIdCallUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/incidents/{id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Close with an outcome (a follow-up is scheduled 24 h later) */
+        post: operations["postAdminIncidentsByIdClose"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/incidents/{id}/follow-up": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record the follow-up as done */
+        post: operations["postAdminIncidentsByIdFollowUp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/incidents/{id}/freeze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Freeze the other party now (suspend, cancel pending bookings with full refunds); reviewed by a T&S manager afterwards */
+        post: operations["postAdminIncidentsByIdFreeze"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/incidents/{id}/mark-safe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark the reporter safe */
+        post: operations["postAdminIncidentsByIdMarkSafe"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/messages/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Release or reject a held message */
+        post: operations["postAdminMessagesByIdDecision"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/messages/held": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Chat messages held for review */
+        get: operations["getAdminMessagesHeld"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/moderation": {
         parameters: {
             query?: never;
@@ -837,6 +1024,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/bookings/{id}/call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Masked call: the virtual number to dial (only inside the call window) */
+        post: operations["postBookingsByIdCall"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/bookings/{id}/cancel": {
         parameters: {
             query?: never;
@@ -905,6 +1109,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/bookings/{id}/location": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A location point while sharing (at most one every 30 s) */
+        post: operations["postBookingsByIdLocation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/location-sharing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Is my location shared for this booking? */
+        get: operations["getBookingsByIdLocationSharing"];
+        put?: never;
+        /** Turn location sharing with my trusted contacts on or off (booking window only) */
+        post: operations["postBookingsByIdLocationSharing"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/bookings/{id}/pay": {
         parameters: {
             query?: never;
@@ -933,6 +1172,40 @@ export interface paths {
         put?: never;
         /** Report an issue or a no-show: the companion earnings are held for review */
         post: operations["postBookingsByIdReportIssue"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/safety-ping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answer a safety ping: OK, or not OK (raises an SOS) */
+        post: operations["postBookingsByIdSafetyPing"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/sos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** SOS for this booking (the app always shows Call 112 first) */
+        post: operations["postBookingsByIdSos"];
         delete?: never;
         options?: never;
         head?: never;
@@ -984,6 +1257,23 @@ export interface paths {
         get: operations["getBookingsSlots"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/calls/mock/simulate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** TEST ONLY: simulate a finished masked call on my booking (mock provider) */
+        post: operations["postCallsMockSimulate"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1503,6 +1793,110 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My booking conversations */
+        get: operations["getConversations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversations/{id}/block": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Block the other person everywhere (as in discovery) and close this chat */
+        post: operations["postConversationsByIdBlock"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversations/{id}/images/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload a photo for the chat (held until a moderator approves it) */
+        post: operations["postConversationsByIdImagesUploadUrl"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversations/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Messages in a conversation (newest page first; pass before= for older) */
+        get: operations["getConversationsByIdMessages"];
+        put?: never;
+        /** Send a message (Idempotency-Key = the client message id). Contact details are masked; solicitation is held */
+        post: operations["postConversationsByIdMessages"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/conversations/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark the conversation read */
+        post: operations["postConversationsByIdRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/devices/push-token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Register this device for push notifications (Expo token) */
+        post: operations["postDevicesPushToken"];
+        /** Stop push notifications to this device (logout) */
+        delete: operations["deleteDevicesPushToken"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/discovery/companions": {
         parameters: {
             query?: never;
@@ -1640,6 +2034,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/messages/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Report a message to Trust & Safety */
+        post: operations["postMessagesByIdReport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/onboarding/complete": {
         parameters: {
             query?: never;
@@ -1742,6 +2153,160 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/safety/invites/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A safety-contact invitation (public) */
+        get: operations["getSafetyInvitesByToken"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/safety/invites/{token}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accept to be a safety contact (public) */
+        post: operations["postSafetyInvitesByTokenAccept"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/safety/share/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A trusted contact's view of a shared meeting (public, approximate location only) */
+        get: operations["getSafetyShareByToken"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/safety/sos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** SOS from anywhere in the app (linked to a booking around now, if any) */
+        post: operations["postSafetySos"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/safety/sos/{id}/safe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** I'm safe (the desk still checks in) */
+        post: operations["postSafetySosByIdSafe"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/safety/sos/current": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My open SOS, if any */
+        get: operations["getSafetySosCurrent"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/safety/trusted-contacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My safety contacts (masked numbers) */
+        get: operations["getSafetyTrustedContacts"];
+        put?: never;
+        /** Add a safety contact (they accept by SMS before receiving anything) */
+        post: operations["postSafetyTrustedContacts"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/safety/trusted-contacts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a safety contact */
+        delete: operations["deleteSafetyTrustedContactsById"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/safety/trusted-contacts/{id}/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send the consent SMS again */
+        post: operations["postSafetyTrustedContactsByIdResend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/storage/local/upload/{token}": {
         parameters: {
             query?: never;
@@ -1804,6 +2369,23 @@ export interface paths {
         put?: never;
         /** Propose a public venue for staff approval */
         post: operations["postVenuesProposals"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/webhooks/calls/{provider}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Call-masking provider webhook (HMAC; metadata only; idempotent per event id) */
+        post: operations["postWebhooksCallsByProvider"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1881,11 +2463,11 @@ export interface components {
         /** @enum {string} */
         ApprovalStatus: "PENDING" | "APPROVED" | "REJECTED" | "EXPIRED" | "EXECUTED";
         /** @enum {string} */
-        RoleCode: "CUSTOMER" | "COMPANION" | "SUPER_ADMIN" | "OPS_MANAGER" | "SENIOR_OPS" | "VERIFICATION_EXECUTIVE" | "FINANCE_EXECUTIVE" | "TS_AGENT" | "TS_MANAGER" | "SUPPORT_EXECUTIVE";
+        RoleCode: "CUSTOMER" | "COMPANION" | "SUPER_ADMIN" | "OPS_MANAGER" | "SENIOR_OPS" | "VERIFICATION_EXECUTIVE" | "FINANCE_EXECUTIVE" | "TS_AGENT" | "TS_MANAGER" | "SUPPORT_EXECUTIVE" | "SAFETY_DESK";
         /** @enum {string} */
         UserStatus: "PENDING" | "ACTIVE" | "SUSPENDED" | "BANNED" | "DEACTIVATED";
         /** @enum {string} */
-        ErrorCode: "VALIDATION_FAILED" | "BAD_JSON" | "INVALID_INPUT" | "INVALID_REFERENCE" | "CONFLICT" | "NOT_FOUND" | "INTERNAL_ERROR" | "RATE_LIMITED" | "INVALID_STATUS_TRANSITION" | "CONTRACT_MISMATCH" | "AUTH_REQUIRED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "SESSION_ENDED" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ACCOUNT_SUSPENDED" | "ACCOUNT_EXISTS" | "ACCOUNT_NOT_FOUND" | "PHONE_NOT_VERIFIED" | "EMAIL_NOT_VERIFIED" | "INELIGIBLE_AGE" | "LINK_INVALID" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_USED" | "OTP_LOCKED" | "OTP_COOLDOWN" | "OTP_NOT_FOUND" | "OTP_RESEND_LIMIT" | "OTP_RESEND_TOO_SOON" | "OTP_SEND_LIMIT" | "OTP_SEND_FAILED" | "STAFF_ONLY" | "IP_NOT_ALLOWED" | "PERMISSION_DENIED" | "ROLE_REQUIRED" | "MFA_ENROLLMENT_REQUIRED" | "MFA_REQUIRED" | "MFA_STEP_UP_REQUIRED" | "MFA_CODE_INVALID" | "MFA_TOKEN_INVALID" | "MFA_ALREADY_ENABLED" | "MFA_NOT_STARTED" | "SECOND_APPROVER_REQUIRED" | "COMPANION_NOT_FOUND" | "PROFILE_UNAVAILABLE" | "APPLICATION_LOCKED" | "APPLICATION_INCOMPLETE" | "PROFILE_LOCKED" | "REAPPLY_BLOCKED" | "REAPPLY_COOLDOWN" | "CONTENT_NOT_ALLOWED" | "BELOW_CATEGORY_MIN_AGE" | "ACTIVITY_CATEGORY_MISMATCH" | "PHOTO_LIMIT" | "PHOTO_MINIMUM" | "PHOTO_NOT_FOUND" | "UPLOAD_NOT_FOUND" | "UPLOAD_ALREADY_RECEIVED" | "UPLOAD_MISMATCH" | "UPLOAD_NOT_PENDING" | "UPLOAD_MISSING" | "UPLOAD_CORRUPTED" | "UPLOAD_URL_EXPIRED" | "UPLOAD_TYPE_MISMATCH" | "UPLOAD_TOO_LARGE" | "UPLOAD_EMPTY" | "FILE_TOO_LARGE" | "IMAGE_UNREADABLE" | "UNSUPPORTED_IMAGE_TYPE" | "IMAGE_TOO_SMALL" | "VIEW_URL_EXPIRED" | "DOCUMENT_TYPE_REQUIRED" | "DOCUMENT_TYPE_UNAVAILABLE" | "AADHAAR_IMAGE_NOT_ALLOWED" | "VERIFICATION_NOT_OPEN" | "AUTO_CHECK_COOLDOWN" | "MANUAL_REVIEW_REQUIRED" | "LIVENESS_BY_UPLOAD" | "LIVENESS_SESSION_MISMATCH" | "DIGILOCKER_UNAVAILABLE" | "DIGILOCKER_NOT_STARTED" | "DIGILOCKER_FAILED" | "KYC_PROVIDER_NOT_CONFIGURED" | "INVALID_SIGNATURE" | "VERIFICATION_NOT_FOUND" | "NOT_IN_REVIEW" | "CLAIMED_BY_OTHER" | "CLAIM_REQUIRED" | "NOT_CLAIMED_BY_YOU" | "BLOCKED_BY_FLAG" | "FACE_MATCH_REQUIRED" | "APPROVAL_ALREADY_PENDING" | "APPROVAL_NOT_FOUND" | "APPROVAL_NOT_PENDING" | "APPROVAL_EXPIRED" | "NOT_AUTO_REJECTED" | "NEWER_ATTEMPT_EXISTS" | "DOCUMENT_NOT_FOUND" | "DOCUMENT_UNAVAILABLE" | "FLAG_NOT_FOUND" | "FLAG_NOT_OPEN" | "NOT_SUSPENDED" | "NOT_PENDING" | "CATEGORY_NOT_FOUND" | "NOT_APPROVED" | "NOT_READY" | "SETUP_INCOMPLETE" | "REVERIFICATION_DUE" | "NOT_LIVE" | "NOT_PAUSED" | "RATE_OUT_OF_BAND" | "AVAILABILITY_OVERLAP" | "EXCEPTION_NOT_FOUND" | "ONBOARDING_REQUIRED" | "VENUE_NOT_FOUND" | "REPORT_NOT_FOUND" | "REPORT_CLOSED" | "BOOKING_NOT_FOUND" | "OFFERING_UNAVAILABLE" | "PLUS_ONE_NOT_OPEN" | "VENUE_NOT_ALLOWED" | "VENUE_UNAVAILABLE" | "INSTANT_NOT_AVAILABLE" | "DURATION_OUT_OF_RANGE" | "TOO_SOON" | "TOO_FAR_AHEAD" | "DATE_BLOCKED" | "OUTSIDE_AVAILABILITY" | "DAILY_LIMIT_REACHED" | "SLOT_UNAVAILABLE" | "CUSTOMER_TIME_CONFLICT" | "QUOTE_NOT_FOUND" | "QUOTE_EXPIRED" | "QUOTE_ALREADY_USED" | "IDEMPOTENCY_KEY_REQUIRED" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_MISMATCH" | "ACCOUNT_RESTRICTED" | "CUSTOMER_ONLY" | "COMPANION_ONLY" | "COMPANION_NOT_LIVE" | "REQUEST_EXPIRED" | "REQUEST_WITHDRAWN" | "NOT_PAYABLE" | "PAYMENT_WINDOW_CLOSED" | "PAYMENT_IN_PROGRESS" | "PAYMENT_ALREADY_ATTEMPTED" | "PAYMENT_NOT_FOUND" | "PAYMENT_PROVIDER_NOT_CONFIGURED" | "NOT_CANCELLABLE" | "USE_REJECT" | "MEETING_STARTED" | "NOTHING_TO_REFUND" | "REFUND_TOO_LARGE" | "REFUND_NOT_PENDING" | "CHECK_IN_NOT_AVAILABLE" | "CHECK_IN_NOT_OPEN" | "CHECK_IN_CLOSED" | "CHECK_OUT_NOT_AVAILABLE" | "ISSUE_WINDOW_CLOSED" | "NOT_DISPUTED" | "DISPUTE_ALREADY_RESOLVED" | "WEBHOOK_SIGNATURE_INVALID" | "WEBHOOK_INVALID" | "WEBHOOK_PROCESSING_FAILED";
+        ErrorCode: "VALIDATION_FAILED" | "BAD_JSON" | "INVALID_INPUT" | "INVALID_REFERENCE" | "CONFLICT" | "NOT_FOUND" | "INTERNAL_ERROR" | "RATE_LIMITED" | "INVALID_STATUS_TRANSITION" | "CONTRACT_MISMATCH" | "AUTH_REQUIRED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "SESSION_ENDED" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ACCOUNT_SUSPENDED" | "ACCOUNT_EXISTS" | "ACCOUNT_NOT_FOUND" | "PHONE_NOT_VERIFIED" | "EMAIL_NOT_VERIFIED" | "INELIGIBLE_AGE" | "LINK_INVALID" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_USED" | "OTP_LOCKED" | "OTP_COOLDOWN" | "OTP_NOT_FOUND" | "OTP_RESEND_LIMIT" | "OTP_RESEND_TOO_SOON" | "OTP_SEND_LIMIT" | "OTP_SEND_FAILED" | "STAFF_ONLY" | "IP_NOT_ALLOWED" | "PERMISSION_DENIED" | "ROLE_REQUIRED" | "MFA_ENROLLMENT_REQUIRED" | "MFA_REQUIRED" | "MFA_STEP_UP_REQUIRED" | "MFA_CODE_INVALID" | "MFA_TOKEN_INVALID" | "MFA_ALREADY_ENABLED" | "MFA_NOT_STARTED" | "SECOND_APPROVER_REQUIRED" | "COMPANION_NOT_FOUND" | "PROFILE_UNAVAILABLE" | "APPLICATION_LOCKED" | "APPLICATION_INCOMPLETE" | "PROFILE_LOCKED" | "REAPPLY_BLOCKED" | "REAPPLY_COOLDOWN" | "CONTENT_NOT_ALLOWED" | "BELOW_CATEGORY_MIN_AGE" | "ACTIVITY_CATEGORY_MISMATCH" | "PHOTO_LIMIT" | "PHOTO_MINIMUM" | "PHOTO_NOT_FOUND" | "UPLOAD_NOT_FOUND" | "UPLOAD_ALREADY_RECEIVED" | "UPLOAD_MISMATCH" | "UPLOAD_NOT_PENDING" | "UPLOAD_MISSING" | "UPLOAD_CORRUPTED" | "UPLOAD_URL_EXPIRED" | "UPLOAD_TYPE_MISMATCH" | "UPLOAD_TOO_LARGE" | "UPLOAD_EMPTY" | "FILE_TOO_LARGE" | "IMAGE_UNREADABLE" | "UNSUPPORTED_IMAGE_TYPE" | "IMAGE_TOO_SMALL" | "VIEW_URL_EXPIRED" | "DOCUMENT_TYPE_REQUIRED" | "DOCUMENT_TYPE_UNAVAILABLE" | "AADHAAR_IMAGE_NOT_ALLOWED" | "VERIFICATION_NOT_OPEN" | "AUTO_CHECK_COOLDOWN" | "MANUAL_REVIEW_REQUIRED" | "LIVENESS_BY_UPLOAD" | "LIVENESS_SESSION_MISMATCH" | "DIGILOCKER_UNAVAILABLE" | "DIGILOCKER_NOT_STARTED" | "DIGILOCKER_FAILED" | "KYC_PROVIDER_NOT_CONFIGURED" | "INVALID_SIGNATURE" | "VERIFICATION_NOT_FOUND" | "NOT_IN_REVIEW" | "CLAIMED_BY_OTHER" | "CLAIM_REQUIRED" | "NOT_CLAIMED_BY_YOU" | "BLOCKED_BY_FLAG" | "FACE_MATCH_REQUIRED" | "APPROVAL_ALREADY_PENDING" | "APPROVAL_NOT_FOUND" | "APPROVAL_NOT_PENDING" | "APPROVAL_EXPIRED" | "NOT_AUTO_REJECTED" | "NEWER_ATTEMPT_EXISTS" | "DOCUMENT_NOT_FOUND" | "DOCUMENT_UNAVAILABLE" | "FLAG_NOT_FOUND" | "FLAG_NOT_OPEN" | "NOT_SUSPENDED" | "NOT_PENDING" | "CATEGORY_NOT_FOUND" | "NOT_APPROVED" | "NOT_READY" | "SETUP_INCOMPLETE" | "REVERIFICATION_DUE" | "NOT_LIVE" | "NOT_PAUSED" | "RATE_OUT_OF_BAND" | "AVAILABILITY_OVERLAP" | "EXCEPTION_NOT_FOUND" | "ONBOARDING_REQUIRED" | "VENUE_NOT_FOUND" | "REPORT_NOT_FOUND" | "REPORT_CLOSED" | "BOOKING_NOT_FOUND" | "OFFERING_UNAVAILABLE" | "PLUS_ONE_NOT_OPEN" | "VENUE_NOT_ALLOWED" | "VENUE_UNAVAILABLE" | "INSTANT_NOT_AVAILABLE" | "DURATION_OUT_OF_RANGE" | "TOO_SOON" | "TOO_FAR_AHEAD" | "DATE_BLOCKED" | "OUTSIDE_AVAILABILITY" | "DAILY_LIMIT_REACHED" | "SLOT_UNAVAILABLE" | "CUSTOMER_TIME_CONFLICT" | "QUOTE_NOT_FOUND" | "QUOTE_EXPIRED" | "QUOTE_ALREADY_USED" | "IDEMPOTENCY_KEY_REQUIRED" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_MISMATCH" | "ACCOUNT_RESTRICTED" | "CUSTOMER_ONLY" | "COMPANION_ONLY" | "COMPANION_NOT_LIVE" | "REQUEST_EXPIRED" | "REQUEST_WITHDRAWN" | "NOT_PAYABLE" | "PAYMENT_WINDOW_CLOSED" | "PAYMENT_IN_PROGRESS" | "PAYMENT_ALREADY_ATTEMPTED" | "PAYMENT_NOT_FOUND" | "PAYMENT_PROVIDER_NOT_CONFIGURED" | "NOT_CANCELLABLE" | "USE_REJECT" | "MEETING_STARTED" | "NOTHING_TO_REFUND" | "REFUND_TOO_LARGE" | "REFUND_NOT_PENDING" | "CHECK_IN_NOT_AVAILABLE" | "CHECK_IN_NOT_OPEN" | "CHECK_IN_CLOSED" | "CHECK_OUT_NOT_AVAILABLE" | "ISSUE_WINDOW_CLOSED" | "NOT_DISPUTED" | "DISPUTE_ALREADY_RESOLVED" | "WEBHOOK_SIGNATURE_INVALID" | "WEBHOOK_INVALID" | "WEBHOOK_PROCESSING_FAILED" | "CONVERSATION_NOT_FOUND" | "CONVERSATION_BLOCKED" | "CHAT_CLOSED" | "MESSAGE_RATE_LIMITED" | "MESSAGE_NOT_FOUND" | "CANNOT_REPORT_OWN" | "MESSAGE_NOT_HELD" | "DEVICE_ID_REQUIRED" | "CALL_NOT_AVAILABLE" | "CALL_WINDOW_CLOSED" | "CALL_BLOCKED" | "CALL_LIMIT_REACHED" | "CALL_PROVIDER_NOT_CONFIGURED" | "CALL_SESSION_NOT_FOUND" | "DESK_PHONE_NOT_SET" | "NO_PHONE" | "TRUSTED_CONTACT_LIMIT" | "TRUSTED_CONTACT_EXISTS" | "TRUSTED_CONTACT_NOT_FOUND" | "INVITE_NOT_FOUND" | "LOCATION_WINDOW_CLOSED" | "LOCATION_SHARING_OFF" | "LOCATION_TOO_FREQUENT" | "SHARE_NOT_FOUND" | "SHARE_ENDED" | "INCIDENT_NOT_FOUND" | "INCIDENT_ALREADY_ACKNOWLEDGED" | "INCIDENT_NOT_ACKNOWLEDGED" | "INCIDENT_CLOSED" | "NO_OTHER_PARTY" | "ALREADY_FROZEN" | "USER_NOT_FOUND";
         ErrorResponse: {
             error: {
                 /** @description Stable machine code; see ErrorCode and contracts/errors.json */
@@ -3552,6 +4134,355 @@ export interface components {
             /** Format: uuid */
             approval_request_id: string;
         };
+        /** @enum {string} */
+        MessageModeration: "DELIVERED" | "MASKED" | "HELD" | "REJECTED";
+        /** @enum {string} */
+        ChatClosedReason: "BLOCKED" | "CLOSED" | "NOT_OPEN";
+        /** @enum {string} */
+        IncidentStatus: "OPEN" | "ACKNOWLEDGED" | "ESCALATED" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
+        /** @enum {string} */
+        IncidentOutcome: "SAFE_NO_ACTION" | "RESOLVED_BY_DESK" | "EMERGENCY_SERVICES" | "FALSE_ALARM" | "OTHER";
+        MessageView: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            conversation_id: string;
+            client_message_id: string | null;
+            /** @enum {string} */
+            from: "ME" | "OTHER" | "SYSTEM";
+            /** @enum {string} */
+            type: "TEXT" | "IMAGE" | "SYSTEM";
+            body: string | null;
+            image_url: string | null;
+            moderation: components["schemas"]["MessageModeration"];
+            /** @description ISO 8601 date-time (UTC) */
+            created_at: string;
+        };
+        ConversationsResponse: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                booking: {
+                    /** Format: uuid */
+                    id: string;
+                    ref: string;
+                    status: components["schemas"]["BookingStatus"];
+                    /** @description ISO 8601 date-time (UTC) */
+                    start_at: string;
+                };
+                other_party: string;
+                last_message: {
+                    /** @enum {string} */
+                    from: "ME" | "OTHER";
+                    /** @enum {string} */
+                    type: "TEXT" | "IMAGE" | "SYSTEM";
+                    preview: string | null;
+                    /** @description ISO 8601 date-time (UTC) */
+                    at: string;
+                } | null;
+                unread: number;
+                window_closes_at: string | null;
+                can_send: boolean;
+                closed_reason: components["schemas"]["ChatClosedReason"] | null;
+            }[];
+        };
+        MessagesResponse: {
+            conversation: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                booking_id: string;
+                window_closes_at: string | null;
+                can_send: boolean;
+                closed_reason: components["schemas"]["ChatClosedReason"] | null;
+                other_read_at: string | null;
+            };
+            items: components["schemas"]["MessageView"][];
+            next_before: string | null;
+        };
+        MessageSentResponse: {
+            message: components["schemas"]["MessageView"];
+            duplicate: boolean;
+        };
+        ReadMarkedResponse: {
+            /** @description ISO 8601 date-time (UTC) */
+            read_at: string;
+        };
+        BlockedResponse: {
+            /** @constant */
+            blocked: true;
+        };
+        PushTokenResponse: {
+            registered: boolean;
+        };
+        CallNumberResponse: {
+            virtual_number: string;
+            /** @description ISO 8601 date-time (UTC) */
+            expires_at: string;
+            call_window?: {
+                /** @description ISO 8601 date-time (UTC) */
+                opens_at: string;
+                /** @description ISO 8601 date-time (UTC) */
+                closes_at: string;
+            };
+        };
+        CallSimulatedResponse: {
+            call_id: string;
+            delivered: number[];
+        };
+        LocationSharingResponse: {
+            sharing: boolean;
+            expires_at?: string | null;
+            contacts_notified?: number;
+            stopped?: boolean;
+            already?: boolean;
+            dev_link?: string;
+        };
+        LocationStoredResponse: {
+            /** @constant */
+            stored: true;
+        };
+        SosResponse: {
+            incident: {
+                /** Format: uuid */
+                id: string;
+                ref: string;
+                status: components["schemas"]["IncidentStatus"];
+                acknowledged: boolean;
+                marked_safe: boolean;
+                location_shared: boolean;
+                /** @description ISO 8601 date-time (UTC) */
+                triggered_at: string;
+                help_message: string;
+            };
+            duplicate: boolean;
+        };
+        SosCurrentResponse: {
+            incident: {
+                /** Format: uuid */
+                id: string;
+                ref: string;
+                status: components["schemas"]["IncidentStatus"];
+                acknowledged: boolean;
+                marked_safe: boolean;
+                location_shared: boolean;
+                /** @description ISO 8601 date-time (UTC) */
+                triggered_at: string;
+                help_message: string;
+            } | null;
+        };
+        PingAnsweredResponse: {
+            responded: boolean;
+            sos?: components["schemas"]["SosResponse"];
+        };
+        TrustedContactsResponse: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                relationship: string | null;
+                phone_masked: string;
+                /** @enum {string} */
+                status: "PENDING" | "ACCEPTED";
+                invited_at: string | null;
+                accepted_at: string | null;
+            }[];
+            max: number;
+        };
+        TrustedContactAddedResponse: {
+            contact: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                relationship: string | null;
+                phone_masked: string;
+                /** @enum {string} */
+                status: "PENDING" | "ACCEPTED";
+                invited_at: string | null;
+                accepted_at: string | null;
+            };
+            dev_link?: string;
+        };
+        RemovedResponse: {
+            /** @constant */
+            removed: true;
+        };
+        InviteInfoResponse: {
+            inviter_first_name: string;
+            /** @enum {string} */
+            status: "PENDING" | "ACCEPTED";
+        };
+        InviteAcceptedResponse: {
+            /** @constant */
+            accepted: true;
+            already: boolean;
+        };
+        SharePageResponse: {
+            sharer_first_name: string;
+            venue: string | null;
+            area: string | null;
+            /** @description ISO 8601 date-time (UTC) */
+            starts_at: string;
+            /** @description ISO 8601 date-time (UTC) */
+            ends_at: string;
+            /** @enum {string} */
+            booking_status: "CONFIRMED" | "IN_PROGRESS" | "COMPLETED";
+            checked_in: boolean;
+            checked_out: boolean;
+            last_location: {
+                latitude: number;
+                longitude: number;
+                accuracy_meters: number;
+                /** @description ISO 8601 date-time (UTC) */
+                at: string;
+            } | null;
+            /** @description ISO 8601 date-time (UTC) */
+            sharing_until: string;
+        };
+        IncidentsResponse: {
+            /** @description ISO 8601 date-time (UTC) */
+            server_time: string;
+            items: {
+                /** Format: uuid */
+                id: string;
+                ref: string;
+                source: string;
+                /** @enum {string} */
+                severity: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
+                status: components["schemas"]["IncidentStatus"];
+                /** @description ISO 8601 date-time (UTC) */
+                triggered_at: string;
+                ack_due_at: string | null;
+                acknowledged_at: string | null;
+                pages: number;
+                marked_safe: boolean;
+                reporter: string | null;
+                booking_ref: string | null;
+            }[];
+        };
+        IncidentResponse: {
+            /** Format: uuid */
+            id: string;
+            ref: string;
+            source: string;
+            /** @enum {string} */
+            severity: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
+            status: components["schemas"]["IncidentStatus"];
+            /** @description ISO 8601 date-time (UTC) */
+            triggered_at: string;
+            ack_due_at: string | null;
+            acknowledged_at: string | null;
+            pages: number;
+            marked_safe_at: string | null;
+            marked_safe_by: string | null;
+            other_party_frozen_at: string | null;
+            legal_hold: boolean;
+            outcome: string | null;
+            resolution: string | null;
+            follow_up_due_at: string | null;
+            description: string | null;
+            reporter: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                role: components["schemas"]["BookingParty"] | null;
+                account_status: string;
+                has_verified_phone: boolean;
+            } | null;
+            other_party: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                role: components["schemas"]["BookingParty"] | null;
+                account_status: string;
+                has_verified_phone: boolean;
+            } | null;
+            booking: {
+                /** Format: uuid */
+                id: string;
+                ref: string;
+                status: components["schemas"]["BookingStatus"];
+                /** @description ISO 8601 date-time (UTC) */
+                start_at: string;
+                /** @description ISO 8601 date-time (UTC) */
+                end_at: string;
+                venue: string | null;
+                venue_address: string | null;
+                zone: string | null;
+            } | null;
+            location: {
+                latitude: number;
+                longitude: number;
+                accuracy_meters?: number | null;
+                /** @description ISO 8601 date-time (UTC) */
+                at?: string;
+                source?: string;
+            } | null;
+            trusted_contacts: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                phone_masked: string;
+            }[];
+            timeline: {
+                type: string;
+                actor_user_id: string | null;
+                notes: string | null;
+                metadata: {
+                    [key: string]: unknown;
+                };
+                /** @description ISO 8601 date-time (UTC) */
+                at: string;
+            }[];
+            transcript: {
+                /** Format: uuid */
+                id: string;
+                /** @enum {string} */
+                from: "CUSTOMER" | "COMPANION" | "SYSTEM";
+                type: string;
+                body: string | null;
+                moderation: string;
+                /** @description ISO 8601 date-time (UTC) */
+                at: string;
+            }[];
+            calls: {
+                status: string;
+                started_at: string | null;
+                ended_at: string | null;
+                duration_seconds: number | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                purpose: string;
+                /** @enum {string} */
+                caller: "CUSTOMER" | "COMPANION" | "DESK";
+            }[];
+        };
+        FrozenResponse: {
+            cancelled: number;
+            incident: components["schemas"]["IncidentResponse"];
+        };
+        HeldMessagesResponse: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                conversation_id: string;
+                type: string;
+                reason: string | null;
+                flags: string[];
+                body: string | null;
+                original: string | null;
+                image_url: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+        };
+        HeldDecisionResponse: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            moderation: "APPROVED" | "REJECTED";
+        };
         WebhookAck: {
             /** @constant */
             received: true;
@@ -3887,6 +4818,25 @@ export interface components {
             categories: ("FRIEND" | "PLUS_ONE" | "CREW_CARE" | "CREW_EVENTS")[];
             note?: string;
         };
+        postBookingsByIdLocationSharingBody: {
+            enabled: boolean;
+        };
+        postBookingsByIdLocationBody: {
+            latitude: number;
+            longitude: number;
+            accuracy_meters?: number;
+        };
+        postBookingsByIdSosBody: {
+            /** @default true */
+            share_location: boolean;
+            latitude?: number;
+            longitude?: number;
+            accuracy_meters?: number;
+            note?: string;
+        };
+        postBookingsByIdSafetyPingBody: {
+            ok: boolean;
+        };
         postBookingsQuoteBody: {
             /** Format: uuid */
             companion_id: string;
@@ -3914,6 +4864,70 @@ export interface components {
             issue_code: "NO_SHOW" | "LATE_ARRIVAL" | "ENDED_EARLY" | "BOUNDARY_CROSSED" | "SAFETY_CONCERN" | "OTHER";
             note?: string;
         };
+        postConversationsByIdMessagesBody: {
+            body?: string;
+            /** Format: uuid */
+            asset_id?: string;
+        };
+        postConversationsByIdImagesUploadUrlBody: {
+            /** @enum {string} */
+            mime: "image/jpeg" | "image/png" | "image/webp";
+            bytes: number;
+            sha256: string;
+        };
+        postMessagesByIdReportBody: {
+            /** @enum {string} */
+            reason_code: "FAKE_PROFILE" | "INAPPROPRIATE_CONTENT" | "OFF_PLATFORM_CONTACT" | "NOT_PLATONIC" | "SAFETY_CONCERN" | "OTHER";
+            note?: string;
+        };
+        postDevicesPushTokenBody: {
+            token: string;
+            /** @enum {string} */
+            platform: "ANDROID" | "IOS";
+        };
+        postSafetyTrustedContactsBody: {
+            name: string;
+            phone: string;
+            relationship?: string;
+        };
+        postSafetySosBody: {
+            /** @default true */
+            share_location: boolean;
+            latitude?: number;
+            longitude?: number;
+            accuracy_meters?: number;
+            note?: string;
+        };
+        postAdminIncidentsByIdCallUserBody: {
+            /**
+             * @default REPORTER
+             * @enum {string}
+             */
+            party: "REPORTER" | "OTHER";
+        };
+        postAdminIncidentsByIdCallContactBody: {
+            /** Format: uuid */
+            trusted_contact_id: string;
+        };
+        postAdminIncidentsByIdFreezeBody: {
+            note: string;
+        };
+        postAdminIncidentsByIdMarkSafeBody: {
+            note?: string;
+        };
+        postAdminIncidentsByIdCloseBody: {
+            /** @enum {string} */
+            outcome: "SAFE_NO_ACTION" | "RESOLVED_BY_DESK" | "EMERGENCY_SERVICES" | "FALSE_ALARM" | "OTHER";
+            notes: string;
+        };
+        postAdminIncidentsByIdFollowUpBody: {
+            note?: string;
+        };
+        postAdminMessagesByIdDecisionBody: {
+            /** @enum {string} */
+            decision: "APPROVE" | "REJECT";
+            note?: string;
+        };
         postAdminBookingsByIdCancelBody: {
             /** @enum {string} */
             reason_code: "SAFETY" | "VENUE_UNAVAILABLE" | "COMPANION_UNAVAILABLE" | "POLICY_VIOLATION" | "OTHER";
@@ -3933,6 +4947,19 @@ export interface components {
         postPaymentsMockOrdersByOrderIdCompleteBody: {
             /** @enum {string} */
             scenario: "SUCCESS" | "FAILED" | "PENDING_THEN_SUCCESS" | "DUPLICATE_WEBHOOK" | "LATE_SUCCESS" | "REFUND_FAIL_ONCE";
+        };
+        postCallsMockSimulateBody: {
+            /** Format: uuid */
+            booking_id: string;
+            /**
+             * @default ANSWERED
+             * @enum {string}
+             */
+            status: "ANSWERED" | "MISSED" | "BUSY" | "FAILED";
+            /** @default 120 */
+            duration_seconds: number;
+            /** @default false */
+            duplicate: boolean;
         };
     };
     responses: never;
@@ -4270,6 +5297,373 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ActionResult"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminIncidents: {
+        parameters: {
+            query?: {
+                status?: "open" | "all";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminIncidentsById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminIncidentsByIdAck: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminIncidentsByIdCallContact: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminIncidentsByIdCallContactBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallNumberResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminIncidentsByIdCallUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminIncidentsByIdCallUserBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallNumberResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminIncidentsByIdClose: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminIncidentsByIdCloseBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminIncidentsByIdFollowUp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminIncidentsByIdFollowUpBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminIncidentsByIdFreeze: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminIncidentsByIdFreezeBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FrozenResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminIncidentsByIdMarkSafe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminIncidentsByIdMarkSafeBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminMessagesByIdDecision: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminMessagesByIdDecisionBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HeldDecisionResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminMessagesHeld: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HeldMessagesResponse"];
                 };
             };
             /** @description Error */
@@ -5704,6 +7098,37 @@ export interface operations {
             };
         };
     };
+    postBookingsByIdCall: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallNumberResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     postBookingsByIdCancel: {
         parameters: {
             query?: never;
@@ -5832,6 +7257,107 @@ export interface operations {
             };
         };
     };
+    postBookingsByIdLocation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postBookingsByIdLocationBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocationStoredResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getBookingsByIdLocationSharing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocationSharingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postBookingsByIdLocationSharing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postBookingsByIdLocationSharingBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocationSharingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     postBookingsByIdPay: {
         parameters: {
             query?: never;
@@ -5885,6 +7411,85 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postBookingsByIdSafetyPing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postBookingsByIdSafetyPingBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PingAnsweredResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postBookingsByIdSos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postBookingsByIdSosBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SosResponse"];
+                };
+            };
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SosResponse"];
                 };
             };
             /** @description Error */
@@ -5983,6 +7588,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BookingSlotsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postCallsMockSimulate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postCallsMockSimulateBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallSimulatedResponse"];
                 };
             };
             /** @description Error */
@@ -7031,6 +8669,275 @@ export interface operations {
             };
         };
     };
+    getConversations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postConversationsByIdBlock: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BlockedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postConversationsByIdImagesUploadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postConversationsByIdImagesUploadUrlBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadUrlResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getConversationsByIdMessages: {
+        parameters: {
+            query?: {
+                before?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessagesResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postConversationsByIdMessages: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The client message id (8-64 characters) */
+                "Idempotency-Key": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postConversationsByIdMessagesBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageSentResponse"];
+                };
+            };
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageSentResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postConversationsByIdRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadMarkedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postDevicesPushToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postDevicesPushTokenBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PushTokenResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteDevicesPushToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PushTokenResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getDiscoveryCompanions: {
         parameters: {
             query?: {
@@ -7324,6 +9231,41 @@ export interface operations {
             };
         };
     };
+    postMessagesByIdReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postMessagesByIdReportBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     postOnboardingComplete: {
         parameters: {
             query?: never;
@@ -7510,6 +9452,325 @@ export interface operations {
             };
         };
     };
+    getSafetyInvitesByToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InviteInfoResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postSafetyInvitesByTokenAccept: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InviteAcceptedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getSafetyShareByToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SharePageResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postSafetySos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postSafetySosBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SosResponse"];
+                };
+            };
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SosResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postSafetySosByIdSafe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SosCurrentResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getSafetySosCurrent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SosCurrentResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getSafetyTrustedContacts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrustedContactsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postSafetyTrustedContacts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postSafetyTrustedContactsBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrustedContactAddedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteSafetyTrustedContactsById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RemovedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postSafetyTrustedContactsByIdResend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrustedContactAddedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     putStorageLocalUploadByToken: {
         parameters: {
             query?: never;
@@ -7628,6 +9889,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VenueStatusResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postWebhooksCallsByProvider: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                provider: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookAck"];
                 };
             };
             /** @description Error */

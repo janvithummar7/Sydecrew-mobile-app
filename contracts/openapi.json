@@ -213,7 +213,8 @@
           "FINANCE_EXECUTIVE",
           "TS_AGENT",
           "TS_MANAGER",
-          "SUPPORT_EXECUTIVE"
+          "SUPPORT_EXECUTIVE",
+          "SAFETY_DESK"
         ]
       },
       "UserStatus": {
@@ -396,7 +397,39 @@
           "DISPUTE_ALREADY_RESOLVED",
           "WEBHOOK_SIGNATURE_INVALID",
           "WEBHOOK_INVALID",
-          "WEBHOOK_PROCESSING_FAILED"
+          "WEBHOOK_PROCESSING_FAILED",
+          "CONVERSATION_NOT_FOUND",
+          "CONVERSATION_BLOCKED",
+          "CHAT_CLOSED",
+          "MESSAGE_RATE_LIMITED",
+          "MESSAGE_NOT_FOUND",
+          "CANNOT_REPORT_OWN",
+          "MESSAGE_NOT_HELD",
+          "DEVICE_ID_REQUIRED",
+          "CALL_NOT_AVAILABLE",
+          "CALL_WINDOW_CLOSED",
+          "CALL_BLOCKED",
+          "CALL_LIMIT_REACHED",
+          "CALL_PROVIDER_NOT_CONFIGURED",
+          "CALL_SESSION_NOT_FOUND",
+          "DESK_PHONE_NOT_SET",
+          "NO_PHONE",
+          "TRUSTED_CONTACT_LIMIT",
+          "TRUSTED_CONTACT_EXISTS",
+          "TRUSTED_CONTACT_NOT_FOUND",
+          "INVITE_NOT_FOUND",
+          "LOCATION_WINDOW_CLOSED",
+          "LOCATION_SHARING_OFF",
+          "LOCATION_TOO_FREQUENT",
+          "SHARE_NOT_FOUND",
+          "SHARE_ENDED",
+          "INCIDENT_NOT_FOUND",
+          "INCIDENT_ALREADY_ACKNOWLEDGED",
+          "INCIDENT_NOT_ACKNOWLEDGED",
+          "INCIDENT_CLOSED",
+          "NO_OTHER_PARTY",
+          "ALREADY_FROZEN",
+          "USER_NOT_FOUND"
         ]
       },
       "ErrorResponse": {
@@ -8305,6 +8338,1660 @@
         ],
         "additionalProperties": false
       },
+      "MessageModeration": {
+        "type": "string",
+        "enum": [
+          "DELIVERED",
+          "MASKED",
+          "HELD",
+          "REJECTED"
+        ]
+      },
+      "ChatClosedReason": {
+        "type": "string",
+        "enum": [
+          "BLOCKED",
+          "CLOSED",
+          "NOT_OPEN"
+        ]
+      },
+      "IncidentStatus": {
+        "type": "string",
+        "enum": [
+          "OPEN",
+          "ACKNOWLEDGED",
+          "ESCALATED",
+          "IN_PROGRESS",
+          "RESOLVED",
+          "CLOSED"
+        ]
+      },
+      "IncidentOutcome": {
+        "type": "string",
+        "enum": [
+          "SAFE_NO_ACTION",
+          "RESOLVED_BY_DESK",
+          "EMERGENCY_SERVICES",
+          "FALSE_ALARM",
+          "OTHER"
+        ]
+      },
+      "MessageView": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "conversation_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "client_message_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "from": {
+            "type": "string",
+            "enum": [
+              "ME",
+              "OTHER",
+              "SYSTEM"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "TEXT",
+              "IMAGE",
+              "SYSTEM"
+            ]
+          },
+          "body": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "moderation": {
+            "$ref": "#/components/schemas/MessageModeration"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          }
+        },
+        "required": [
+          "id",
+          "conversation_id",
+          "client_message_id",
+          "from",
+          "type",
+          "body",
+          "image_url",
+          "moderation",
+          "created_at"
+        ],
+        "additionalProperties": false
+      },
+      "ConversationsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "booking": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "ref": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "$ref": "#/components/schemas/BookingStatus"
+                    },
+                    "start_at": {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "ref",
+                    "status",
+                    "start_at"
+                  ],
+                  "additionalProperties": false
+                },
+                "other_party": {
+                  "type": "string"
+                },
+                "last_message": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "from": {
+                          "type": "string",
+                          "enum": [
+                            "ME",
+                            "OTHER"
+                          ]
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "TEXT",
+                            "IMAGE",
+                            "SYSTEM"
+                          ]
+                        },
+                        "preview": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "at": {
+                          "type": "string",
+                          "description": "ISO 8601 date-time (UTC)"
+                        }
+                      },
+                      "required": [
+                        "from",
+                        "type",
+                        "preview",
+                        "at"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "unread": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "window_closes_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "can_send": {
+                  "type": "boolean"
+                },
+                "closed_reason": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ChatClosedReason"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "booking",
+                "other_party",
+                "last_message",
+                "unread",
+                "window_closes_at",
+                "can_send",
+                "closed_reason"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "MessagesResponse": {
+        "type": "object",
+        "properties": {
+          "conversation": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "booking_id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "window_closes_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "can_send": {
+                "type": "boolean"
+              },
+              "closed_reason": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ChatClosedReason"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "other_read_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "booking_id",
+              "window_closes_at",
+              "can_send",
+              "closed_reason",
+              "other_read_at"
+            ],
+            "additionalProperties": false
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MessageView"
+            }
+          },
+          "next_before": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "conversation",
+          "items",
+          "next_before"
+        ],
+        "additionalProperties": false
+      },
+      "MessageSentResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "$ref": "#/components/schemas/MessageView"
+          },
+          "duplicate": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "message",
+          "duplicate"
+        ],
+        "additionalProperties": false
+      },
+      "ReadMarkedResponse": {
+        "type": "object",
+        "properties": {
+          "read_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          }
+        },
+        "required": [
+          "read_at"
+        ],
+        "additionalProperties": false
+      },
+      "BlockedResponse": {
+        "type": "object",
+        "properties": {
+          "blocked": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "blocked"
+        ],
+        "additionalProperties": false
+      },
+      "PushTokenResponse": {
+        "type": "object",
+        "properties": {
+          "registered": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "registered"
+        ],
+        "additionalProperties": false
+      },
+      "CallNumberResponse": {
+        "type": "object",
+        "properties": {
+          "virtual_number": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "call_window": {
+            "type": "object",
+            "properties": {
+              "opens_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              "closes_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              }
+            },
+            "required": [
+              "opens_at",
+              "closes_at"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "virtual_number",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      },
+      "CallSimulatedResponse": {
+        "type": "object",
+        "properties": {
+          "call_id": {
+            "type": "string"
+          },
+          "delivered": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "required": [
+          "call_id",
+          "delivered"
+        ],
+        "additionalProperties": false
+      },
+      "LocationSharingResponse": {
+        "type": "object",
+        "properties": {
+          "sharing": {
+            "type": "boolean"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "contacts_notified": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "stopped": {
+            "type": "boolean"
+          },
+          "already": {
+            "type": "boolean"
+          },
+          "dev_link": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sharing"
+        ],
+        "additionalProperties": false
+      },
+      "LocationStoredResponse": {
+        "type": "object",
+        "properties": {
+          "stored": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "stored"
+        ],
+        "additionalProperties": false
+      },
+      "SosResponse": {
+        "type": "object",
+        "properties": {
+          "incident": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "ref": {
+                "type": "string"
+              },
+              "status": {
+                "$ref": "#/components/schemas/IncidentStatus"
+              },
+              "acknowledged": {
+                "type": "boolean"
+              },
+              "marked_safe": {
+                "type": "boolean"
+              },
+              "location_shared": {
+                "type": "boolean"
+              },
+              "triggered_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              "help_message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "ref",
+              "status",
+              "acknowledged",
+              "marked_safe",
+              "location_shared",
+              "triggered_at",
+              "help_message"
+            ],
+            "additionalProperties": false
+          },
+          "duplicate": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "incident",
+          "duplicate"
+        ],
+        "additionalProperties": false
+      },
+      "SosCurrentResponse": {
+        "type": "object",
+        "properties": {
+          "incident": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "ref": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "$ref": "#/components/schemas/IncidentStatus"
+                  },
+                  "acknowledged": {
+                    "type": "boolean"
+                  },
+                  "marked_safe": {
+                    "type": "boolean"
+                  },
+                  "location_shared": {
+                    "type": "boolean"
+                  },
+                  "triggered_at": {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  "help_message": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "ref",
+                  "status",
+                  "acknowledged",
+                  "marked_safe",
+                  "location_shared",
+                  "triggered_at",
+                  "help_message"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "incident"
+        ],
+        "additionalProperties": false
+      },
+      "PingAnsweredResponse": {
+        "type": "object",
+        "properties": {
+          "responded": {
+            "type": "boolean"
+          },
+          "sos": {
+            "$ref": "#/components/schemas/SosResponse"
+          }
+        },
+        "required": [
+          "responded"
+        ],
+        "additionalProperties": false
+      },
+      "TrustedContactsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "relationship": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "phone_masked": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "PENDING",
+                    "ACCEPTED"
+                  ]
+                },
+                "invited_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "accepted_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "relationship",
+                "phone_masked",
+                "status",
+                "invited_at",
+                "accepted_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "max": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "items",
+          "max"
+        ],
+        "additionalProperties": false
+      },
+      "TrustedContactAddedResponse": {
+        "type": "object",
+        "properties": {
+          "contact": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "relationship": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "phone_masked": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "PENDING",
+                  "ACCEPTED"
+                ]
+              },
+              "invited_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "accepted_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "relationship",
+              "phone_masked",
+              "status",
+              "invited_at",
+              "accepted_at"
+            ],
+            "additionalProperties": false
+          },
+          "dev_link": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "contact"
+        ],
+        "additionalProperties": false
+      },
+      "RemovedResponse": {
+        "type": "object",
+        "properties": {
+          "removed": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "removed"
+        ],
+        "additionalProperties": false
+      },
+      "InviteInfoResponse": {
+        "type": "object",
+        "properties": {
+          "inviter_first_name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "ACCEPTED"
+            ]
+          }
+        },
+        "required": [
+          "inviter_first_name",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "InviteAcceptedResponse": {
+        "type": "object",
+        "properties": {
+          "accepted": {
+            "type": "boolean",
+            "const": true
+          },
+          "already": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "accepted",
+          "already"
+        ],
+        "additionalProperties": false
+      },
+      "SharePageResponse": {
+        "type": "object",
+        "properties": {
+          "sharer_first_name": {
+            "type": "string"
+          },
+          "venue": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "area": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "starts_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "ends_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "booking_status": {
+            "type": "string",
+            "enum": [
+              "CONFIRMED",
+              "IN_PROGRESS",
+              "COMPLETED"
+            ]
+          },
+          "checked_in": {
+            "type": "boolean"
+          },
+          "checked_out": {
+            "type": "boolean"
+          },
+          "last_location": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "latitude": {
+                    "type": "number"
+                  },
+                  "longitude": {
+                    "type": "number"
+                  },
+                  "accuracy_meters": {
+                    "type": "number"
+                  },
+                  "at": {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  }
+                },
+                "required": [
+                  "latitude",
+                  "longitude",
+                  "accuracy_meters",
+                  "at"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sharing_until": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          }
+        },
+        "required": [
+          "sharer_first_name",
+          "venue",
+          "area",
+          "starts_at",
+          "ends_at",
+          "booking_status",
+          "checked_in",
+          "checked_out",
+          "last_location",
+          "sharing_until"
+        ],
+        "additionalProperties": false
+      },
+      "IncidentsResponse": {
+        "type": "object",
+        "properties": {
+          "server_time": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "ref": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "CRITICAL",
+                    "HIGH",
+                    "MEDIUM",
+                    "LOW"
+                  ]
+                },
+                "status": {
+                  "$ref": "#/components/schemas/IncidentStatus"
+                },
+                "triggered_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "ack_due_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "acknowledged_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "pages": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "marked_safe": {
+                  "type": "boolean"
+                },
+                "reporter": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "booking_ref": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "ref",
+                "source",
+                "severity",
+                "status",
+                "triggered_at",
+                "ack_due_at",
+                "acknowledged_at",
+                "pages",
+                "marked_safe",
+                "reporter",
+                "booking_ref"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "server_time",
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "IncidentResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "ref": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "CRITICAL",
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/IncidentStatus"
+          },
+          "triggered_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "ack_due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "acknowledged_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pages": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "marked_safe_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "marked_safe_by": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "other_party_frozen_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "legal_hold": {
+            "type": "boolean"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "resolution": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "follow_up_due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reporter": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/BookingParty"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "account_status": {
+                    "type": "string"
+                  },
+                  "has_verified_phone": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "role",
+                  "account_status",
+                  "has_verified_phone"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "other_party": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/BookingParty"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "account_status": {
+                    "type": "string"
+                  },
+                  "has_verified_phone": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "role",
+                  "account_status",
+                  "has_verified_phone"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "booking": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "ref": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "$ref": "#/components/schemas/BookingStatus"
+                  },
+                  "start_at": {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  "end_at": {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  "venue": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "venue_address": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "zone": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "ref",
+                  "status",
+                  "start_at",
+                  "end_at",
+                  "venue",
+                  "venue_address",
+                  "zone"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "latitude": {
+                    "type": "number"
+                  },
+                  "longitude": {
+                    "type": "number"
+                  },
+                  "accuracy_meters": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "at": {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  "source": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "latitude",
+                  "longitude"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "trusted_contacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "phone_masked": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "phone_masked"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "timeline": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "actor_user_id": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "notes": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "metadata": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {}
+                },
+                "at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "type",
+                "actor_user_id",
+                "notes",
+                "metadata",
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "transcript": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "from": {
+                  "type": "string",
+                  "enum": [
+                    "CUSTOMER",
+                    "COMPANION",
+                    "SYSTEM"
+                  ]
+                },
+                "type": {
+                  "type": "string"
+                },
+                "body": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "moderation": {
+                  "type": "string"
+                },
+                "at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "id",
+                "from",
+                "type",
+                "body",
+                "moderation",
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "calls": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "started_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "ended_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "duration_seconds": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "purpose": {
+                  "type": "string"
+                },
+                "caller": {
+                  "type": "string",
+                  "enum": [
+                    "CUSTOMER",
+                    "COMPANION",
+                    "DESK"
+                  ]
+                }
+              },
+              "required": [
+                "status",
+                "started_at",
+                "ended_at",
+                "duration_seconds",
+                "created_at",
+                "purpose",
+                "caller"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "ref",
+          "source",
+          "severity",
+          "status",
+          "triggered_at",
+          "ack_due_at",
+          "acknowledged_at",
+          "pages",
+          "marked_safe_at",
+          "marked_safe_by",
+          "other_party_frozen_at",
+          "legal_hold",
+          "outcome",
+          "resolution",
+          "follow_up_due_at",
+          "description",
+          "reporter",
+          "other_party",
+          "booking",
+          "location",
+          "trusted_contacts",
+          "timeline",
+          "transcript",
+          "calls"
+        ],
+        "additionalProperties": false
+      },
+      "FrozenResponse": {
+        "type": "object",
+        "properties": {
+          "cancelled": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "incident": {
+            "$ref": "#/components/schemas/IncidentResponse"
+          }
+        },
+        "required": [
+          "cancelled",
+          "incident"
+        ],
+        "additionalProperties": false
+      },
+      "HeldMessagesResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "conversation_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "flags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "body": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "original": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "image_url": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "id",
+                "conversation_id",
+                "type",
+                "reason",
+                "flags",
+                "body",
+                "original",
+                "image_url",
+                "created_at"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "HeldDecisionResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "moderation": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "REJECTED"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "moderation"
+        ],
+        "additionalProperties": false
+      },
       "WebhookAck": {
         "type": "object",
         "properties": {
@@ -9699,6 +11386,80 @@
           "address"
         ]
       },
+      "postBookingsByIdLocationSharingBody": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ]
+      },
+      "postBookingsByIdLocationBody": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "accuracy_meters": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10000
+          }
+        },
+        "required": [
+          "latitude",
+          "longitude"
+        ]
+      },
+      "postBookingsByIdSosBody": {
+        "type": "object",
+        "properties": {
+          "share_location": {
+            "default": true,
+            "type": "boolean"
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "accuracy_meters": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "postBookingsByIdSafetyPingBody": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok"
+        ]
+      },
       "postBookingsQuoteBody": {
         "type": "object",
         "properties": {
@@ -9810,6 +11571,242 @@
           "issue_code"
         ]
       },
+      "postConversationsByIdMessagesBody": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "asset_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        }
+      },
+      "postConversationsByIdImagesUploadUrlBody": {
+        "type": "object",
+        "properties": {
+          "mime": {
+            "type": "string",
+            "enum": [
+              "image/jpeg",
+              "image/png",
+              "image/webp"
+            ]
+          },
+          "bytes": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "mime",
+          "bytes",
+          "sha256"
+        ]
+      },
+      "postMessagesByIdReportBody": {
+        "type": "object",
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "FAKE_PROFILE",
+              "INAPPROPRIATE_CONTENT",
+              "OFF_PLATFORM_CONTACT",
+              "NOT_PLATONIC",
+              "SAFETY_CONCERN",
+              "OTHER"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "reason_code"
+        ]
+      },
+      "postDevicesPushTokenBody": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "pattern": "^(ExponentPushToken|ExpoPushToken)\\[[A-Za-z0-9_-]+\\]$"
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "ANDROID",
+              "IOS"
+            ]
+          }
+        },
+        "required": [
+          "token",
+          "platform"
+        ]
+      },
+      "postSafetyTrustedContactsBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 20
+          },
+          "relationship": {
+            "type": "string",
+            "maxLength": 60
+          }
+        },
+        "required": [
+          "name",
+          "phone"
+        ]
+      },
+      "postSafetySosBody": {
+        "type": "object",
+        "properties": {
+          "share_location": {
+            "default": true,
+            "type": "boolean"
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "accuracy_meters": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "postAdminIncidentsByIdCallUserBody": {
+        "type": "object",
+        "properties": {
+          "party": {
+            "default": "REPORTER",
+            "type": "string",
+            "enum": [
+              "REPORTER",
+              "OTHER"
+            ]
+          }
+        }
+      },
+      "postAdminIncidentsByIdCallContactBody": {
+        "type": "object",
+        "properties": {
+          "trusted_contact_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "trusted_contact_id"
+        ]
+      },
+      "postAdminIncidentsByIdFreezeBody": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "note"
+        ]
+      },
+      "postAdminIncidentsByIdMarkSafeBody": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "postAdminIncidentsByIdCloseBody": {
+        "type": "object",
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "SAFE_NO_ACTION",
+              "RESOLVED_BY_DESK",
+              "EMERGENCY_SERVICES",
+              "FALSE_ALARM",
+              "OTHER"
+            ]
+          },
+          "notes": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "outcome",
+          "notes"
+        ]
+      },
+      "postAdminIncidentsByIdFollowUpBody": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "postAdminMessagesByIdDecisionBody": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "APPROVE",
+              "REJECT"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "decision"
+        ]
+      },
       "postAdminBookingsByIdCancelBody": {
         "type": "object",
         "properties": {
@@ -9898,6 +11895,39 @@
         },
         "required": [
           "scenario"
+        ]
+      },
+      "postCallsMockSimulateBody": {
+        "type": "object",
+        "properties": {
+          "booking_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "status": {
+            "default": "ANSWERED",
+            "type": "string",
+            "enum": [
+              "ANSWERED",
+              "MISSED",
+              "BUSY",
+              "FAILED"
+            ]
+          },
+          "duration_seconds": {
+            "default": 120,
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 7200
+          },
+          "duplicate": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "booking_id"
         ]
       }
     }
@@ -10425,6 +12455,533 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/postAdminCompanionsByIdSuspendBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/incidents": {
+      "get": {
+        "operationId": "getAdminIncidents",
+        "summary": "Safety desk queue (live; ack countdown)",
+        "tags": [
+          "admin",
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": "open",
+              "type": "string",
+              "enum": [
+                "open",
+                "all"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/incidents/{id}": {
+      "get": {
+        "operationId": "getAdminIncidentsById",
+        "summary": "Incident: booking, parties, location, timeline, transcript, call metadata",
+        "tags": [
+          "admin",
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/incidents/{id}/ack": {
+      "post": {
+        "operationId": "postAdminIncidentsByIdAck",
+        "summary": "Acknowledge (one agent wins)",
+        "tags": [
+          "admin",
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/incidents/{id}/call-contact": {
+      "post": {
+        "operationId": "postAdminIncidentsByIdCallContact",
+        "summary": "Masked call to the reporter's trusted contact",
+        "tags": [
+          "admin",
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CallNumberResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminIncidentsByIdCallContactBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/incidents/{id}/call-user": {
+      "post": {
+        "operationId": "postAdminIncidentsByIdCallUser",
+        "summary": "Masked call between the desk and the reporter (or the other party)",
+        "tags": [
+          "admin",
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CallNumberResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminIncidentsByIdCallUserBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/incidents/{id}/close": {
+      "post": {
+        "operationId": "postAdminIncidentsByIdClose",
+        "summary": "Close with an outcome (a follow-up is scheduled 24 h later)",
+        "tags": [
+          "admin",
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminIncidentsByIdCloseBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/incidents/{id}/follow-up": {
+      "post": {
+        "operationId": "postAdminIncidentsByIdFollowUp",
+        "summary": "Record the follow-up as done",
+        "tags": [
+          "admin",
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminIncidentsByIdFollowUpBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/incidents/{id}/freeze": {
+      "post": {
+        "operationId": "postAdminIncidentsByIdFreeze",
+        "summary": "Freeze the other party now (suspend, cancel pending bookings with full refunds); reviewed by a T&S manager afterwards",
+        "tags": [
+          "admin",
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrozenResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminIncidentsByIdFreezeBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/incidents/{id}/mark-safe": {
+      "post": {
+        "operationId": "postAdminIncidentsByIdMarkSafe",
+        "summary": "Mark the reporter safe",
+        "tags": [
+          "admin",
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminIncidentsByIdMarkSafeBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/messages/{id}/decision": {
+      "post": {
+        "operationId": "postAdminMessagesByIdDecision",
+        "summary": "Release or reject a held message",
+        "tags": [
+          "admin",
+          "chat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeldDecisionResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminMessagesByIdDecisionBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/messages/held": {
+      "get": {
+        "operationId": "getAdminMessagesHeld",
+        "summary": "Chat messages held for review",
+        "tags": [
+          "admin",
+          "chat"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeldMessagesResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -12365,6 +14922,47 @@
         }
       }
     },
+    "/api/v1/bookings/{id}/call": {
+      "post": {
+        "operationId": "postBookingsByIdCall",
+        "summary": "Masked call: the virtual number to dial (only inside the call window)",
+        "tags": [
+          "calls"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CallNumberResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/bookings/{id}/cancel": {
       "post": {
         "operationId": "postBookingsByIdCancel",
@@ -12539,6 +15137,147 @@
         }
       }
     },
+    "/api/v1/bookings/{id}/location": {
+      "post": {
+        "operationId": "postBookingsByIdLocation",
+        "summary": "A location point while sharing (at most one every 30 s)",
+        "tags": [
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationStoredResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postBookingsByIdLocationBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/{id}/location-sharing": {
+      "get": {
+        "operationId": "getBookingsByIdLocationSharing",
+        "summary": "Is my location shared for this booking?",
+        "tags": [
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationSharingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postBookingsByIdLocationSharing",
+        "summary": "Turn location sharing with my trusted contacts on or off (booking window only)",
+        "tags": [
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationSharingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postBookingsByIdLocationSharingBody"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/bookings/{id}/pay": {
       "post": {
         "operationId": "postBookingsByIdPay",
@@ -12625,6 +15364,118 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/postBookingsByIdReportIssueBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/{id}/safety-ping": {
+      "post": {
+        "operationId": "postBookingsByIdSafetyPing",
+        "summary": "Answer a safety ping: OK, or not OK (raises an SOS)",
+        "tags": [
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PingAnsweredResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postBookingsByIdSafetyPingBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/{id}/sos": {
+      "post": {
+        "operationId": "postBookingsByIdSos",
+        "summary": "SOS for this booking (the app always shows Call 112 first)",
+        "tags": [
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SosResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SosResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postBookingsByIdSosBody"
               }
             }
           }
@@ -12781,6 +15632,47 @@
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/calls/mock/simulate": {
+      "post": {
+        "operationId": "postCallsMockSimulate",
+        "summary": "TEST ONLY: simulate a finished masked call on my booking (mock provider)",
+        "tags": [
+          "calls"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CallSimulatedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postCallsMockSimulateBody"
               }
             }
           }
@@ -14042,6 +16934,370 @@
         }
       }
     },
+    "/api/v1/conversations": {
+      "get": {
+        "operationId": "getConversations",
+        "summary": "My booking conversations",
+        "tags": [
+          "chat"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{id}/block": {
+      "post": {
+        "operationId": "postConversationsByIdBlock",
+        "summary": "Block the other person everywhere (as in discovery) and close this chat",
+        "tags": [
+          "chat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlockedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{id}/images/upload-url": {
+      "post": {
+        "operationId": "postConversationsByIdImagesUploadUrl",
+        "summary": "Upload a photo for the chat (held until a moderator approves it)",
+        "tags": [
+          "chat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadUrlResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postConversationsByIdImagesUploadUrlBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{id}/messages": {
+      "get": {
+        "operationId": "getConversationsByIdMessages",
+        "summary": "Messages in a conversation (newest page first; pass before= for older)",
+        "tags": [
+          "chat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessagesResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postConversationsByIdMessages",
+        "summary": "Send a message (Idempotency-Key = the client message id). Contact details are masked; solicitation is held",
+        "tags": [
+          "chat"
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "The client message id (8-64 characters)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageSentResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageSentResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postConversationsByIdMessagesBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/conversations/{id}/read": {
+      "post": {
+        "operationId": "postConversationsByIdRead",
+        "summary": "Mark the conversation read",
+        "tags": [
+          "chat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadMarkedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/push-token": {
+      "post": {
+        "operationId": "postDevicesPushToken",
+        "summary": "Register this device for push notifications (Expo token)",
+        "tags": [
+          "devices"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushTokenResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postDevicesPushTokenBody"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteDevicesPushToken",
+        "summary": "Stop push notifications to this device (logout)",
+        "tags": [
+          "devices"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushTokenResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/discovery/companions": {
       "get": {
         "operationId": "getDiscoveryCompanions",
@@ -14560,6 +17816,57 @@
         }
       }
     },
+    "/api/v1/messages/{id}/report": {
+      "post": {
+        "operationId": "postMessagesByIdReport",
+        "summary": "Report a message to Trust & Safety",
+        "tags": [
+          "chat"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postMessagesByIdReportBody"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/onboarding/complete": {
       "post": {
         "operationId": "postOnboardingComplete",
@@ -14791,6 +18098,407 @@
         }
       }
     },
+    "/api/v1/safety/invites/{token}": {
+      "get": {
+        "operationId": "getSafetyInvitesByToken",
+        "summary": "A safety-contact invitation (public)",
+        "tags": [
+          "safety"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InviteInfoResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/safety/invites/{token}/accept": {
+      "post": {
+        "operationId": "postSafetyInvitesByTokenAccept",
+        "summary": "Accept to be a safety contact (public)",
+        "tags": [
+          "safety"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InviteAcceptedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/safety/share/{token}": {
+      "get": {
+        "operationId": "getSafetyShareByToken",
+        "summary": "A trusted contact's view of a shared meeting (public, approximate location only)",
+        "tags": [
+          "safety"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharePageResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/safety/sos": {
+      "post": {
+        "operationId": "postSafetySos",
+        "summary": "SOS from anywhere in the app (linked to a booking around now, if any)",
+        "tags": [
+          "safety"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SosResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SosResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postSafetySosBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/safety/sos/{id}/safe": {
+      "post": {
+        "operationId": "postSafetySosByIdSafe",
+        "summary": "I'm safe (the desk still checks in)",
+        "tags": [
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SosCurrentResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/safety/sos/current": {
+      "get": {
+        "operationId": "getSafetySosCurrent",
+        "summary": "My open SOS, if any",
+        "tags": [
+          "safety"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SosCurrentResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/safety/trusted-contacts": {
+      "get": {
+        "operationId": "getSafetyTrustedContacts",
+        "summary": "My safety contacts (masked numbers)",
+        "tags": [
+          "safety"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrustedContactsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postSafetyTrustedContacts",
+        "summary": "Add a safety contact (they accept by SMS before receiving anything)",
+        "tags": [
+          "safety"
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrustedContactAddedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postSafetyTrustedContactsBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/safety/trusted-contacts/{id}": {
+      "delete": {
+        "operationId": "deleteSafetyTrustedContactsById",
+        "summary": "Remove a safety contact",
+        "tags": [
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemovedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/safety/trusted-contacts/{id}/resend": {
+      "post": {
+        "operationId": "postSafetyTrustedContactsByIdResend",
+        "summary": "Send the consent SMS again",
+        "tags": [
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrustedContactAddedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/storage/local/upload/{token}": {
       "put": {
         "operationId": "putStorageLocalUploadByToken",
@@ -14979,6 +18687,48 @@
         }
       }
     },
+    "/api/v1/webhooks/calls/{provider}": {
+      "post": {
+        "operationId": "postWebhooksCallsByProvider",
+        "summary": "Call-masking provider webhook (HMAC; metadata only; idempotent per event id)",
+        "tags": [
+          "webhooks"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookAck"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/webhooks/kyc/{provider}": {
       "post": {
         "operationId": "postWebhooksKycByProvider",
@@ -15085,7 +18835,7 @@
     "ACCOUNT_SUSPENDED": "This account is suspended.",
     "ACCOUNT_EXISTS": "An account already exists. Log in or reset your password.",
     "ACCOUNT_NOT_FOUND": "Account not found. Please sign up again.",
-    "PHONE_NOT_VERIFIED": "Verify your mobile number first.",
+    "PHONE_NOT_VERIFIED": "Both people need a verified phone number for calls.",
     "EMAIL_NOT_VERIFIED": "Verify your email address first. Check your inbox for the link.",
     "INELIGIBLE_AGE": "Sydecrew is only for adults aged 18 and over.",
     "LINK_INVALID": "This link has expired or was already used. Request a new one.",
@@ -15232,6 +18982,38 @@
     "DISPUTE_ALREADY_RESOLVED": "This issue was already resolved or is waiting for a second approver.",
     "WEBHOOK_SIGNATURE_INVALID": "Signature check failed.",
     "WEBHOOK_INVALID": "The webhook is missing an event id or type.",
-    "WEBHOOK_PROCESSING_FAILED": "Processing failed; the gateway may retry."
+    "WEBHOOK_PROCESSING_FAILED": "Processing failed; the gateway may retry.",
+    "CONVERSATION_NOT_FOUND": "Conversation not found.",
+    "CONVERSATION_BLOCKED": "You cannot message in this conversation.",
+    "CHAT_CLOSED": "This chat is closed.",
+    "MESSAGE_RATE_LIMITED": "You are sending messages too fast. Wait a moment.",
+    "MESSAGE_NOT_FOUND": "Message not found.",
+    "CANNOT_REPORT_OWN": "You cannot report your own message.",
+    "MESSAGE_NOT_HELD": "This message is not waiting for review.",
+    "DEVICE_ID_REQUIRED": "Something went wrong with this device. Restart the app.",
+    "CALL_NOT_AVAILABLE": "Calls open once the booking is confirmed.",
+    "CALL_WINDOW_CLOSED": "Calls are available from 2 hours before the start until 2 hours after the end.",
+    "CALL_BLOCKED": "Calls are not available for this booking.",
+    "CALL_LIMIT_REACHED": "The call limit for this booking today has been reached.",
+    "CALL_PROVIDER_NOT_CONFIGURED": "Calls are temporarily unavailable. Please try again later.",
+    "CALL_SESSION_NOT_FOUND": "Start a call first.",
+    "DESK_PHONE_NOT_SET": "The safety desk phone is not set.",
+    "NO_PHONE": "There is no verified phone to call.",
+    "TRUSTED_CONTACT_LIMIT": "You have the maximum number of safety contacts.",
+    "TRUSTED_CONTACT_EXISTS": "This number is already one of your safety contacts.",
+    "TRUSTED_CONTACT_NOT_FOUND": "Safety contact not found.",
+    "INVITE_NOT_FOUND": "This invitation is no longer valid.",
+    "LOCATION_WINDOW_CLOSED": "Location sharing is available only around a confirmed booking.",
+    "LOCATION_SHARING_OFF": "Location sharing is off for this booking.",
+    "LOCATION_TOO_FREQUENT": "Location updates are limited to one every 30 seconds.",
+    "SHARE_NOT_FOUND": "This link is not valid.",
+    "SHARE_ENDED": "Sharing has ended.",
+    "INCIDENT_NOT_FOUND": "Incident not found.",
+    "INCIDENT_ALREADY_ACKNOWLEDGED": "Another agent already acknowledged this incident.",
+    "INCIDENT_NOT_ACKNOWLEDGED": "Acknowledge the incident before closing it.",
+    "INCIDENT_CLOSED": "This incident is already closed.",
+    "NO_OTHER_PARTY": "There is no other party on this incident.",
+    "ALREADY_FROZEN": "The other party is already frozen.",
+    "USER_NOT_FOUND": "User not found."
   }
 }
