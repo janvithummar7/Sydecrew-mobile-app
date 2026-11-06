@@ -1,44 +1,58 @@
+import { useCallback, useEffect, useState } from 'react';
 import { StepHeader, LoadState } from '@/components/companion/Bits';
-import { ProfileView } from '@/components/companion/ProfileView';
+import { PublicProfileView } from '@/components/discovery/PublicProfileView';
 import { Alert } from '@/components/ui/Feedback';
 import { Screen } from '@/components/ui/Screen';
-import { useCompanion } from '@/lib/companion/context';
-import { categoryNames } from '@/content/common';
+import { preview as copy } from '@/content/discovery';
+import { companionApi } from '@/lib/companion/api';
+import type { PublicProfile } from '@/lib/discovery/types';
+import { errorView } from '@/lib/errors';
 
 /**
- * "This is how customers will see you": a read-only preview of the public
- * profile built from the companion's own data (there is no public discovery
- * yet). Only approved photos and approved categories are shown, as customers would see them.
+ * "This is how customers see you": GET /companion/public-preview, the same
+ * public profile customers get from Discover (approved photos, approved
+ * categories, rates, boundaries, availability), rendered by the same view.
+ * Read-only: no save, report or booking actions.
  */
 export default function PublicProfilePreview() {
-  const { companion, options, loading, error, refresh } = useCompanion();
-  if (!companion) {
-    return (
-      <Screen>
-        <StepHeader title="Your public profile" />
-        <LoadState loading={loading} error={error} onRetry={refresh} />
-      </Screen>
-    );
-  }
-  const photo = companion.photos.find((p) => p.is_primary && p.moderation_status === 'APPROVED') ?? companion.photos.find((p) => p.is_primary);
-  const zone = options?.cities.flatMap((c) => c.zones.map((z) => ({ ...z, city: c.name }))).find((z) => z.id === companion.zone_id);
-  const cats = companion.categories.filter((c) => c.status === 'APPROVED' || c.status === 'PENDING');
+  const [data, setData] = useState<PublicProfile | null>(null);
+  const [state, setState] = useState<{ loading: boolean; error: string | null; offline: boolean }>({ loading: true, error: null, offline: false });
+
+  // State changes only after the request settles (the first render already shows loading).
+  const load = useCallback(
+    () =>
+      companionApi.publicPreview().then(
+        (p) => {
+          setData(p);
+          setState({ loading: false, error: null, offline: false });
+        },
+        (err) => {
+          const v = errorView(err);
+          setState({ loading: false, error: v.offline ? null : v.message, offline: v.offline });
+        },
+      ),
+    [],
+  );
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+  const retry = () => {
+    setState({ loading: true, error: null, offline: false });
+    void load();
+  };
+
   return (
     <Screen>
-      <StepHeader title="Your public profile" subtitle="This is how customers will see you once discovery opens." />
-      {companion.status !== 'LIVE' ? <Alert tone="info">You are not live yet, so customers cannot see this profile.</Alert> : null}
-      <ProfileView
-        data={{
-          name: companion.display_name,
-          headline: cats.map((c) => categoryNames[c.code] ?? c.name).join(' · ') || null,
-          meta: [zone ? `${zone.name}, ${zone.city}` : null, companion.languages.map((l) => l.name).join(', ') || null].filter(Boolean).join(' · '),
-          photoUrl: photo?.url ?? null,
-          verified: ['APPROVED', 'SETUP', 'LIVE', 'PAUSED'].includes(companion.status),
-          intro: companion.intro,
-          offers: companion.activities.map((a) => ({ activity: a.name, label: categoryNames[companion.categories.find((c) => c.category_id === a.category_id)?.code ?? ''] ?? '' })),
-          boundaries: companion.boundaries.filter((b) => b.moderation_status !== 'REJECTED').map((b) => b.text),
-        }}
-      />
+      <StepHeader title={copy.title} subtitle={copy.subtitle} />
+      {data ? (
+        <>
+          <Alert tone={data.status === 'LIVE' ? 'success' : 'info'}>{data.status === 'LIVE' ? copy.live : copy.notLive}</Alert>
+          <PublicProfileView data={data} />
+        </>
+      ) : (
+        <LoadState loading={state.loading} error={state.error} offline={state.offline} onRetry={retry} />
+      )}
     </Screen>
   );
 }

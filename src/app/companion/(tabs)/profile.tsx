@@ -1,14 +1,16 @@
 import { limitsOf } from '@/lib/companion/types';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Chip, ChipRow, LoadState, Section, StepHeader } from '@/components/companion/Bits';
 import { Button } from '@/components/ui/Button';
 import { Alert } from '@/components/ui/Feedback';
-import { TextField } from '@/components/ui/Field';
+import { Checkbox, TextField } from '@/components/ui/Field';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
-import { ApiError } from '@/lib/api';
+import { companionProfile as extra } from '@/content/discovery';
+import { ApiError, authApi } from '@/lib/api';
+import { toggleIn } from '@/lib/discovery/filters';
 import { companionApi } from '@/lib/companion/api';
 import { useCompanion } from '@/lib/companion/context';
 import { isApproved } from '@/lib/companion/steps';
@@ -16,7 +18,7 @@ import type { Companion, CompanionOptions } from '@/lib/companion/types';
 import { contactWarning } from '@/lib/contentWarning';
 import { colors } from '@/theme';
 
-/** Profile basics (brief §6.2). On an approved profile, name and intro changes wait for moderation. */
+/** Profile basics (brief §6.2), plus interests and "show my age" (Feature 3). On an approved profile, name and intro changes wait for moderation. */
 export default function ProfileBasics() {
   const { companion, options, loading, error, refresh } = useCompanion();
   if (!companion || !options) {
@@ -38,6 +40,29 @@ function ProfileForm({ companion, options }: { companion: Companion; options: Co
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
   const submitting = useRef(false);
+  // Interests and "show my age" (Feature 3). The companion view does not carry them, so the current
+  // values come from the public preview and the interest list from the onboarding options.
+  // They are only sent once known (or changed), so a failed lookup never clears them.
+  const [interestList, setInterestList] = useState<{ items: { id: string; name: string }[]; max: number } | null>(null);
+  const [interests, setInterests] = useState<string[]>([]);
+  const [showAge, setShowAge] = useState(false);
+  const [known, setKnown] = useState({ interests: false, showAge: false });
+  useEffect(() => {
+    let live = true;
+    Promise.allSettled([authApi.onboardingOptions(), companionApi.publicPreview()]).then(([o, p]) => {
+      if (!live || o.status !== 'fulfilled') return;
+      setInterestList({ items: o.value.interests, max: o.value.max_interests });
+      if (p.status === 'fulfilled') {
+        const byName = new Map(o.value.interests.map((i) => [i.name, i.id]));
+        setInterests(p.value.interests.map((n) => byName.get(n)).filter((x): x is string => !!x));
+        setShowAge(p.value.age !== null);
+        setKnown({ interests: true, showAge: true });
+      }
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
 
   const l = limitsOf(options);
   const warning = contactWarning(intro) ?? contactWarning(name);
@@ -59,7 +84,15 @@ function ProfileForm({ companion, options }: { companion: Companion; options: Co
     submitting.current = true;
     setBusy(true);
     try {
-      const res = await companionApi.updateProfile({ display_name: name.trim(), intro: intro.trim(), language_ids: languages, ...zone!, service_radius_km: r });
+      const res = await companionApi.updateProfile({
+        display_name: name.trim(),
+        intro: intro.trim(),
+        language_ids: languages,
+        ...zone!,
+        service_radius_km: r,
+        ...(known.interests ? { interest_ids: interests } : {}),
+        ...(known.showAge ? { show_age: showAge } : {}),
+      });
       setCompanion(res.companion);
       if (approved) setSaved(true);
       else router.push('/companion/photos');
@@ -137,6 +170,24 @@ function ProfileForm({ companion, options }: { companion: Companion; options: Co
         error={errors.service_radius_km}
         hint={`${l.radius_km_min} to ${l.radius_km_max} km, in half-km steps.`}
       />
+
+      {interestList && known.interests ? (
+        <Section title={extra.interests} hint={extra.interestsHint(interestList.max)}>
+          <ChipRow>
+            {interestList.items.map((i) => {
+              const on = interests.includes(i.id);
+              return <Chip key={i.id} label={i.name} selected={on} disabled={!on && interests.length >= interestList.max} onPress={() => setInterests(toggleIn(interests, i.id))} />;
+            })}
+          </ChipRow>
+          {errors.interest_ids ? <Text variant="caption" color={colors.red300} accessibilityRole="alert">{errors.interest_ids}</Text> : null}
+        </Section>
+      ) : null}
+      {known.showAge ? (
+        <View style={{ gap: 4 }}>
+          <Checkbox checked={showAge} onChange={setShowAge} label={extra.showAge}>{extra.showAge}</Checkbox>
+          <Text variant="caption" color={colors.textMuted} style={{ paddingLeft: 32 }}>{extra.showAgeHint}</Text>
+        </View>
+      ) : null}
     </Screen>
   );
 }

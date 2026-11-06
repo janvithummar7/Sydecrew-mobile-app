@@ -1,6 +1,7 @@
 import { api } from '../api';
 import type { Me } from '../types';
-import type { ApplyInput, Availability, Companion, CompanionOptions, Rate, UploadTarget } from './types';
+import type { PublicProfile } from '../discovery/types';
+import type { ApplyInput, Availability, Companion, CompanionOptions, ProfileInput, Rate, UploadTarget } from './types';
 
 type View = { companion: Companion };
 type Side = 'FRONT' | 'BACK' | 'SELFIE';
@@ -12,8 +13,10 @@ export const companionApi = {
   apply: (body: ApplyInput) => api<{ user: Me; companion: Companion }>('/companion/apply', { method: 'POST', body }),
   me: () => api<View>('/companion/me'),
 
-  updateProfile: (body: Partial<{ display_name: string; intro: string; language_ids: string[]; city_id: string; zone_id: string; service_radius_km: number }>) =>
-    api<View>('/companion/profile', { method: 'PATCH', body }),
+  /** Also takes interest_ids and show_age (Feature 3: shown on the public profile). */
+  updateProfile: (body: ProfileInput) => api<View>('/companion/profile', { method: 'PATCH', body }),
+  /** Own public profile exactly as customers see it (preview: true, plus status). */
+  publicPreview: () => api<PublicProfile>('/companion/public-preview'),
   setCategories: (category_ids: string[]) => api<View>('/companion/categories', { method: 'PUT', body: { category_ids } }),
   setActivities: (activity_ids: string[]) => api<View>('/companion/activities', { method: 'PUT', body: { activity_ids } }),
   setBoundaries: (option_ids: string[], custom: string[]) => api<View>('/companion/boundaries', { method: 'PUT', body: { option_ids, custom } }),

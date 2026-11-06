@@ -30,7 +30,7 @@ export const companionStates: Record<CompanionStateKey, CompanionStateCopy> = {
   REJECTED: { badge: 'suspended', label: 'Not approved', title: 'Your application was not approved', body: 'See the reason and when you can apply again.', cta: 'See details' },
   APPROVED: { badge: 'verified', label: 'Approved', title: 'You are approved', body: 'Set your availability and rates to go live.', cta: 'Start setup' },
   SETUP: { badge: 'verified', label: 'Setting up', title: 'Finish your setup', body: 'Add availability and a rate in each approved category, then go live.', cta: 'Continue setup' },
-  LIVE: { badge: 'live', label: 'Live', title: 'You are live', body: 'Customers will find you once discovery opens. Keep your availability up to date.', cta: 'Preview your public profile' },
+  LIVE: { badge: 'live', label: 'Live', title: 'You are live', body: 'Customers can find you in Discover. Keep your availability up to date.', cta: 'Preview your public profile' },
   PAUSED: { badge: 'paused', label: 'Paused', title: 'Your profile is paused', body: 'You are hidden from search. Resume any time.', cta: 'Resume' },
   REVERIFICATION_REQUIRED: { badge: 'needs-changes', label: 'Re-verify', title: 'Please re-verify your identity', body: 'Your profile is hidden until you re-verify. Existing bookings are not cancelled automatically.', cta: 'Re-verify now' },
   SUSPENDED: { badge: 'suspended', label: 'Suspended', title: 'Your profile is suspended', body: 'Our Trust & Safety team will contact you. You can appeal by replying to their message.', cta: null },
