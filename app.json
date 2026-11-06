@@ -52,9 +52,26 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Sydecrew uses your photos so you can add pictures to your companion profile.",
+          "photosPermission": "Sydecrew uses your photos so you can add pictures to your companion profile or send one in a booking chat.",
           "cameraPermission": false,
           "microphonePermission": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Sydecrew uses your location only while you share a meeting with your safety contacts, and on SOS with our safety desk. Sharing stops when the meeting ends.",
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": false,
+          "isAndroidForegroundServiceEnabled": false
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#08070c",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
         }
       ]
     ],
