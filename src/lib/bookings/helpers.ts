@@ -3,6 +3,7 @@
  * idempotency keys, price lines, status and action mapping, the request SLA
  * countdown and polling the booking after payment. Money stays in paise.
  */
+import { companionStatusLabels, prices, statusLabels } from '../../content/bookings';
 import type { Booking, BookingActions, BookingStatus, Breakdown } from './types';
 
 // ── Idempotency ─────────────────────────────────────────────────────────
@@ -54,12 +55,31 @@ export type PriceLine = { key: string; label: string; paise: number; strong?: bo
 
 /** What the customer pays, line by line (zero fee / GST / discount lines are left out). Sums to the total. */
 export function customerLines(b: Breakdown, durationMinutes: number): PriceLine[] {
-  const lines: PriceLine[] = [{ key: 'subtotal', label: `Companion's time (${durationLabel(durationMinutes)})`, paise: b.subtotal_paise }];
-  if (b.discount_paise) lines.push({ key: 'discount', label: 'Discount', paise: -b.discount_paise });
-  if (b.customer_fee_paise) lines.push({ key: 'fee', label: 'Service fee', paise: b.customer_fee_paise });
-  if (b.gst_on_fee_paise) lines.push({ key: 'gst_fee', label: 'GST on the service fee', paise: b.gst_on_fee_paise });
-  lines.push({ key: 'total', label: 'Total', paise: b.total_paise, strong: true });
+  const lines: PriceLine[] = [{ key: 'subtotal', label: prices.time(durationLabel(durationMinutes)), paise: b.subtotal_paise }];
+  if (b.discount_paise) lines.push({ key: 'discount', label: prices.discount, paise: -b.discount_paise });
+  if (b.customer_fee_paise) lines.push({ key: 'fee', label: prices.fee, paise: b.customer_fee_paise });
+  if (b.gst_on_fee_paise) lines.push({ key: 'gst_fee', label: prices.gstFee, paise: b.gst_on_fee_paise });
+  lines.push({ key: 'total', label: prices.total, paise: b.total_paise, strong: true });
   return lines;
+}
+
+/** The customer's side of a saved booking (same lines as the quote). */
+export function customerMoneyLines(m: Booking['money'], durationMinutes: number): PriceLine[] {
+  return customerLines(
+    {
+      hourly_rate_paise: 0,
+      subtotal_paise: m.subtotal_paise,
+      customer_fee_paise: m.customer_fee_paise ?? 0,
+      gst_on_fee_paise: m.gst_on_fee_paise ?? 0,
+      discount_paise: m.discount_paise ?? 0,
+      total_paise: m.total_paise ?? 0,
+      commission_paise: 0,
+      gst_on_commission_paise: 0,
+      companion_earnings_paise: 0,
+      is_repeat: false,
+    },
+    durationMinutes,
+  );
 }
 
 /** Lines that add up to the total (everything except the total row). */
@@ -67,10 +87,10 @@ export const linesSum = (lines: PriceLine[]) => lines.filter((l) => l.key !== 't
 
 /** The companion's side of a booking: subtotal, commission and GST on it, earnings. */
 export function companionLines(m: Booking['money']): PriceLine[] {
-  const lines: PriceLine[] = [{ key: 'subtotal', label: 'Booking value', paise: m.subtotal_paise }];
-  if (m.commission_paise) lines.push({ key: 'commission', label: 'Sydecrew commission', paise: -m.commission_paise });
-  if (m.gst_on_commission_paise) lines.push({ key: 'gst_commission', label: 'GST on the commission', paise: -m.gst_on_commission_paise });
-  lines.push({ key: 'earnings', label: 'Your earnings', paise: m.earnings_paise ?? 0, strong: true });
+  const lines: PriceLine[] = [{ key: 'subtotal', label: prices.bookingValue, paise: m.subtotal_paise }];
+  if (m.commission_paise) lines.push({ key: 'commission', label: prices.commission, paise: -m.commission_paise });
+  if (m.gst_on_commission_paise) lines.push({ key: 'gst_commission', label: prices.gstCommission, paise: -m.gst_on_commission_paise });
+  lines.push({ key: 'earnings', label: prices.earnings, paise: m.earnings_paise ?? 0, strong: true });
   return lines;
 }
 
@@ -78,28 +98,25 @@ export function companionLines(m: Booking['money']): PriceLine[] {
 
 export type BadgeKind = 'verified' | 'pending' | 'needs-changes' | 'live' | 'paused' | 'suspended' | 'neutral' | 'info';
 
-const STATUS: Record<BookingStatus, { label: string; badge: BadgeKind }> = {
-  DRAFT: { label: 'Draft', badge: 'neutral' },
-  REQUESTED: { label: 'Request sent', badge: 'pending' },
-  AWAITING_COMPANION: { label: 'Waiting for the companion', badge: 'pending' },
-  ACCEPTED: { label: 'Accepted', badge: 'info' },
-  REJECTED: { label: 'Not accepted', badge: 'neutral' },
-  PAYMENT_PENDING: { label: 'Waiting for payment', badge: 'pending' },
-  CONFIRMED: { label: 'Confirmed', badge: 'verified' },
-  IN_PROGRESS: { label: 'In progress', badge: 'live' },
-  COMPLETED: { label: 'Completed', badge: 'verified' },
-  CANCELLED: { label: 'Cancelled', badge: 'neutral' },
-  EXPIRED: { label: 'Expired', badge: 'neutral' },
-  DISPUTED: { label: 'Issue under review', badge: 'needs-changes' },
-  REFUNDED: { label: 'Refunded', badge: 'neutral' },
-  PARTIALLY_REFUNDED: { label: 'Partly refunded', badge: 'neutral' },
+const BADGE: Record<BookingStatus, BadgeKind> = {
+  DRAFT: 'neutral',
+  REQUESTED: 'pending',
+  AWAITING_COMPANION: 'pending',
+  ACCEPTED: 'info',
+  REJECTED: 'neutral',
+  PAYMENT_PENDING: 'pending',
+  CONFIRMED: 'verified',
+  IN_PROGRESS: 'live',
+  COMPLETED: 'verified',
+  CANCELLED: 'neutral',
+  EXPIRED: 'neutral',
+  DISPUTED: 'needs-changes',
+  REFUNDED: 'neutral',
+  PARTIALLY_REFUNDED: 'neutral',
 };
-/** Companion wording where it differs ("Waiting for you"). */
-const COMPANION_STATUS: Partial<Record<BookingStatus, string>> = { AWAITING_COMPANION: 'Waiting for your answer', PAYMENT_PENDING: 'Waiting for the customer to pay' };
 
 export function statusView(status: BookingStatus, viewer: 'CUSTOMER' | 'COMPANION' = 'CUSTOMER') {
-  const s = STATUS[status];
-  return { label: (viewer === 'COMPANION' && COMPANION_STATUS[status]) || s.label, badge: s.badge };
+  return { label: (viewer === 'COMPANION' && companionStatusLabels[status]) || statusLabels[status], badge: BADGE[status] };
 }
 
 export type ActionKey = 'pay' | 'check_in' | 'check_out' | 'accept' | 'reject' | 'cancel' | 'report_issue';
