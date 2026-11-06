@@ -10,7 +10,6 @@ import { PlaceholderNotice, useToast } from '@/components/ui/Misc';
 import { Screen } from '@/components/ui/Screen';
 import { EmptyState, ErrorState, OfflineBanner, SkeletonList } from '@/components/ui/States';
 import { profile as copy } from '@/content/discovery';
-import { ApiError } from '@/lib/api';
 import { discoveryApi } from '@/lib/discovery/api';
 import type { PublicProfile } from '@/lib/discovery/types';
 import { errorView } from '@/lib/errors';
@@ -20,7 +19,8 @@ import { colors, space } from '@/theme';
  * A companion's public profile (Feature 3 §5, artboard "Companion profile"):
  * GET /discovery/companions/:id (also records "recently viewed"). Save /
  * unsave, report, and a disabled "Request to book" until bookings open. A
- * hidden, blocked, paused or removed companion answers 404: "not available".
+ * hidden, blocked, paused or removed companion answers 404 PROFILE_UNAVAILABLE:
+ * the screen says "not available" (other errors get the shared message and retry).
  */
 export default function CompanionProfileScreen() {
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function CompanionProfileScreen() {
       },
       (err) => {
         const v = errorView(err);
-        const gone = err instanceof ApiError && err.status === 404;
+        const gone = v.code === 'PROFILE_UNAVAILABLE';
         setState({ loading: false, error: gone || v.offline ? null : v.message, offline: v.offline, gone });
       },
     );
@@ -69,7 +69,12 @@ export default function CompanionProfileScreen() {
       toast(res.saved ? copy.savedToast : copy.unsavedToast);
     } catch (err) {
       setSaved(!want);
-      toast(errorView(err).message, 'error');
+      const v = errorView(err);
+      if (v.code === 'PROFILE_UNAVAILABLE') {
+        // Hidden or paused while open: show "not available" instead of a stale profile.
+        setData(null);
+        setState({ loading: false, error: null, offline: false, gone: true });
+      } else toast(v.message, 'error');
     } finally {
       busy.current = false;
       setSaving(false);
