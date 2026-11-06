@@ -6,7 +6,20 @@ import { Sheet } from '@/components/ui/Sheet';
 import { Text } from '@/components/ui/Text';
 import { categoryNames } from '@/content/common';
 import { filtersSheet as copy, sortLabels, windowLabels } from '@/content/discovery';
-import { DURATION_CHOICES, EMPTY_FILTERS, nextDates, overallBand, priceBuckets, toggleIn, withCategory, withDate, type DiscoveryFilters } from '@/lib/discovery/filters';
+import {
+  DURATION_CHOICES,
+  EMPTY_FILTERS,
+  hourChoices,
+  nextDates,
+  overallBand,
+  priceBuckets,
+  toggleIn,
+  withCategory,
+  withDate,
+  withExactTime,
+  withTimeWindow,
+  type DiscoveryFilters,
+} from '@/lib/discovery/filters';
 import { shortDay } from '@/lib/discovery/list';
 import type { DiscoveryOptions } from '@/lib/discovery/types';
 import { formatPaise } from '@/lib/money';
@@ -36,6 +49,10 @@ export function FiltersSheet({ visible, onClose, options, value, onApply }: {
   const dates = useMemo(() => nextDates(options.today, 14), [options.today]);
   const buckets = priceBuckets(category?.price_band ?? overallBand(options.categories.map((c) => c.price_band)));
   const set = (patch: Partial<DiscoveryFilters>) => setDraft((d) => ({ ...d, ...patch }));
+  // Exact time: whole hours across the API's time windows (e.g. 06:00–23:00), as an alternative to a window.
+  const tw = options.time_windows;
+  const hours = useMemo(() => (tw.length ? hourChoices(tw[0].start, tw[tw.length - 1].end) : []), [tw]);
+  const exactMode = !draft.timeWindow && draft.startTime !== null;
 
   return (
     <Sheet visible={visible} onClose={onClose} title={copy.title}>
@@ -76,11 +93,20 @@ export function FiltersSheet({ visible, onClose, options, value, onApply }: {
         </Group>
 
         <Group title={copy.time} hint={draft.date ? undefined : copy.timeHint}>
-          <Chip radio label={copy.anyTime} selected={!draft.timeWindow} disabled={!draft.date} onPress={() => set({ timeWindow: null })} />
+          <Chip radio label={copy.anyTime} selected={!draft.timeWindow && !exactMode} onPress={() => setDraft((d) => withTimeWindow(d, null))} />
           {options.time_windows.map((w) => (
-            <Chip key={w.key} radio label={windowLabels[w.key]} note={`${w.start}–${w.end}`} selected={draft.timeWindow === w.key} disabled={!draft.date} onPress={() => set({ timeWindow: w.key })} />
+            <Chip key={w.key} radio label={windowLabels[w.key]} note={`${w.start}–${w.end}`} selected={draft.timeWindow === w.key} onPress={() => setDraft((d) => withTimeWindow(d, w.key))} />
           ))}
+          {hours.length > 1 ? (
+            <Chip radio label={copy.exactTime} selected={exactMode} onPress={() => setDraft((d) => withExactTime(d, hours[0], hours[Math.min(2, hours.length - 1)]))} />
+          ) : null}
         </Group>
+        {exactMode ? (
+          <View style={{ gap: space.sm }}>
+            <HourRow label={copy.from} hours={hours.slice(0, -1)} value={draft.startTime} onPick={(h) => setDraft((d) => withExactTime(d, h, d.endTime && d.endTime > h ? d.endTime : hours[hours.indexOf(h) + 1]))} />
+            <HourRow label={copy.until} hours={hours.filter((h) => !draft.startTime || h > draft.startTime)} value={draft.endTime} onPick={(h) => setDraft((d) => withExactTime(d, d.startTime, h))} />
+          </View>
+        ) : null}
 
         <Group title={copy.duration}>
           <Chip radio label={copy.anyDuration} selected={!draft.durationMinutes} onPress={() => set({ durationMinutes: null })} />
@@ -106,6 +132,18 @@ export function FiltersSheet({ visible, onClose, options, value, onApply }: {
         <Button onPress={() => onApply(draft)} style={{ flex: 2 }} accessibilityLabel={copy.apply}>{copy.apply}</Button>
       </View>
     </Sheet>
+  );
+}
+
+/** One scrollable row of hour chips ("From" / "Until"). */
+function HourRow({ label, hours, value, onPick }: { label: string; hours: string[]; value: string | null; onPick: (h: string) => void }) {
+  return (
+    <View style={{ gap: space.xs }}>
+      <Text variant="caption" color={colors.textMuted}>{label}</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.sm }}>
+        {hours.map((h) => <Chip key={h} radio label={h} selected={value === h} onPress={() => onPick(h)} />)}
+      </ScrollView>
+    </View>
   );
 }
 

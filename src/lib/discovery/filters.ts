@@ -4,7 +4,9 @@
  *
  * Rules that mirror the API (Sydecrew-be discovery.routes.js):
  *  - an activity belongs to a category: changing the category clears it;
- *  - the time window only applies to a chosen date, so it is dropped without one;
+ *  - time of day is a coarse window (morning / afternoon / evening) OR an exact
+ *    start and end time (HH:MM, both, end after start), never both; without a
+ *    date either one means that time of day on any day;
  *  - duration is 30–720 minutes; prices are whole paise and min <= max;
  *  - limit is 1–24.
  */
@@ -18,6 +20,9 @@ export type DiscoveryFilters = {
   interests: string[];
   date: string | null;
   timeWindow: TimeWindow | null;
+  /** Exact time of day (HH:MM, 24-hour): sent only as a pair, and only without timeWindow. */
+  startTime: string | null;
+  endTime: string | null;
   durationMinutes: number | null;
   minPaise: number | null;
   maxPaise: number | null;
@@ -32,6 +37,8 @@ export const EMPTY_FILTERS: DiscoveryFilters = Object.freeze({
   interests: [],
   date: null,
   timeWindow: null,
+  startTime: null,
+  endTime: null,
   durationMinutes: null,
   minPaise: null,
   maxPaise: null,
@@ -44,7 +51,12 @@ export const PAGE_SIZE = 12;
 const MAX_LIMIT = 24;
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 const enc = encodeURIComponent;
+
+/** A usable exact time range: both set, valid HH:MM, end after start (HH:MM compares as text). */
+export const exactRange = (start: string | null | undefined, end: string | null | undefined): [string, string] | null =>
+  start && end && TIME_RE.test(start) && TIME_RE.test(end) && end > start ? [start, end] : null;
 
 const intOrNull = (v: unknown, min: number, max = Number.MAX_SAFE_INTEGER): number | null => {
   const n = typeof v === 'number' ? v : typeof v === 'string' && /^\d+$/.test(v) ? Number(v) : NaN;
@@ -59,10 +71,10 @@ export function filtersToQuery(f: DiscoveryFilters, opts: { cursor?: string | nu
   if (f.zone) parts.push(['zone', f.zone]);
   for (const l of [...new Set(f.languages)]) parts.push(['language', l]);
   for (const i of [...new Set(f.interests)]) parts.push(['interest', i]);
-  if (f.date && DATE_RE.test(f.date)) {
-    parts.push(['date', f.date]);
-    if (f.timeWindow) parts.push(['time_window', f.timeWindow]);
-  }
+  if (f.date && DATE_RE.test(f.date)) parts.push(['date', f.date]);
+  const exact = exactRange(f.startTime, f.endTime);
+  if (f.timeWindow) parts.push(['time_window', f.timeWindow]);
+  else if (exact) parts.push(['start_time', exact[0]], ['end_time', exact[1]]);
   if (f.durationMinutes !== null && intOrNull(f.durationMinutes, 30, 720) !== null) parts.push(['duration_minutes', String(f.durationMinutes)]);
   const [min, max] = orderedRange(f.minPaise, f.maxPaise);
   if (min !== null) parts.push(['min_paise', String(min)]);
@@ -112,6 +124,9 @@ export function queryToFilters(input: string | Params): DiscoveryFilters {
   const sort = first(p.sort);
   const validDate = date && DATE_RE.test(date) ? date : null;
   const [minPaise, maxPaise] = orderedRange(intOrNull(first(p.min_paise), 0), intOrNull(first(p.max_paise), 0));
+  const timeWindow = tw && (TimeWindowValues as readonly string[]).includes(tw) ? (tw as TimeWindow) : null;
+  // A window wins over an exact time (the API refuses both together).
+  const exact = timeWindow ? null : exactRange(first(p.start_time), first(p.end_time));
   return {
     category,
     activity: category ? first(p.activity) || null : null,
@@ -119,7 +134,9 @@ export function queryToFilters(input: string | Params): DiscoveryFilters {
     languages: [...new Set(all(p.language))],
     interests: [...new Set(all(p.interest))],
     date: validDate,
-    timeWindow: validDate && tw && (TimeWindowValues as readonly string[]).includes(tw) ? (tw as TimeWindow) : null,
+    timeWindow,
+    startTime: exact?.[0] ?? null,
+    endTime: exact?.[1] ?? null,
     durationMinutes: intOrNull(first(p.duration_minutes), 30, 720),
     minPaise,
     maxPaise,
@@ -136,6 +153,7 @@ export function activeFilterCount(f: DiscoveryFilters): number {
     f.languages.length,
     f.interests.length,
     f.date,
+    f.timeWindow || exactRange(f.startTime, f.endTime),
     f.durationMinutes,
     f.minPaise !== null || f.maxPaise !== null,
   ].filter(Boolean).length;
@@ -146,9 +164,25 @@ export function withCategory(f: DiscoveryFilters, category: string | null): Disc
   return category === f.category ? f : { ...f, category, activity: null };
 }
 
-/** Clearing the date also clears the time window (it only applies to a date). */
 export function withDate(f: DiscoveryFilters, date: string | null): DiscoveryFilters {
-  return { ...f, date, timeWindow: date ? f.timeWindow : null };
+  return { ...f, date };
+}
+
+/** Time of day: a coarse window clears an exact time, and an exact time clears the window. */
+export function withTimeWindow(f: DiscoveryFilters, timeWindow: TimeWindow | null): DiscoveryFilters {
+  return { ...f, timeWindow, startTime: null, endTime: null };
+}
+export function withExactTime(f: DiscoveryFilters, startTime: string | null, endTime: string | null): DiscoveryFilters {
+  return { ...f, timeWindow: null, startTime, endTime };
+}
+
+/** "08:00" … for whole hours from `from` to `to` (inclusive), e.g. the span of the API's time windows. */
+export function hourChoices(from: string, to: string): string[] {
+  const h = (t: string) => (TIME_RE.test(t) ? Number(t.slice(0, 2)) : NaN);
+  const a = h(from);
+  const b = to === '24:00' ? 24 : h(to);
+  if (!(a <= b)) return [];
+  return Array.from({ length: b - a + 1 }, (_, i) => (a + i === 24 ? '23:59' : `${String(a + i).padStart(2, '0')}:00`));
 }
 
 export const toggleIn = (list: string[], id: string): string[] => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
