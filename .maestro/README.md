@@ -30,6 +30,22 @@ customer in a pilot city and at least one LIVE companion there:
 maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/discovery.yaml
 ```
 
+Bookings (Feature 4). Need a **development build** (the "Test payment — no real money" checkout exists only in
+`__DEV__` builds) and the API with `PAYMENT_PROVIDER=mock`:
+
+```bash
+# Request -> the companion accepts -> pay with the test checkout -> confirmed -> booking day (two accounts, three parts)
+maestro test -e EMAIL=customer@example.com -e PASSWORD=Secret123 -e OTP=123456 -e PART=request .maestro/booking-request-pay.yaml
+maestro test -e EMAIL=companion@example.com -e PASSWORD=Secret123 -e OTP=123456 -e PART=accept .maestro/booking-request-pay.yaml
+maestro test -e EMAIL=customer@example.com -e PASSWORD=Secret123 -e OTP=123456 -e PART=pay .maestro/booking-request-pay.yaml
+# Instant booking -> payment fails -> try again -> confirmed (a companion with Instant booking on)
+maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/booking-instant-retry.yaml
+# Cancel a confirmed booking after the refund preview
+maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/booking-cancel.yaml
+```
+
+Check-in opens 30 minutes before the start, so those steps run only when "Check in" is shown.
+
 The OTP is shown on screen by the development API (dev hint); pass the current code each run.
 The gallery picker and crop screen differ between Android versions: the photo steps use optional
 taps and may need adjusting for your device.

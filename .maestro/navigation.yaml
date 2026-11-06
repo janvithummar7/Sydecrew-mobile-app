@@ -19,9 +19,11 @@ appId: com.sydecrew.app
 - tapOn: "Discover"
 - assertVisible: "Filters.*"
 - assertNotVisible: "Sample — design preview only"
-# Bookings: booking details and booking-day previews.
+# Bookings (Feature 4): the real list with its tabs; no previews.
 - tapOn: "Bookings"
-- assertVisible: "Coming soon — not bookable yet"
+- assertVisible: "Upcoming"
+- assertVisible: "Cancelled"
+- assertNotVisible: "Coming soon — not bookable yet"
 - tapOn: "Messages"
 - assertVisible: "Messages"
 # Profile -> Settings and legal: draft legal pages and the grievance officer placeholder.

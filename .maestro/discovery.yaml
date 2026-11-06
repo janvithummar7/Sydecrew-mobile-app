@@ -43,7 +43,6 @@ appId: com.sydecrew.app
     id: "companion-card-.*"
     index: 0
 - assertVisible: "ID verified by Sydecrew"
-- assertVisible: "Booking opens soon"
 - assertVisible: "Request to book"
 
 # Save (idempotent: a profile saved by an earlier run shows "Saved"; tap until it is saved).

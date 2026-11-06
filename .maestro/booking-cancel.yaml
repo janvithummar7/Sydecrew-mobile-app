@@ -1,0 +1,41 @@
+# Bookings (Feature 4): cancel a confirmed booking after seeing the refund preview.
+# Needs: an onboarded customer with at least one upcoming CONFIRMED booking (e.g. from booking-instant-retry.yaml).
+# Run: maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/booking-cancel.yaml
+# Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+
+- tapOn: "Bookings"
+- tapOn: "Upcoming"
+- tapOn:
+    text: ".*Confirmed.*"
+    index: 0
+- scrollUntilVisible:
+    element: "Cancel booking"
+- tapOn: "Cancel booking"
+
+# The refund preview comes first: the amount and the rule that applies.
+- assertVisible: "Refund"
+- assertVisible: "(Full refund|.*refund|No refund).*"
+- tapOn: "Change of plans"
+- tapOn:
+    text: "Cancel booking"
+    index: 1
+- extendedWaitUntil:
+    visible: "(Cancelled|Refunded|Partly refunded)"
+    timeout: 20000
+- tapOn: "Back"
+- tapOn: "Cancelled"
+- assertVisible: ".*(Cancelled|Refunded|Partly refunded).*"

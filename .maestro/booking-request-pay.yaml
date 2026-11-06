@@ -1,0 +1,104 @@
+# Bookings (Feature 4): request -> (companion accepts) -> pay with the test checkout -> confirmed -> check in / out.
+# Needs: a development build (the test checkout exists only in __DEV__), the API with PAYMENT_PROVIDER=mock,
+# an onboarded customer, and a LIVE request-mode companion with an approved venue in their area.
+# Run in three parts (two accounts):
+#   maestro test -e EMAIL=customer@example.com -e PASSWORD=… -e OTP=… -e PART=request .maestro/booking-request-pay.yaml
+#   maestro test -e EMAIL=companion@example.com -e PASSWORD=… -e OTP=… -e PART=accept  .maestro/booking-request-pay.yaml
+#   maestro test -e EMAIL=customer@example.com -e PASSWORD=… -e OTP=… -e PART=pay     .maestro/booking-request-pay.yaml
+# Check-in opens 30 minutes before the start: the check-in steps run only when "Check in" is shown.
+# Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+
+# Part 1 (customer): profile -> booking details -> review -> send the request.
+- runFlow:
+    when:
+      true: ${PART == 'request'}
+    commands:
+      - tapOn: "Discover"
+      - tapOn:
+          id: "companion-card-.*"
+          index: 0
+      - tapOn: "Request to book"
+      - assertVisible: "Booking details.*"
+      - tapOn:
+          text: "(Mon|Tue|Wed|Thu|Fri|Sat|Sun).*"
+          index: 2
+      - tapOn: "1 h"
+      - tapOn:
+          text: ".*[ap]m"
+          index: 0
+      - scrollUntilVisible:
+          element: "Approved public venues in the companion’s area only."
+      - tapOn:
+          below: "Approved public venues in the companion’s area only."
+      - tapOn: "See the price"
+      - assertVisible: "Review your request"
+      - assertVisible: "Total"
+      - assertVisible: "Cancellation policy"
+      - scrollUntilVisible:
+          element: "I will meet only at the approved public venue.*"
+      - tapOn: "I will meet only at the approved public venue.*"
+      - tapOn: "Send request"
+      - assertVisible: "Waiting for the companion"
+
+# Part 2 (companion): Bookings tab -> the request (with its countdown) -> accept.
+- runFlow:
+    when:
+      true: ${PART == 'accept'}
+    commands:
+      - tapOn: "Bookings"
+      - assertVisible: "Requests"
+      - assertVisible: "Answer within.*"
+      - tapOn:
+          text: ".*Waiting for your answer.*"
+          index: 0
+      - tapOn: "Accept request"
+      - assertVisible: "Request accepted"
+      - assertVisible: "Waiting for the customer to pay"
+
+# Part 3 (customer): Bookings -> pay -> test checkout SUCCESS -> confirmed -> booking day.
+- runFlow:
+    when:
+      true: ${PART == 'pay'}
+    commands:
+      - tapOn: "Bookings"
+      - tapOn:
+          text: ".*Waiting for payment.*"
+          index: 0
+      - tapOn: "Pay now"
+      - assertVisible: "Test payment — no real money"
+      - tapOn: "Payment succeeds"
+      - tapOn: "Test payment — no real money · .*"
+      - assertVisible: "Checking with the payment gateway…"
+      - extendedWaitUntil:
+          visible: "Booking confirmed"
+          timeout: 30000
+      - tapOn: "View booking"
+      - assertVisible: "Confirmed"
+      - tapOn: "Booking day"
+      - assertVisible: "Agreed boundaries"
+      - assertVisible: "Need help? Open SOS"
+      - runFlow:
+          when:
+            visible: "Check in"
+          commands:
+            - tapOn: "Check in"
+            - assertVisible: "Checked in.*"
+      - runFlow:
+          when:
+            visible: "Check out"
+          commands:
+            - tapOn: "Check out"

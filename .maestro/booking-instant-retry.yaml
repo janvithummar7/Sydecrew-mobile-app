@@ -1,0 +1,61 @@
+# Bookings (Feature 4): instant booking -> the payment fails -> try again -> confirmed.
+# Needs: a development build (test checkout), the API with PAYMENT_PROVIDER=mock, an onboarded customer,
+# and a LIVE companion with "Instant booking" on for an activity, and an approved venue in their area.
+# Run: maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/booking-instant-retry.yaml
+# Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+
+- tapOn: "Discover"
+- tapOn:
+    id: "companion-card-.*"
+    index: 0
+- tapOn: "Request to book"
+- assertVisible: "Instant booking: pay now and it is confirmed."
+- tapOn:
+    text: "(Mon|Tue|Wed|Thu|Fri|Sat|Sun).*"
+    index: 3
+- tapOn: "1 h"
+- tapOn:
+    text: ".*[ap]m"
+    index: 0
+- scrollUntilVisible:
+    element: "Approved public venues in the companion’s area only."
+- tapOn:
+    below: "Approved public venues in the companion’s area only."
+- tapOn: "See the price"
+- assertVisible: "Review and pay"
+- scrollUntilVisible:
+    element: "I will meet only at the approved public venue.*"
+- tapOn: "I will meet only at the approved public venue.*"
+- tapOn: "Book and pay .*"
+
+# First attempt: the gateway says the payment failed. The time stays held.
+- assertVisible: "Test payment — no real money"
+- tapOn: "Payment fails"
+- tapOn: "Test payment — no real money · .*"
+- extendedWaitUntil:
+    visible: "The payment did not go through"
+    timeout: 30000
+- tapOn: "Try again"
+
+# Second attempt: success, confirmed only when the API says so.
+- tapOn: "Payment succeeds"
+- tapOn: "Test payment — no real money · .*"
+- extendedWaitUntil:
+    visible: "Booking confirmed"
+    timeout: 30000
+- tapOn: "View booking"
+- assertVisible: "Confirmed"
