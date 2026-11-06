@@ -18,13 +18,6 @@ export const customerHome = {
   comingSoon: 'Coming soon',
 } as const;
 
-export const discover = {
-  title: 'Discover',
-  subtitle: 'Verified companions for Crew, Plus-One, Crew Care and Crew Events.',
-  filters: ['Crew', 'Plus-One', 'Crew Care', 'Crew Events'],
-  perHour: '/ hour',
-} as const;
-
 export const bookings = {
   title: 'Bookings',
   subtitle: 'Your upcoming meetings and history will appear here.',
@@ -52,16 +45,6 @@ export const account = {
 } as const;
 
 export const previews = {
-  profile: {
-    verified: 'ID verified by Sydecrew',
-    offers: 'Offers',
-    interests: 'Interests',
-    boundaries: 'Boundaries',
-    reviews: 'Reviews',
-    noReviews: 'New companion — no reviews yet. Only customers with a completed booking can review.',
-    request: 'Request to book',
-    report: 'Report this profile',
-  },
   booking: {
     title: 'Booking details',
     occasion: 'Occasion',
