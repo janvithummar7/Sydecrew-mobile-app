@@ -6368,9 +6368,34 @@
               }
             ]
           },
+          "call_window": {
+            "type": "object",
+            "properties": {
+              "opens_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              "closes_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              "open": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "opens_at",
+              "closes_at",
+              "open"
+            ],
+            "additionalProperties": false
+          },
           "actions": {
             "type": "object",
             "properties": {
+              "can_call": {
+                "type": "boolean"
+              },
               "can_pay": {
                 "type": "boolean"
               },
@@ -6394,6 +6419,7 @@
               }
             },
             "required": [
+              "can_call",
               "can_pay",
               "can_cancel",
               "can_accept",
@@ -6432,6 +6458,7 @@
           "dispute_window_ends_at",
           "timeline",
           "conversation_id",
+          "call_window",
           "actions"
         ],
         "additionalProperties": false
@@ -7524,9 +7551,34 @@
               }
             ]
           },
+          "call_window": {
+            "type": "object",
+            "properties": {
+              "opens_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              "closes_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              "open": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "opens_at",
+              "closes_at",
+              "open"
+            ],
+            "additionalProperties": false
+          },
           "actions": {
             "type": "object",
             "properties": {
+              "can_call": {
+                "type": "boolean"
+              },
               "can_pay": {
                 "type": "boolean"
               },
@@ -7550,6 +7602,7 @@
               }
             },
             "required": [
+              "can_call",
               "can_pay",
               "can_cancel",
               "can_accept",
@@ -8200,6 +8253,7 @@
           "dispute_window_ends_at",
           "timeline",
           "conversation_id",
+          "call_window",
           "actions",
           "money_staff",
           "ledger",
@@ -9536,6 +9590,17 @@
               }
             ]
           },
+          "follow_up_completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "description": {
             "type": [
               "string",
@@ -9933,6 +9998,7 @@
           "outcome",
           "resolution",
           "follow_up_due_at",
+          "follow_up_completed_at",
           "description",
           "reporter",
           "other_party",

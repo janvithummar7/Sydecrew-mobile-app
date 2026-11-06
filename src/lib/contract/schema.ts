@@ -3713,7 +3713,15 @@ export interface components {
                 at: string;
             }[];
             conversation_id: string | null;
+            call_window: {
+                /** @description ISO 8601 date-time (UTC) */
+                opens_at: string;
+                /** @description ISO 8601 date-time (UTC) */
+                closes_at: string;
+                open: boolean;
+            };
             actions: {
+                can_call: boolean;
                 can_pay: boolean;
                 can_cancel: boolean;
                 can_accept: boolean;
@@ -3962,7 +3970,15 @@ export interface components {
                 at: string;
             }[];
             conversation_id: string | null;
+            call_window: {
+                /** @description ISO 8601 date-time (UTC) */
+                opens_at: string;
+                /** @description ISO 8601 date-time (UTC) */
+                closes_at: string;
+                open: boolean;
+            };
             actions: {
+                can_call: boolean;
                 can_pay: boolean;
                 can_cancel: boolean;
                 can_accept: boolean;
@@ -4393,6 +4409,7 @@ export interface components {
             outcome: string | null;
             resolution: string | null;
             follow_up_due_at: string | null;
+            follow_up_completed_at: string | null;
             description: string | null;
             reporter: {
                 /** Format: uuid */
