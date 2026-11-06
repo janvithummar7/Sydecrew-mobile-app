@@ -6,7 +6,7 @@ import { BackBar } from '@/components/account/BackBar';
 import { PublicProfileView } from '@/components/discovery/PublicProfileView';
 import { ReportSheet } from '@/components/discovery/ReportSheet';
 import { Button } from '@/components/ui/Button';
-import { PlaceholderNotice, useToast } from '@/components/ui/Misc';
+import { useToast } from '@/components/ui/Misc';
 import { Screen } from '@/components/ui/Screen';
 import { EmptyState, ErrorState, OfflineBanner, SkeletonList } from '@/components/ui/States';
 import { profile as copy } from '@/content/discovery';
@@ -18,7 +18,7 @@ import { colors, space } from '@/theme';
 /**
  * A companion's public profile (Feature 3 §5, artboard "Companion profile"):
  * GET /discovery/companions/:id (also records "recently viewed"). Save /
- * unsave, report, and a disabled "Request to book" until bookings open. A
+ * unsave, report, and "Request to book" (Feature 4: booking details). A
  * hidden, blocked, paused or removed companion answers 404 PROFILE_UNAVAILABLE:
  * the screen says "not available" (other errors get the shared message and retry).
  */
@@ -101,10 +101,9 @@ export default function CompanionProfileScreen() {
   return (
     <Screen
       footer={
-        <View style={{ gap: space.sm }}>
-          <PlaceholderNotice title={copy.bookingSoonTitle} body={copy.bookingSoonBody} />
-          <Button disabled accessibilityHint={copy.bookingSoonTitle}>{copy.request}</Button>
-        </View>
+        <Button onPress={() => id && router.push({ pathname: '/book/[companionId]', params: { companionId: id } })} accessibilityHint={copy.requestHint}>
+          {copy.request}
+        </Button>
       }
     >
       <BackBar label={copy.back} />
