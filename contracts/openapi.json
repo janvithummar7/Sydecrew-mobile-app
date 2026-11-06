@@ -348,7 +348,55 @@
           "ONBOARDING_REQUIRED",
           "VENUE_NOT_FOUND",
           "REPORT_NOT_FOUND",
-          "REPORT_CLOSED"
+          "REPORT_CLOSED",
+          "BOOKING_NOT_FOUND",
+          "OFFERING_UNAVAILABLE",
+          "PLUS_ONE_NOT_OPEN",
+          "VENUE_NOT_ALLOWED",
+          "VENUE_UNAVAILABLE",
+          "INSTANT_NOT_AVAILABLE",
+          "DURATION_OUT_OF_RANGE",
+          "TOO_SOON",
+          "TOO_FAR_AHEAD",
+          "DATE_BLOCKED",
+          "OUTSIDE_AVAILABILITY",
+          "DAILY_LIMIT_REACHED",
+          "SLOT_UNAVAILABLE",
+          "CUSTOMER_TIME_CONFLICT",
+          "QUOTE_NOT_FOUND",
+          "QUOTE_EXPIRED",
+          "QUOTE_ALREADY_USED",
+          "IDEMPOTENCY_KEY_REQUIRED",
+          "IDEMPOTENCY_KEY_REUSED",
+          "IDEMPOTENCY_MISMATCH",
+          "ACCOUNT_RESTRICTED",
+          "CUSTOMER_ONLY",
+          "COMPANION_ONLY",
+          "COMPANION_NOT_LIVE",
+          "REQUEST_EXPIRED",
+          "REQUEST_WITHDRAWN",
+          "NOT_PAYABLE",
+          "PAYMENT_WINDOW_CLOSED",
+          "PAYMENT_IN_PROGRESS",
+          "PAYMENT_ALREADY_ATTEMPTED",
+          "PAYMENT_NOT_FOUND",
+          "PAYMENT_PROVIDER_NOT_CONFIGURED",
+          "NOT_CANCELLABLE",
+          "USE_REJECT",
+          "MEETING_STARTED",
+          "NOTHING_TO_REFUND",
+          "REFUND_TOO_LARGE",
+          "REFUND_NOT_PENDING",
+          "CHECK_IN_NOT_AVAILABLE",
+          "CHECK_IN_NOT_OPEN",
+          "CHECK_IN_CLOSED",
+          "CHECK_OUT_NOT_AVAILABLE",
+          "ISSUE_WINDOW_CLOSED",
+          "NOT_DISPUTED",
+          "DISPUTE_ALREADY_RESOLVED",
+          "WEBHOOK_SIGNATURE_INVALID",
+          "WEBHOOK_INVALID",
+          "WEBHOOK_PROCESSING_FAILED"
         ]
       },
       "ErrorResponse": {
@@ -2404,6 +2452,11 @@
                 "type": "integer",
                 "minimum": -9007199254740991,
                 "maximum": 9007199254740991
+              },
+              "max_bookings_per_day": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
               }
             },
             "required": [
@@ -2411,7 +2464,8 @@
               "min_duration_minutes",
               "max_duration_minutes",
               "min_notice_hours",
-              "max_advance_days"
+              "max_advance_days",
+              "max_bookings_per_day"
             ],
             "additionalProperties": false
           }
@@ -2494,6 +2548,13 @@
                 "out_of_band": {
                   "type": "boolean"
                 },
+                "booking_mode": {
+                  "type": "string",
+                  "enum": [
+                    "INSTANT",
+                    "REQUEST"
+                  ]
+                },
                 "band": {
                   "type": "object",
                   "properties": {
@@ -2529,6 +2590,7 @@
                 "rate_set",
                 "active",
                 "out_of_band",
+                "booking_mode",
                 "band"
               ],
               "additionalProperties": false
@@ -5127,6 +5189,3122 @@
         ],
         "additionalProperties": false
       },
+      "BookingStatus": {
+        "type": "string",
+        "enum": [
+          "DRAFT",
+          "REQUESTED",
+          "AWAITING_COMPANION",
+          "ACCEPTED",
+          "REJECTED",
+          "PAYMENT_PENDING",
+          "CONFIRMED",
+          "IN_PROGRESS",
+          "COMPLETED",
+          "CANCELLED",
+          "EXPIRED",
+          "DISPUTED",
+          "REFUNDED",
+          "PARTIALLY_REFUNDED"
+        ]
+      },
+      "BookingMode": {
+        "type": "string",
+        "enum": [
+          "INSTANT",
+          "REQUEST"
+        ]
+      },
+      "BookingParty": {
+        "type": "string",
+        "enum": [
+          "CUSTOMER",
+          "COMPANION"
+        ]
+      },
+      "BookingRejectReason": {
+        "type": "string",
+        "enum": [
+          "NOT_AVAILABLE",
+          "VENUE_NOT_SUITABLE",
+          "ACTIVITY_NOT_SUITABLE",
+          "TOO_SHORT_NOTICE",
+          "OTHER"
+        ]
+      },
+      "BookingCancelReason": {
+        "type": "string",
+        "enum": [
+          "CHANGE_OF_PLANS",
+          "EMERGENCY",
+          "FEEL_UNSAFE",
+          "SCHEDULE_CONFLICT",
+          "VENUE_ISSUE",
+          "OTHER"
+        ]
+      },
+      "PlatformCancelReason": {
+        "type": "string",
+        "enum": [
+          "SAFETY",
+          "VENUE_UNAVAILABLE",
+          "COMPANION_UNAVAILABLE",
+          "POLICY_VIOLATION",
+          "OTHER"
+        ]
+      },
+      "BookingIssue": {
+        "type": "string",
+        "enum": [
+          "NO_SHOW",
+          "LATE_ARRIVAL",
+          "ENDED_EARLY",
+          "BOUNDARY_CROSSED",
+          "SAFETY_CONCERN",
+          "OTHER"
+        ]
+      },
+      "DisputeResolution": {
+        "type": "string",
+        "enum": [
+          "RELEASE_TO_COMPANION",
+          "FULL_REFUND",
+          "PARTIAL_REFUND"
+        ]
+      },
+      "PaymentStatus": {
+        "type": "string",
+        "enum": [
+          "CREATED",
+          "AUTHORIZED",
+          "CAPTURED",
+          "FAILED",
+          "REFUNDED",
+          "PARTIALLY_REFUNDED"
+        ]
+      },
+      "RefundStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING_APPROVAL",
+          "APPROVED",
+          "PROCESSING",
+          "SUCCEEDED",
+          "FAILED",
+          "REJECTED"
+        ]
+      },
+      "MockPaymentScenario": {
+        "type": "string",
+        "enum": [
+          "SUCCESS",
+          "FAILED",
+          "PENDING_THEN_SUCCESS",
+          "DUPLICATE_WEBHOOK",
+          "LATE_SUCCESS",
+          "REFUND_FAIL_ONCE"
+        ]
+      },
+      "CancellationPolicy": {
+        "type": "object",
+        "properties": {
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "companion_cancels": {
+            "type": "string"
+          },
+          "full_refund_hours": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "partial_refund_hours": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "partial_refund_bps": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "lines",
+          "companion_cancels",
+          "full_refund_hours",
+          "partial_refund_hours",
+          "partial_refund_bps"
+        ],
+        "additionalProperties": false
+      },
+      "BookingFormResponse": {
+        "type": "object",
+        "properties": {
+          "companion": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "zone": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "display_name",
+              "zone"
+            ],
+            "additionalProperties": false
+          },
+          "offerings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "offering_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "category": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "code": {
+                      "$ref": "#/components/schemas/CategoryCode"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "code",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "activity": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "hourly_rate_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "min_duration_minutes": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "max_duration_minutes": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "instant": {
+                  "type": "boolean"
+                },
+                "closed_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "offering_id",
+                "category",
+                "activity",
+                "hourly_rate_paise",
+                "min_duration_minutes",
+                "max_duration_minutes",
+                "instant",
+                "closed_reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "venues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "venue_type": {
+                  "$ref": "#/components/schemas/VenueType"
+                },
+                "categories": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "pending_approval": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "venue_type",
+                "categories",
+                "pending_approval"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "rules": {
+            "type": "object",
+            "properties": {
+              "min_notice_hours": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "max_advance_days": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "quote_valid_minutes": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "plus_one_enabled": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "min_notice_hours",
+              "max_advance_days",
+              "quote_valid_minutes",
+              "plus_one_enabled"
+            ],
+            "additionalProperties": false
+          },
+          "cancellation": {
+            "$ref": "#/components/schemas/CancellationPolicy"
+          }
+        },
+        "required": [
+          "companion",
+          "offerings",
+          "venues",
+          "rules",
+          "cancellation"
+        ],
+        "additionalProperties": false
+      },
+      "BookingSlotsResponse": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "start_times": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "ISO 8601 date-time (UTC)"
+            }
+          }
+        },
+        "required": [
+          "date",
+          "duration_minutes",
+          "start_times"
+        ],
+        "additionalProperties": false
+      },
+      "BookingBreakdown": {
+        "type": "object",
+        "properties": {
+          "hourly_rate_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "subtotal_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "customer_fee_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "gst_on_fee_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "discount_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "total_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "commission_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "gst_on_commission_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "companion_earnings_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "is_repeat": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "hourly_rate_paise",
+          "subtotal_paise",
+          "customer_fee_paise",
+          "gst_on_fee_paise",
+          "discount_paise",
+          "total_paise",
+          "commission_paise",
+          "gst_on_commission_paise",
+          "companion_earnings_paise",
+          "is_repeat"
+        ],
+        "additionalProperties": false
+      },
+      "BookingQuoteResponse": {
+        "type": "object",
+        "properties": {
+          "quote_id": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "booking_mode": {
+            "$ref": "#/components/schemas/BookingMode"
+          },
+          "forced_request_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "VENUE_PENDING_APPROVAL"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "companion": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "display_name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "display_name"
+            ],
+            "additionalProperties": false
+          },
+          "category": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "code": {
+                "$ref": "#/components/schemas/CategoryCode"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "code",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "activity": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "venue": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "venue_type": {
+                "$ref": "#/components/schemas/VenueType"
+              },
+              "pending_approval": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "venue_type",
+              "pending_approval"
+            ],
+            "additionalProperties": false
+          },
+          "start_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "end_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "breakdown": {
+            "$ref": "#/components/schemas/BookingBreakdown"
+          },
+          "versions": {
+            "type": "object",
+            "properties": {
+              "settings_version": {
+                "type": "string"
+              },
+              "commission_rule": {
+                "type": "string",
+                "enum": [
+                  "CATEGORY_DEFAULT",
+                  "REPEAT_BOOKING"
+                ]
+              },
+              "commission_bps": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "customer_fee_bps": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "gst_bps": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "settings_version",
+              "commission_rule",
+              "commission_bps",
+              "customer_fee_bps",
+              "gst_bps"
+            ],
+            "additionalProperties": false
+          },
+          "cancellation": {
+            "$ref": "#/components/schemas/CancellationPolicy"
+          }
+        },
+        "required": [
+          "quote_id",
+          "expires_at",
+          "booking_mode",
+          "forced_request_reason",
+          "companion",
+          "category",
+          "activity",
+          "venue",
+          "start_at",
+          "end_at",
+          "duration_minutes",
+          "breakdown",
+          "versions",
+          "cancellation"
+        ],
+        "additionalProperties": false
+      },
+      "BookingView": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "ref": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BookingStatus"
+          },
+          "booking_mode": {
+            "$ref": "#/components/schemas/BookingMode"
+          },
+          "viewer": {
+            "$ref": "#/components/schemas/BookingParty"
+          },
+          "category": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "code": {
+                "$ref": "#/components/schemas/CategoryCode"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "code",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "activity": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "companion": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "photo_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "display_name",
+              "photo_url"
+            ],
+            "additionalProperties": false
+          },
+          "customer": {
+            "type": "object",
+            "properties": {
+              "first_name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "first_name"
+            ],
+            "additionalProperties": false
+          },
+          "venue": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "venue_type": {
+                    "$ref": "#/components/schemas/VenueType"
+                  },
+                  "zone": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pending_approval": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "venue_type",
+                  "zone",
+                  "pending_approval"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "start_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "end_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "notes_masked": {
+            "type": "boolean"
+          },
+          "money": {
+            "type": "object",
+            "properties": {
+              "subtotal_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "refunded_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "customer_fee_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "gst_on_fee_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "discount_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "total_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "commission_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "gst_on_commission_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "earnings_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              }
+            },
+            "required": [
+              "subtotal_paise",
+              "refunded_paise"
+            ],
+            "additionalProperties": false
+          },
+          "due": {
+            "type": "object",
+            "properties": {
+              "companion_response_due_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "payment_due_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "companion_response_due_at",
+              "payment_due_at"
+            ],
+            "additionalProperties": false
+          },
+          "payment": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "$ref": "#/components/schemas/PaymentStatus"
+                  },
+                  "attempts": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  "in_flight": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "status",
+                  "attempts",
+                  "in_flight"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "refunds": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "amount_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "status": {
+                  "$ref": "#/components/schemas/RefundStatus"
+                },
+                "reason_code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "processed_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "amount_paise",
+                "status",
+                "reason_code",
+                "processed_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "check_in": {
+            "type": "object",
+            "properties": {
+              "opens_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              "closes_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              "customer_in_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "companion_in_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "customer_out_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "companion_out_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "opens_at",
+              "closes_at",
+              "customer_in_at",
+              "companion_in_at",
+              "customer_out_at",
+              "companion_out_at"
+            ],
+            "additionalProperties": false
+          },
+          "boundaries": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cancellation": {
+            "$ref": "#/components/schemas/CancellationPolicy"
+          },
+          "dispute": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "issue_code": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "outcome": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "status",
+                  "issue_code",
+                  "outcome"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dispute_window_ends_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeline": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/BookingStatus"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "to": {
+                  "$ref": "#/components/schemas/BookingStatus"
+                },
+                "actor_type": {
+                  "type": "string",
+                  "enum": [
+                    "CUSTOMER",
+                    "COMPANION",
+                    "ADMIN",
+                    "SYSTEM"
+                  ]
+                },
+                "reason_code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "from",
+                "to",
+                "actor_type",
+                "reason_code",
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "actions": {
+            "type": "object",
+            "properties": {
+              "can_pay": {
+                "type": "boolean"
+              },
+              "can_cancel": {
+                "type": "boolean"
+              },
+              "can_accept": {
+                "type": "boolean"
+              },
+              "can_reject": {
+                "type": "boolean"
+              },
+              "can_check_in": {
+                "type": "boolean"
+              },
+              "can_check_out": {
+                "type": "boolean"
+              },
+              "can_report_issue": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "can_pay",
+              "can_cancel",
+              "can_accept",
+              "can_reject",
+              "can_check_in",
+              "can_check_out",
+              "can_report_issue"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "id",
+          "ref",
+          "status",
+          "booking_mode",
+          "viewer",
+          "category",
+          "activity",
+          "companion",
+          "customer",
+          "venue",
+          "start_at",
+          "end_at",
+          "duration_minutes",
+          "notes",
+          "notes_masked",
+          "money",
+          "due",
+          "payment",
+          "refunds",
+          "check_in",
+          "boundaries",
+          "cancellation",
+          "dispute",
+          "dispute_window_ends_at",
+          "timeline",
+          "actions"
+        ],
+        "additionalProperties": false
+      },
+      "BookingResponse": {
+        "type": "object",
+        "properties": {
+          "booking": {
+            "$ref": "#/components/schemas/BookingView"
+          }
+        },
+        "required": [
+          "booking"
+        ],
+        "additionalProperties": false
+      },
+      "BookingListResponse": {
+        "type": "object",
+        "properties": {
+          "tab": {
+            "type": "string",
+            "enum": [
+              "upcoming",
+              "past",
+              "cancelled",
+              "requests"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "ref": {
+                  "type": "string"
+                },
+                "status": {
+                  "$ref": "#/components/schemas/BookingStatus"
+                },
+                "start_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "end_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "duration_minutes": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "activity": {
+                  "type": "string"
+                },
+                "category_code": {
+                  "$ref": "#/components/schemas/CategoryCode"
+                },
+                "other_party": {
+                  "type": "string"
+                },
+                "photo_url": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "venue": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "amount_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "companion_response_due_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "payment_due_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "venue_pending_approval": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "ref",
+                "status",
+                "start_at",
+                "end_at",
+                "duration_minutes",
+                "activity",
+                "category_code",
+                "other_party",
+                "photo_url",
+                "venue",
+                "amount_paise",
+                "companion_response_due_at",
+                "payment_due_at",
+                "venue_pending_approval"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "tab",
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "BookingPaymentResponse": {
+        "type": "object",
+        "properties": {
+          "payment_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "status": {
+            "$ref": "#/components/schemas/PaymentStatus"
+          },
+          "gateway": {
+            "type": "string",
+            "enum": [
+              "RAZORPAY",
+              "CASHFREE",
+              "MOCK"
+            ]
+          },
+          "order_id": {
+            "type": "string"
+          },
+          "amount_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "client": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "type": "string"
+                  },
+                  "order_id": {
+                    "type": "string"
+                  },
+                  "amount_paise": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991,
+                    "description": "Money in paise (₹1 = 100)"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "test_mode": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "provider",
+                  "order_id",
+                  "amount_paise",
+                  "currency"
+                ],
+                "additionalProperties": {}
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "payment_id",
+          "attempt",
+          "status",
+          "gateway",
+          "order_id",
+          "amount_paise",
+          "due_at",
+          "client"
+        ],
+        "additionalProperties": false
+      },
+      "CancellationPreviewResponse": {
+        "type": "object",
+        "properties": {
+          "by": {
+            "type": "string",
+            "enum": [
+              "CUSTOMER",
+              "COMPANION",
+              "PLATFORM"
+            ]
+          },
+          "paid_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "refund_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "companion_keeps_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "minutes_before_start": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "rule": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "NOT_PAID",
+                  "FULL_REFUND_WINDOW",
+                  "PARTIAL_REFUND_WINDOW",
+                  "NO_REFUND_WINDOW",
+                  "COMPANION_CANCELLED",
+                  "PLATFORM_CANCELLED"
+                ]
+              },
+              "refund_bps": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "refund_bps",
+              "text"
+            ],
+            "additionalProperties": false
+          },
+          "companion_penalty": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "by",
+          "paid_paise",
+          "refund_paise",
+          "companion_keeps_paise",
+          "minutes_before_start",
+          "rule",
+          "companion_penalty"
+        ],
+        "additionalProperties": false
+      },
+      "BookingCancelledResponse": {
+        "type": "object",
+        "properties": {
+          "refund": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "amount_paise": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991,
+                    "description": "Money in paise (₹1 = 100)"
+                  },
+                  "status": {
+                    "$ref": "#/components/schemas/RefundStatus"
+                  }
+                },
+                "required": [
+                  "id",
+                  "amount_paise",
+                  "status"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rule": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "NOT_PAID",
+                  "FULL_REFUND_WINDOW",
+                  "PARTIAL_REFUND_WINDOW",
+                  "NO_REFUND_WINDOW",
+                  "COMPANION_CANCELLED",
+                  "PLATFORM_CANCELLED"
+                ]
+              },
+              "refund_bps": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "refund_bps",
+              "text"
+            ],
+            "additionalProperties": false
+          },
+          "booking": {
+            "$ref": "#/components/schemas/BookingView"
+          }
+        },
+        "required": [
+          "refund",
+          "rule",
+          "booking"
+        ],
+        "additionalProperties": false
+      },
+      "MockPaymentOrderResponse": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "amount_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CREATED",
+              "PENDING",
+              "CAPTURED",
+              "FAILED"
+            ]
+          },
+          "scenarios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MockPaymentScenario"
+            }
+          },
+          "test_mode": {
+            "type": "boolean",
+            "const": true
+          },
+          "booking_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "order_id",
+          "amount_paise",
+          "status",
+          "scenarios",
+          "test_mode",
+          "booking_id"
+        ],
+        "additionalProperties": false
+      },
+      "MockCheckoutResponse": {
+        "type": "object",
+        "properties": {
+          "scenario": {
+            "$ref": "#/components/schemas/MockPaymentScenario"
+          },
+          "delivered": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          },
+          "held": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "scenario",
+          "delivered",
+          "held"
+        ],
+        "additionalProperties": false
+      },
+      "MockFlushResponse": {
+        "type": "object",
+        "properties": {
+          "delivered": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "required": [
+          "delivered"
+        ],
+        "additionalProperties": false
+      },
+      "PaymentWebhookAck": {
+        "type": "object",
+        "properties": {
+          "received": {
+            "type": "boolean",
+            "const": true
+          },
+          "duplicate": {
+            "type": "boolean"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "received",
+          "duplicate"
+        ],
+        "additionalProperties": false
+      },
+      "AdminBookingsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "ref": {
+                  "type": "string"
+                },
+                "status": {
+                  "$ref": "#/components/schemas/BookingStatus"
+                },
+                "booking_mode": {
+                  "$ref": "#/components/schemas/BookingMode"
+                },
+                "category_code": {
+                  "$ref": "#/components/schemas/CategoryCode"
+                },
+                "start_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "companion": {
+                  "type": "string"
+                },
+                "customer": {
+                  "type": "string"
+                },
+                "total_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "refunded_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "open_refunds": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "id",
+                "ref",
+                "status",
+                "booking_mode",
+                "category_code",
+                "start_at",
+                "companion",
+                "customer",
+                "total_paise",
+                "refunded_paise",
+                "open_refunds",
+                "created_at"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "AdminBookingResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "ref": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BookingStatus"
+          },
+          "booking_mode": {
+            "$ref": "#/components/schemas/BookingMode"
+          },
+          "viewer": {
+            "type": "string",
+            "const": "STAFF"
+          },
+          "category": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "code": {
+                "$ref": "#/components/schemas/CategoryCode"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "code",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "activity": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "companion": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "photo_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "display_name",
+              "photo_url"
+            ],
+            "additionalProperties": false
+          },
+          "customer": {
+            "type": "object",
+            "properties": {
+              "first_name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "first_name"
+            ],
+            "additionalProperties": false
+          },
+          "venue": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "venue_type": {
+                    "$ref": "#/components/schemas/VenueType"
+                  },
+                  "zone": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pending_approval": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "venue_type",
+                  "zone",
+                  "pending_approval"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "start_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "end_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "notes_masked": {
+            "type": "boolean"
+          },
+          "money": {
+            "type": "object",
+            "properties": {
+              "subtotal_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "refunded_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "customer_fee_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "gst_on_fee_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "discount_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "total_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "commission_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "gst_on_commission_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "earnings_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              }
+            },
+            "required": [
+              "subtotal_paise",
+              "refunded_paise"
+            ],
+            "additionalProperties": false
+          },
+          "due": {
+            "type": "object",
+            "properties": {
+              "companion_response_due_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "payment_due_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "companion_response_due_at",
+              "payment_due_at"
+            ],
+            "additionalProperties": false
+          },
+          "payment": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "$ref": "#/components/schemas/PaymentStatus"
+                  },
+                  "attempts": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  "in_flight": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "status",
+                  "attempts",
+                  "in_flight"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "refunds": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "amount_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "status": {
+                  "$ref": "#/components/schemas/RefundStatus"
+                },
+                "reason_code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "processed_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "amount_paise",
+                "status",
+                "reason_code",
+                "processed_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "check_in": {
+            "type": "object",
+            "properties": {
+              "opens_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              "closes_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              "customer_in_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "companion_in_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "customer_out_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "companion_out_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "opens_at",
+              "closes_at",
+              "customer_in_at",
+              "companion_in_at",
+              "customer_out_at",
+              "companion_out_at"
+            ],
+            "additionalProperties": false
+          },
+          "boundaries": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cancellation": {
+            "$ref": "#/components/schemas/CancellationPolicy"
+          },
+          "dispute": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "issue_code": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "outcome": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "status",
+                  "issue_code",
+                  "outcome"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dispute_window_ends_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeline": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/BookingStatus"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "to": {
+                  "$ref": "#/components/schemas/BookingStatus"
+                },
+                "actor_type": {
+                  "type": "string",
+                  "enum": [
+                    "CUSTOMER",
+                    "COMPANION",
+                    "ADMIN",
+                    "SYSTEM"
+                  ]
+                },
+                "reason_code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "from",
+                "to",
+                "actor_type",
+                "reason_code",
+                "at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "actions": {
+            "type": "object",
+            "properties": {
+              "can_pay": {
+                "type": "boolean"
+              },
+              "can_cancel": {
+                "type": "boolean"
+              },
+              "can_accept": {
+                "type": "boolean"
+              },
+              "can_reject": {
+                "type": "boolean"
+              },
+              "can_check_in": {
+                "type": "boolean"
+              },
+              "can_check_out": {
+                "type": "boolean"
+              },
+              "can_report_issue": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "can_pay",
+              "can_cancel",
+              "can_accept",
+              "can_reject",
+              "can_check_in",
+              "can_check_out",
+              "can_report_issue"
+            ],
+            "additionalProperties": false
+          },
+          "money_staff": {
+            "type": "object",
+            "properties": {
+              "subtotal_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "customer_fee_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "gst_on_fee_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "total_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "commission_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "gst_on_commission_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "companion_earnings_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "refunded_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "versions": {
+                "type": "object",
+                "properties": {
+                  "settings_version": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "settings": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "propertyNames": {
+                          "type": "string"
+                        },
+                        "additionalProperties": {}
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "settings_version",
+                  "settings"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "subtotal_paise",
+              "customer_fee_paise",
+              "gst_on_fee_paise",
+              "total_paise",
+              "commission_paise",
+              "gst_on_commission_paise",
+              "companion_earnings_paise",
+              "refunded_paise",
+              "versions"
+            ],
+            "additionalProperties": false
+          },
+          "ledger": {
+            "type": "object",
+            "properties": {
+              "entries": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "entry_group": {
+                      "type": "string"
+                    },
+                    "account": {
+                      "type": "string",
+                      "enum": [
+                        "CUSTOMER_PAID",
+                        "CUSTOMER_REFUNDED",
+                        "COMPANION_EARNINGS",
+                        "PLATFORM_COMMISSION",
+                        "GST_ON_COMMISSION",
+                        "SERVICE_FEE",
+                        "GST_ON_SERVICE_FEE",
+                        "REFUND_DUE"
+                      ]
+                    },
+                    "amount_paise": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991,
+                      "description": "Money in paise (₹1 = 100)"
+                    },
+                    "memo": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    }
+                  },
+                  "required": [
+                    "entry_group",
+                    "account",
+                    "amount_paise",
+                    "memo",
+                    "created_at"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "balances": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "customer_side_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "allocation_side_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              }
+            },
+            "required": [
+              "entries",
+              "balances",
+              "customer_side_paise",
+              "allocation_side_paise"
+            ],
+            "additionalProperties": false
+          },
+          "payments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "attempt": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "gateway": {
+                  "type": "string"
+                },
+                "gateway_order_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "gateway_payment_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "status": {
+                  "$ref": "#/components/schemas/PaymentStatus"
+                },
+                "amount_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "amount_refunded_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "captured_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "failed_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "attempt",
+                "gateway",
+                "gateway_order_id",
+                "gateway_payment_id",
+                "status",
+                "amount_paise",
+                "amount_refunded_paise",
+                "created_at",
+                "captured_at",
+                "failed_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "payment_events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "txn_type": {
+                  "type": "string"
+                },
+                "amount_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "gateway_reference": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "txn_type",
+                "amount_paise",
+                "status",
+                "gateway_reference",
+                "created_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "refunds_staff": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "amount_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "status": {
+                  "$ref": "#/components/schemas/RefundStatus"
+                },
+                "reason_code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "initiated_by": {
+                  "type": "string"
+                },
+                "requires_approval": {
+                  "type": "boolean"
+                },
+                "approval_request_id": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "retry_count": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "failure_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "processed_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "allocation": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "id",
+                "amount_paise",
+                "status",
+                "reason_code",
+                "initiated_by",
+                "requires_approval",
+                "approval_request_id",
+                "retry_count",
+                "failure_reason",
+                "processed_at",
+                "allocation",
+                "created_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "disputes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "issue_code": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "outcome": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "customer_statement": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "companion_statement": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "refund_amount_paise": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991,
+                      "description": "Money in paise (₹1 = 100)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "resolution_notes": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "resolved_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "id",
+                "status",
+                "issue_code",
+                "outcome",
+                "customer_statement",
+                "companion_statement",
+                "refund_amount_paise",
+                "resolution_notes",
+                "resolved_at",
+                "created_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "party_events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "party": {
+                  "$ref": "#/components/schemas/BookingParty"
+                },
+                "event_type": {
+                  "type": "string",
+                  "enum": [
+                    "NO_SHOW",
+                    "REQUEST_EXPIRED",
+                    "COMPANION_CANCELLED"
+                  ]
+                },
+                "metadata": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {}
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "party",
+                "event_type",
+                "metadata",
+                "created_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "earnings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "earning_type": {
+                  "type": "string"
+                },
+                "amount_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "available_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "hold_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "earning_type",
+                "amount_paise",
+                "status",
+                "available_at",
+                "hold_reason",
+                "created_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "approvals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "action_type": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "id",
+                "action_type",
+                "status",
+                "created_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "staff_transitions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookingStatus"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "ref",
+          "status",
+          "booking_mode",
+          "viewer",
+          "category",
+          "activity",
+          "companion",
+          "customer",
+          "venue",
+          "start_at",
+          "end_at",
+          "duration_minutes",
+          "notes",
+          "notes_masked",
+          "money",
+          "due",
+          "payment",
+          "refunds",
+          "check_in",
+          "boundaries",
+          "cancellation",
+          "dispute",
+          "dispute_window_ends_at",
+          "timeline",
+          "actions",
+          "money_staff",
+          "ledger",
+          "payments",
+          "payment_events",
+          "refunds_staff",
+          "disputes",
+          "party_events",
+          "earnings",
+          "approvals",
+          "staff_transitions"
+        ],
+        "additionalProperties": false
+      },
+      "DisputeResolvedResponse": {
+        "type": "object",
+        "properties": {
+          "outcome": {
+            "$ref": "#/components/schemas/DisputeResolution"
+          },
+          "refund": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "amount_paise": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991,
+                    "description": "Money in paise (₹1 = 100)"
+                  },
+                  "status": {
+                    "$ref": "#/components/schemas/RefundStatus"
+                  }
+                },
+                "required": [
+                  "id",
+                  "amount_paise",
+                  "status"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "booking": {
+            "$ref": "#/components/schemas/AdminBookingResponse"
+          }
+        },
+        "required": [
+          "outcome",
+          "refund",
+          "booking"
+        ],
+        "additionalProperties": false
+      },
+      "PricingSettingsResponse": {
+        "type": "object",
+        "properties": {
+          "can_edit": {
+            "type": "boolean"
+          },
+          "placeholder_notice": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "value": {},
+                "description": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "updated_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "pending_change": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "approval_request_id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "value": {},
+                        "requested_at": {
+                          "type": "string",
+                          "description": "ISO 8601 date-time (UTC)"
+                        }
+                      },
+                      "required": [
+                        "approval_request_id",
+                        "value",
+                        "requested_at"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "key",
+                "value",
+                "description",
+                "updated_at",
+                "pending_change"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "can_edit",
+          "placeholder_notice",
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "SettingProposedResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "PENDING_SECOND_APPROVAL"
+          },
+          "approval_request_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "status",
+          "approval_request_id"
+        ],
+        "additionalProperties": false
+      },
       "WebhookAck": {
         "type": "object",
         "properties": {
@@ -5419,6 +8597,28 @@
           "city_id",
           "zone_id",
           "consents"
+        ]
+      },
+      "postCompanionBookingsByIdRejectBody": {
+        "type": "object",
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "NOT_AVAILABLE",
+              "VENUE_NOT_SUITABLE",
+              "ACTIVITY_NOT_SUITABLE",
+              "TOO_SHORT_NOTICE",
+              "OTHER"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "reason_code"
         ]
       },
       "postCompanionApplyBody": {
@@ -5790,6 +8990,11 @@
                 "type": "integer",
                 "minimum": -9007199254740991,
                 "maximum": 9007199254740991
+              },
+              "max_bookings_per_day": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
               }
             },
             "required": [
@@ -5866,6 +9071,13 @@
                   "type": "integer",
                   "minimum": -9007199254740991,
                   "maximum": 9007199254740991
+                },
+                "booking_mode": {
+                  "type": "string",
+                  "enum": [
+                    "INSTANT",
+                    "REQUEST"
+                  ]
                 }
               },
               "required": [
@@ -6486,6 +9698,207 @@
           "zone_id",
           "address"
         ]
+      },
+      "postBookingsQuoteBody": {
+        "type": "object",
+        "properties": {
+          "companion_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "offering_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "start_time": {
+            "type": "string",
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": 30,
+            "maximum": 720
+          },
+          "venue_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "booking_mode": {
+            "type": "string",
+            "enum": [
+              "INSTANT",
+              "REQUEST"
+            ]
+          }
+        },
+        "required": [
+          "companion_id",
+          "offering_id",
+          "date",
+          "start_time",
+          "duration_minutes",
+          "venue_id"
+        ]
+      },
+      "postBookingsBody": {
+        "type": "object",
+        "properties": {
+          "quote_id": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 80
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "quote_id"
+        ]
+      },
+      "postBookingsByIdCancelBody": {
+        "type": "object",
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "CHANGE_OF_PLANS",
+              "EMERGENCY",
+              "FEEL_UNSAFE",
+              "SCHEDULE_CONFLICT",
+              "VENUE_ISSUE",
+              "OTHER"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "reason_code"
+        ]
+      },
+      "postBookingsByIdReportIssueBody": {
+        "type": "object",
+        "properties": {
+          "issue_code": {
+            "type": "string",
+            "enum": [
+              "NO_SHOW",
+              "LATE_ARRIVAL",
+              "ENDED_EARLY",
+              "BOUNDARY_CROSSED",
+              "SAFETY_CONCERN",
+              "OTHER"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "issue_code"
+        ]
+      },
+      "postAdminBookingsByIdCancelBody": {
+        "type": "object",
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "SAFETY",
+              "VENUE_UNAVAILABLE",
+              "COMPANION_UNAVAILABLE",
+              "POLICY_VIOLATION",
+              "OTHER"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "reason_code",
+          "note"
+        ]
+      },
+      "postAdminBookingsByIdResolveBody": {
+        "type": "object",
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "RELEASE_TO_COMPANION",
+              "FULL_REFUND",
+              "PARTIAL_REFUND"
+            ]
+          },
+          "amount_paise": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "note": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "outcome",
+          "note"
+        ]
+      },
+      "postAdminSettingsPricingBody": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "value": {},
+          "reason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "key",
+          "value",
+          "reason"
+        ]
+      },
+      "postPaymentsMockOrdersByOrderIdCompleteBody": {
+        "type": "object",
+        "properties": {
+          "scenario": {
+            "type": "string",
+            "enum": [
+              "SUCCESS",
+              "FAILED",
+              "PENDING_THEN_SUCCESS",
+              "DUPLICATE_WEBHOOK",
+              "LATE_SUCCESS",
+              "REFUND_FAIL_ONCE"
+            ]
+          }
+        },
+        "required": [
+          "scenario"
+        ]
       }
     }
   },
@@ -6588,6 +10001,226 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/postAdminApprovalsByIdDecisionBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/bookings": {
+      "get": {
+        "operationId": "getAdminBookings",
+        "summary": "Bookings (staff)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "REQUESTED",
+                "AWAITING_COMPANION",
+                "ACCEPTED",
+                "REJECTED",
+                "PAYMENT_PENDING",
+                "CONFIRMED",
+                "IN_PROGRESS",
+                "COMPLETED",
+                "CANCELLED",
+                "EXPIRED",
+                "DISPUTED",
+                "REFUNDED",
+                "PARTIALLY_REFUNDED"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 40
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminBookingsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/bookings/{id}": {
+      "get": {
+        "operationId": "getAdminBookingsById",
+        "summary": "One booking with its timeline, money breakdown, ledger, payment events and refunds (staff)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminBookingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/bookings/{id}/cancel": {
+      "post": {
+        "operationId": "postAdminBookingsByIdCancel",
+        "summary": "Platform cancellation (safety, venue, policy): always a full refund; audit-logged",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminBookingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminBookingsByIdCancelBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/bookings/{id}/resolve": {
+      "post": {
+        "operationId": "postAdminBookingsByIdResolve",
+        "summary": "Resolve a reported issue (refunds above the threshold need a Finance second approver)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisputeResolvedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminBookingsByIdResolveBody"
               }
             }
           }
@@ -6993,6 +10626,76 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/postAdminReportsByIdDecisionBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/settings/pricing": {
+      "get": {
+        "operationId": "getAdminSettingsPricing",
+        "summary": "Pricing, tax and cancellation settings (placeholders)",
+        "tags": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PricingSettingsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postAdminSettingsPricing",
+        "summary": "Propose a settings change (a second approver with settings.pricing.edit applies it)",
+        "tags": [
+          "admin"
+        ],
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingProposedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminSettingsPricingBody"
               }
             }
           }
@@ -8514,6 +12217,576 @@
         }
       }
     },
+    "/api/v1/bookings": {
+      "post": {
+        "operationId": "postBookings",
+        "summary": "Book from a quote. Idempotent: the same Idempotency-Key returns the same booking",
+        "tags": [
+          "bookings"
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "8-60 characters; one per booking attempt",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postBookingsBody"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getBookings",
+        "summary": "The customer's bookings",
+        "tags": [
+          "bookings"
+        ],
+        "parameters": [
+          {
+            "name": "tab",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": "upcoming",
+              "type": "string",
+              "enum": [
+                "upcoming",
+                "past",
+                "cancelled"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingListResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/{id}": {
+      "get": {
+        "operationId": "getBookingsById",
+        "summary": "One booking, as its customer or companion sees it",
+        "tags": [
+          "bookings"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/{id}/cancel": {
+      "post": {
+        "operationId": "postBookingsByIdCancel",
+        "summary": "Cancel (customer or companion); refunds follow the policy shown at booking",
+        "tags": [
+          "bookings"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingCancelledResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postBookingsByIdCancelBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/{id}/cancellation-preview": {
+      "get": {
+        "operationId": "getBookingsByIdCancellationPreview",
+        "summary": "What cancelling now would refund, and the rule applied",
+        "tags": [
+          "bookings"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancellationPreviewResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/{id}/check-in": {
+      "post": {
+        "operationId": "postBookingsByIdCheckIn",
+        "summary": "Check in (a tap, no location). Both checked in: in progress",
+        "tags": [
+          "bookings"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/{id}/check-out": {
+      "post": {
+        "operationId": "postBookingsByIdCheckOut",
+        "summary": "Check out. Both checked out: completed",
+        "tags": [
+          "bookings"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/{id}/pay": {
+      "post": {
+        "operationId": "postBookingsByIdPay",
+        "summary": "Start (or resume) payment: a gateway order for this attempt",
+        "tags": [
+          "bookings"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingPaymentResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/{id}/report-issue": {
+      "post": {
+        "operationId": "postBookingsByIdReportIssue",
+        "summary": "Report an issue or a no-show: the companion earnings are held for review",
+        "tags": [
+          "bookings"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postBookingsByIdReportIssueBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/form": {
+      "get": {
+        "operationId": "getBookingsForm",
+        "summary": "What can be booked with a companion: offerings, venues, rules, cancellation policy",
+        "tags": [
+          "bookings"
+        ],
+        "parameters": [
+          {
+            "name": "companion_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingFormResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/quote": {
+      "post": {
+        "operationId": "postBookingsQuote",
+        "summary": "Price quote: immutable, signed, valid for 10 minutes; every amount in paise",
+        "tags": [
+          "bookings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingQuoteResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postBookingsQuoteBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/slots": {
+      "get": {
+        "operationId": "getBookingsSlots",
+        "summary": "Start times a companion can be booked on a date (IST)",
+        "tags": [
+          "bookings"
+        ],
+        "parameters": [
+          {
+            "name": "companion_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          },
+          {
+            "name": "offering_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          {
+            "name": "duration_minutes",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 30,
+              "maximum": 720
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingSlotsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/companion/activities": {
       "put": {
         "operationId": "putCompanionActivities",
@@ -8742,6 +13015,146 @@
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/companion/bookings": {
+      "get": {
+        "operationId": "getCompanionBookings",
+        "summary": "The companion's requests, upcoming and past bookings",
+        "tags": [
+          "companion"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": "requests",
+              "type": "string",
+              "enum": [
+                "requests",
+                "upcoming",
+                "past",
+                "cancelled"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingListResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/companion/bookings/{id}/accept": {
+      "post": {
+        "operationId": "postCompanionBookingsByIdAccept",
+        "summary": "Accept a request: the customer then has the payment window to pay",
+        "tags": [
+          "companion"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/companion/bookings/{id}/reject": {
+      "post": {
+        "operationId": "postCompanionBookingsByIdReject",
+        "summary": "Decline a request",
+        "tags": [
+          "companion"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postCompanionBookingsByIdRejectBody"
               }
             }
           }
@@ -10245,6 +14658,139 @@
         }
       }
     },
+    "/api/v1/payments/mock/orders/{orderId}": {
+      "get": {
+        "operationId": "getPaymentsMockOrdersByOrderId",
+        "summary": "TEST PAYMENT (no real money): the order on the mock gateway",
+        "tags": [
+          "payments"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockPaymentOrderResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/mock/orders/{orderId}/complete": {
+      "post": {
+        "operationId": "postPaymentsMockOrdersByOrderIdComplete",
+        "summary": "TEST PAYMENT (no real money): finish the mock checkout with a scenario",
+        "tags": [
+          "payments"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockCheckoutResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postPaymentsMockOrdersByOrderIdCompleteBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/mock/orders/{orderId}/flush": {
+      "post": {
+        "operationId": "postPaymentsMockOrdersByOrderIdFlush",
+        "summary": "TEST PAYMENT (no real money): deliver webhooks the mock gateway held back (LATE_SUCCESS)",
+        "tags": [
+          "payments"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockFlushResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/storage/local/upload/{token}": {
       "put": {
         "operationId": "putStorageLocalUploadByToken",
@@ -10474,6 +15020,48 @@
           }
         }
       }
+    },
+    "/api/v1/webhooks/payments/{provider}": {
+      "post": {
+        "operationId": "postWebhooksPaymentsByProvider",
+        "summary": "Payment gateway webhook (HMAC over the raw body; idempotent per event id)",
+        "tags": [
+          "webhooks"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentWebhookAck"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "x-error-messages": {
@@ -10596,6 +15184,54 @@
     "ONBOARDING_REQUIRED": "Finish setting up your account first.",
     "VENUE_NOT_FOUND": "Venue not found.",
     "REPORT_NOT_FOUND": "Report not found.",
-    "REPORT_CLOSED": "This report was already decided."
+    "REPORT_CLOSED": "This report was already decided.",
+    "BOOKING_NOT_FOUND": "Booking not found.",
+    "OFFERING_UNAVAILABLE": "This activity is not available at a current rate. Choose another one.",
+    "PLUS_ONE_NOT_OPEN": "Plus-One bookings open once ID verification for customers is live.",
+    "VENUE_NOT_ALLOWED": "Choose one of the approved public venues in the companion’s area.",
+    "VENUE_UNAVAILABLE": "This venue is no longer available. Choose another one.",
+    "INSTANT_NOT_AVAILABLE": "This companion takes requests for this activity. Send a request instead.",
+    "DURATION_OUT_OF_RANGE": "Choose a duration this companion offers.",
+    "TOO_SOON": "This companion needs more notice. Choose a later time.",
+    "TOO_FAR_AHEAD": "This date is too far ahead for this companion.",
+    "DATE_BLOCKED": "The companion is not available on this date.",
+    "OUTSIDE_AVAILABILITY": "The companion is not available at this time.",
+    "DAILY_LIMIT_REACHED": "The companion is fully booked on this day.",
+    "SLOT_UNAVAILABLE": "This time was just taken. Choose another time.",
+    "CUSTOMER_TIME_CONFLICT": "You already have a booking at this time.",
+    "QUOTE_NOT_FOUND": "This price quote is not valid. Get a new one.",
+    "QUOTE_EXPIRED": "This price quote expired. Get a new one.",
+    "QUOTE_ALREADY_USED": "This quote was already used for a booking.",
+    "IDEMPOTENCY_KEY_REQUIRED": "Something went wrong sending that. Please try again.",
+    "IDEMPOTENCY_KEY_REUSED": "This request was already sent with different details. Start again.",
+    "IDEMPOTENCY_MISMATCH": "This payment request does not match the earlier one. Start again.",
+    "ACCOUNT_RESTRICTED": "Your account cannot make bookings right now.",
+    "CUSTOMER_ONLY": "Only the customer can do this.",
+    "COMPANION_ONLY": "Only the companion can do this.",
+    "COMPANION_NOT_LIVE": "Resume your profile to accept requests.",
+    "REQUEST_EXPIRED": "This request has expired.",
+    "REQUEST_WITHDRAWN": "The customer withdrew this request.",
+    "NOT_PAYABLE": "This booking is not waiting for payment.",
+    "PAYMENT_WINDOW_CLOSED": "The time to pay has passed. The slot was released.",
+    "PAYMENT_IN_PROGRESS": "A payment for this booking is already being processed.",
+    "PAYMENT_ALREADY_ATTEMPTED": "This payment was already attempted. Start a new payment to try again.",
+    "PAYMENT_NOT_FOUND": "Payment not found.",
+    "PAYMENT_PROVIDER_NOT_CONFIGURED": "Payments are temporarily unavailable. Please try again later.",
+    "NOT_CANCELLABLE": "This booking can no longer be cancelled.",
+    "USE_REJECT": "Decline the request instead.",
+    "MEETING_STARTED": "The meeting has started. Report an issue instead.",
+    "NOTHING_TO_REFUND": "There is nothing to refund on this booking.",
+    "REFUND_TOO_LARGE": "This is more than is left to refund.",
+    "REFUND_NOT_PENDING": "This refund is no longer waiting for approval.",
+    "CHECK_IN_NOT_AVAILABLE": "Check-in is for confirmed bookings.",
+    "CHECK_IN_NOT_OPEN": "Check-in is not open yet.",
+    "CHECK_IN_CLOSED": "Check-in has closed for this booking.",
+    "CHECK_OUT_NOT_AVAILABLE": "Check-out is for meetings in progress.",
+    "ISSUE_WINDOW_CLOSED": "Issues can be reported during the meeting, for a no-show, or within the window after it.",
+    "NOT_DISPUTED": "This booking has no open issue.",
+    "DISPUTE_ALREADY_RESOLVED": "This issue was already resolved or is waiting for a second approver.",
+    "WEBHOOK_SIGNATURE_INVALID": "Signature check failed.",
+    "WEBHOOK_INVALID": "The webhook is missing an event id or type.",
+    "WEBHOOK_PROCESSING_FAILED": "Processing failed; the gateway may retry."
   }
 }

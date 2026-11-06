@@ -34,6 +34,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bookings (staff) */
+        get: operations["getAdminBookings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/bookings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One booking with its timeline, money breakdown, ledger, payment events and refunds (staff) */
+        get: operations["getAdminBookingsById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/bookings/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Platform cancellation (safety, venue, policy): always a full refund; audit-logged */
+        post: operations["postAdminBookingsByIdCancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/bookings/{id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resolve a reported issue (refunds above the threshold need a Finance second approver) */
+        post: operations["postAdminBookingsByIdResolve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/categories/{id}/price-band": {
         parameters: {
             query?: never;
@@ -164,6 +232,24 @@ export interface paths {
         put?: never;
         /** Dismiss, warn, or escalate (re-verification / suspension) a profile report */
         post: operations["postAdminReportsByIdDecision"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/settings/pricing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Pricing, tax and cancellation settings (placeholders) */
+        get: operations["getAdminSettingsPricing"];
+        put?: never;
+        /** Propose a settings change (a second approver with settings.pricing.edit applies it) */
+        post: operations["postAdminSettingsPricing"];
         delete?: never;
         options?: never;
         head?: never;
@@ -716,6 +802,194 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The customer's bookings */
+        get: operations["getBookings"];
+        put?: never;
+        /** Book from a quote. Idempotent: the same Idempotency-Key returns the same booking */
+        post: operations["postBookings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One booking, as its customer or companion sees it */
+        get: operations["getBookingsById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel (customer or companion); refunds follow the policy shown at booking */
+        post: operations["postBookingsByIdCancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/cancellation-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What cancelling now would refund, and the rule applied */
+        get: operations["getBookingsByIdCancellationPreview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check in (a tap, no location). Both checked in: in progress */
+        post: operations["postBookingsByIdCheckIn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/check-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check out. Both checked out: completed */
+        post: operations["postBookingsByIdCheckOut"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start (or resume) payment: a gateway order for this attempt */
+        post: operations["postBookingsByIdPay"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/report-issue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Report an issue or a no-show: the companion earnings are held for review */
+        post: operations["postBookingsByIdReportIssue"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/form": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What can be booked with a companion: offerings, venues, rules, cancellation policy */
+        get: operations["getBookingsForm"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Price quote: immutable, signed, valid for 10 minutes; every amount in paise */
+        post: operations["postBookingsQuote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Start times a companion can be booked on a date (IST) */
+        get: operations["getBookingsSlots"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/companion/activities": {
         parameters: {
             query?: never;
@@ -797,6 +1071,57 @@ export interface paths {
         post?: never;
         /** Remove an exception */
         delete: operations["deleteCompanionAvailabilityExceptionsById"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/companion/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The companion's requests, upcoming and past bookings */
+        get: operations["getCompanionBookings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/companion/bookings/{id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accept a request: the customer then has the payment window to pay */
+        post: operations["postCompanionBookingsByIdAccept"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/companion/bookings/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decline a request */
+        post: operations["postCompanionBookingsByIdReject"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1366,6 +1691,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/payments/mock/orders/{orderId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** TEST PAYMENT (no real money): the order on the mock gateway */
+        get: operations["getPaymentsMockOrdersByOrderId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/mock/orders/{orderId}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** TEST PAYMENT (no real money): finish the mock checkout with a scenario */
+        post: operations["postPaymentsMockOrdersByOrderIdComplete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/mock/orders/{orderId}/flush": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** TEST PAYMENT (no real money): deliver webhooks the mock gateway held back (LATE_SUCCESS) */
+        post: operations["postPaymentsMockOrdersByOrderIdFlush"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/storage/local/upload/{token}": {
         parameters: {
             query?: never;
@@ -1451,6 +1827,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/webhooks/payments/{provider}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Payment gateway webhook (HMAC over the raw body; idempotent per event id) */
+        post: operations["postWebhooksPaymentsByProvider"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1492,7 +1885,7 @@ export interface components {
         /** @enum {string} */
         UserStatus: "PENDING" | "ACTIVE" | "SUSPENDED" | "BANNED" | "DEACTIVATED";
         /** @enum {string} */
-        ErrorCode: "VALIDATION_FAILED" | "BAD_JSON" | "INVALID_INPUT" | "INVALID_REFERENCE" | "CONFLICT" | "NOT_FOUND" | "INTERNAL_ERROR" | "RATE_LIMITED" | "INVALID_STATUS_TRANSITION" | "CONTRACT_MISMATCH" | "AUTH_REQUIRED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "SESSION_ENDED" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ACCOUNT_SUSPENDED" | "ACCOUNT_EXISTS" | "ACCOUNT_NOT_FOUND" | "PHONE_NOT_VERIFIED" | "EMAIL_NOT_VERIFIED" | "INELIGIBLE_AGE" | "LINK_INVALID" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_USED" | "OTP_LOCKED" | "OTP_COOLDOWN" | "OTP_NOT_FOUND" | "OTP_RESEND_LIMIT" | "OTP_RESEND_TOO_SOON" | "OTP_SEND_LIMIT" | "OTP_SEND_FAILED" | "STAFF_ONLY" | "IP_NOT_ALLOWED" | "PERMISSION_DENIED" | "ROLE_REQUIRED" | "MFA_ENROLLMENT_REQUIRED" | "MFA_REQUIRED" | "MFA_STEP_UP_REQUIRED" | "MFA_CODE_INVALID" | "MFA_TOKEN_INVALID" | "MFA_ALREADY_ENABLED" | "MFA_NOT_STARTED" | "SECOND_APPROVER_REQUIRED" | "COMPANION_NOT_FOUND" | "PROFILE_UNAVAILABLE" | "APPLICATION_LOCKED" | "APPLICATION_INCOMPLETE" | "PROFILE_LOCKED" | "REAPPLY_BLOCKED" | "REAPPLY_COOLDOWN" | "CONTENT_NOT_ALLOWED" | "BELOW_CATEGORY_MIN_AGE" | "ACTIVITY_CATEGORY_MISMATCH" | "PHOTO_LIMIT" | "PHOTO_MINIMUM" | "PHOTO_NOT_FOUND" | "UPLOAD_NOT_FOUND" | "UPLOAD_ALREADY_RECEIVED" | "UPLOAD_MISMATCH" | "UPLOAD_NOT_PENDING" | "UPLOAD_MISSING" | "UPLOAD_CORRUPTED" | "UPLOAD_URL_EXPIRED" | "UPLOAD_TYPE_MISMATCH" | "UPLOAD_TOO_LARGE" | "UPLOAD_EMPTY" | "FILE_TOO_LARGE" | "IMAGE_UNREADABLE" | "UNSUPPORTED_IMAGE_TYPE" | "IMAGE_TOO_SMALL" | "VIEW_URL_EXPIRED" | "DOCUMENT_TYPE_REQUIRED" | "DOCUMENT_TYPE_UNAVAILABLE" | "AADHAAR_IMAGE_NOT_ALLOWED" | "VERIFICATION_NOT_OPEN" | "AUTO_CHECK_COOLDOWN" | "MANUAL_REVIEW_REQUIRED" | "LIVENESS_BY_UPLOAD" | "LIVENESS_SESSION_MISMATCH" | "DIGILOCKER_UNAVAILABLE" | "DIGILOCKER_NOT_STARTED" | "DIGILOCKER_FAILED" | "KYC_PROVIDER_NOT_CONFIGURED" | "INVALID_SIGNATURE" | "VERIFICATION_NOT_FOUND" | "NOT_IN_REVIEW" | "CLAIMED_BY_OTHER" | "CLAIM_REQUIRED" | "NOT_CLAIMED_BY_YOU" | "BLOCKED_BY_FLAG" | "FACE_MATCH_REQUIRED" | "APPROVAL_ALREADY_PENDING" | "APPROVAL_NOT_FOUND" | "APPROVAL_NOT_PENDING" | "APPROVAL_EXPIRED" | "NOT_AUTO_REJECTED" | "NEWER_ATTEMPT_EXISTS" | "DOCUMENT_NOT_FOUND" | "DOCUMENT_UNAVAILABLE" | "FLAG_NOT_FOUND" | "FLAG_NOT_OPEN" | "NOT_SUSPENDED" | "NOT_PENDING" | "CATEGORY_NOT_FOUND" | "NOT_APPROVED" | "NOT_READY" | "SETUP_INCOMPLETE" | "REVERIFICATION_DUE" | "NOT_LIVE" | "NOT_PAUSED" | "RATE_OUT_OF_BAND" | "AVAILABILITY_OVERLAP" | "EXCEPTION_NOT_FOUND" | "ONBOARDING_REQUIRED" | "VENUE_NOT_FOUND" | "REPORT_NOT_FOUND" | "REPORT_CLOSED";
+        ErrorCode: "VALIDATION_FAILED" | "BAD_JSON" | "INVALID_INPUT" | "INVALID_REFERENCE" | "CONFLICT" | "NOT_FOUND" | "INTERNAL_ERROR" | "RATE_LIMITED" | "INVALID_STATUS_TRANSITION" | "CONTRACT_MISMATCH" | "AUTH_REQUIRED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "SESSION_ENDED" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ACCOUNT_SUSPENDED" | "ACCOUNT_EXISTS" | "ACCOUNT_NOT_FOUND" | "PHONE_NOT_VERIFIED" | "EMAIL_NOT_VERIFIED" | "INELIGIBLE_AGE" | "LINK_INVALID" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_USED" | "OTP_LOCKED" | "OTP_COOLDOWN" | "OTP_NOT_FOUND" | "OTP_RESEND_LIMIT" | "OTP_RESEND_TOO_SOON" | "OTP_SEND_LIMIT" | "OTP_SEND_FAILED" | "STAFF_ONLY" | "IP_NOT_ALLOWED" | "PERMISSION_DENIED" | "ROLE_REQUIRED" | "MFA_ENROLLMENT_REQUIRED" | "MFA_REQUIRED" | "MFA_STEP_UP_REQUIRED" | "MFA_CODE_INVALID" | "MFA_TOKEN_INVALID" | "MFA_ALREADY_ENABLED" | "MFA_NOT_STARTED" | "SECOND_APPROVER_REQUIRED" | "COMPANION_NOT_FOUND" | "PROFILE_UNAVAILABLE" | "APPLICATION_LOCKED" | "APPLICATION_INCOMPLETE" | "PROFILE_LOCKED" | "REAPPLY_BLOCKED" | "REAPPLY_COOLDOWN" | "CONTENT_NOT_ALLOWED" | "BELOW_CATEGORY_MIN_AGE" | "ACTIVITY_CATEGORY_MISMATCH" | "PHOTO_LIMIT" | "PHOTO_MINIMUM" | "PHOTO_NOT_FOUND" | "UPLOAD_NOT_FOUND" | "UPLOAD_ALREADY_RECEIVED" | "UPLOAD_MISMATCH" | "UPLOAD_NOT_PENDING" | "UPLOAD_MISSING" | "UPLOAD_CORRUPTED" | "UPLOAD_URL_EXPIRED" | "UPLOAD_TYPE_MISMATCH" | "UPLOAD_TOO_LARGE" | "UPLOAD_EMPTY" | "FILE_TOO_LARGE" | "IMAGE_UNREADABLE" | "UNSUPPORTED_IMAGE_TYPE" | "IMAGE_TOO_SMALL" | "VIEW_URL_EXPIRED" | "DOCUMENT_TYPE_REQUIRED" | "DOCUMENT_TYPE_UNAVAILABLE" | "AADHAAR_IMAGE_NOT_ALLOWED" | "VERIFICATION_NOT_OPEN" | "AUTO_CHECK_COOLDOWN" | "MANUAL_REVIEW_REQUIRED" | "LIVENESS_BY_UPLOAD" | "LIVENESS_SESSION_MISMATCH" | "DIGILOCKER_UNAVAILABLE" | "DIGILOCKER_NOT_STARTED" | "DIGILOCKER_FAILED" | "KYC_PROVIDER_NOT_CONFIGURED" | "INVALID_SIGNATURE" | "VERIFICATION_NOT_FOUND" | "NOT_IN_REVIEW" | "CLAIMED_BY_OTHER" | "CLAIM_REQUIRED" | "NOT_CLAIMED_BY_YOU" | "BLOCKED_BY_FLAG" | "FACE_MATCH_REQUIRED" | "APPROVAL_ALREADY_PENDING" | "APPROVAL_NOT_FOUND" | "APPROVAL_NOT_PENDING" | "APPROVAL_EXPIRED" | "NOT_AUTO_REJECTED" | "NEWER_ATTEMPT_EXISTS" | "DOCUMENT_NOT_FOUND" | "DOCUMENT_UNAVAILABLE" | "FLAG_NOT_FOUND" | "FLAG_NOT_OPEN" | "NOT_SUSPENDED" | "NOT_PENDING" | "CATEGORY_NOT_FOUND" | "NOT_APPROVED" | "NOT_READY" | "SETUP_INCOMPLETE" | "REVERIFICATION_DUE" | "NOT_LIVE" | "NOT_PAUSED" | "RATE_OUT_OF_BAND" | "AVAILABILITY_OVERLAP" | "EXCEPTION_NOT_FOUND" | "ONBOARDING_REQUIRED" | "VENUE_NOT_FOUND" | "REPORT_NOT_FOUND" | "REPORT_CLOSED" | "BOOKING_NOT_FOUND" | "OFFERING_UNAVAILABLE" | "PLUS_ONE_NOT_OPEN" | "VENUE_NOT_ALLOWED" | "VENUE_UNAVAILABLE" | "INSTANT_NOT_AVAILABLE" | "DURATION_OUT_OF_RANGE" | "TOO_SOON" | "TOO_FAR_AHEAD" | "DATE_BLOCKED" | "OUTSIDE_AVAILABILITY" | "DAILY_LIMIT_REACHED" | "SLOT_UNAVAILABLE" | "CUSTOMER_TIME_CONFLICT" | "QUOTE_NOT_FOUND" | "QUOTE_EXPIRED" | "QUOTE_ALREADY_USED" | "IDEMPOTENCY_KEY_REQUIRED" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_MISMATCH" | "ACCOUNT_RESTRICTED" | "CUSTOMER_ONLY" | "COMPANION_ONLY" | "COMPANION_NOT_LIVE" | "REQUEST_EXPIRED" | "REQUEST_WITHDRAWN" | "NOT_PAYABLE" | "PAYMENT_WINDOW_CLOSED" | "PAYMENT_IN_PROGRESS" | "PAYMENT_ALREADY_ATTEMPTED" | "PAYMENT_NOT_FOUND" | "PAYMENT_PROVIDER_NOT_CONFIGURED" | "NOT_CANCELLABLE" | "USE_REJECT" | "MEETING_STARTED" | "NOTHING_TO_REFUND" | "REFUND_TOO_LARGE" | "REFUND_NOT_PENDING" | "CHECK_IN_NOT_AVAILABLE" | "CHECK_IN_NOT_OPEN" | "CHECK_IN_CLOSED" | "CHECK_OUT_NOT_AVAILABLE" | "ISSUE_WINDOW_CLOSED" | "NOT_DISPUTED" | "DISPUTE_ALREADY_RESOLVED" | "WEBHOOK_SIGNATURE_INVALID" | "WEBHOOK_INVALID" | "WEBHOOK_PROCESSING_FAILED";
         ErrorResponse: {
             error: {
                 /** @description Stable machine code; see ErrorCode and contracts/errors.json */
@@ -1927,6 +2320,7 @@ export interface components {
                 max_duration_minutes: number;
                 min_notice_hours: number;
                 max_advance_days: number;
+                max_bookings_per_day: number;
             };
         };
         RatesResponse: {
@@ -1947,6 +2341,8 @@ export interface components {
                 rate_set: boolean;
                 active: boolean;
                 out_of_band: boolean;
+                /** @enum {string} */
+                booking_mode: "INSTANT" | "REQUEST";
                 band: {
                     /** @description Money in paise (₹1 = 100) */
                     min_paise: number;
@@ -2482,6 +2878,680 @@ export interface components {
                 total_reports_for_profile: number;
             }[];
         };
+        /** @enum {string} */
+        BookingStatus: "DRAFT" | "REQUESTED" | "AWAITING_COMPANION" | "ACCEPTED" | "REJECTED" | "PAYMENT_PENDING" | "CONFIRMED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "EXPIRED" | "DISPUTED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+        /** @enum {string} */
+        BookingMode: "INSTANT" | "REQUEST";
+        /** @enum {string} */
+        BookingParty: "CUSTOMER" | "COMPANION";
+        /** @enum {string} */
+        BookingRejectReason: "NOT_AVAILABLE" | "VENUE_NOT_SUITABLE" | "ACTIVITY_NOT_SUITABLE" | "TOO_SHORT_NOTICE" | "OTHER";
+        /** @enum {string} */
+        BookingCancelReason: "CHANGE_OF_PLANS" | "EMERGENCY" | "FEEL_UNSAFE" | "SCHEDULE_CONFLICT" | "VENUE_ISSUE" | "OTHER";
+        /** @enum {string} */
+        PlatformCancelReason: "SAFETY" | "VENUE_UNAVAILABLE" | "COMPANION_UNAVAILABLE" | "POLICY_VIOLATION" | "OTHER";
+        /** @enum {string} */
+        BookingIssue: "NO_SHOW" | "LATE_ARRIVAL" | "ENDED_EARLY" | "BOUNDARY_CROSSED" | "SAFETY_CONCERN" | "OTHER";
+        /** @enum {string} */
+        DisputeResolution: "RELEASE_TO_COMPANION" | "FULL_REFUND" | "PARTIAL_REFUND";
+        /** @enum {string} */
+        PaymentStatus: "CREATED" | "AUTHORIZED" | "CAPTURED" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+        /** @enum {string} */
+        RefundStatus: "PENDING_APPROVAL" | "APPROVED" | "PROCESSING" | "SUCCEEDED" | "FAILED" | "REJECTED";
+        /** @enum {string} */
+        MockPaymentScenario: "SUCCESS" | "FAILED" | "PENDING_THEN_SUCCESS" | "DUPLICATE_WEBHOOK" | "LATE_SUCCESS" | "REFUND_FAIL_ONCE";
+        CancellationPolicy: {
+            lines: string[];
+            companion_cancels: string;
+            full_refund_hours: number;
+            partial_refund_hours: number;
+            partial_refund_bps: number;
+        };
+        BookingFormResponse: {
+            companion: {
+                /** Format: uuid */
+                id: string;
+                display_name: string;
+                zone: string | null;
+            };
+            offerings: {
+                /** Format: uuid */
+                offering_id: string;
+                category: {
+                    /** Format: uuid */
+                    id: string;
+                    code: components["schemas"]["CategoryCode"];
+                    name: string;
+                };
+                activity: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                };
+                /** @description Money in paise (₹1 = 100) */
+                hourly_rate_paise: number;
+                min_duration_minutes: number;
+                max_duration_minutes: number;
+                instant: boolean;
+                closed_reason: string | null;
+            }[];
+            venues: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                venue_type: components["schemas"]["VenueType"];
+                categories: string[];
+                pending_approval: boolean;
+            }[];
+            rules: {
+                min_notice_hours: number;
+                max_advance_days: number;
+                quote_valid_minutes: number;
+                plus_one_enabled: boolean;
+            };
+            cancellation: components["schemas"]["CancellationPolicy"];
+        };
+        BookingSlotsResponse: {
+            date: string;
+            duration_minutes: number;
+            start_times: string[];
+        };
+        BookingBreakdown: {
+            /** @description Money in paise (₹1 = 100) */
+            hourly_rate_paise: number;
+            /** @description Money in paise (₹1 = 100) */
+            subtotal_paise: number;
+            /** @description Money in paise (₹1 = 100) */
+            customer_fee_paise: number;
+            /** @description Money in paise (₹1 = 100) */
+            gst_on_fee_paise: number;
+            /** @description Money in paise (₹1 = 100) */
+            discount_paise: number;
+            /** @description Money in paise (₹1 = 100) */
+            total_paise: number;
+            /** @description Money in paise (₹1 = 100) */
+            commission_paise: number;
+            /** @description Money in paise (₹1 = 100) */
+            gst_on_commission_paise: number;
+            /** @description Money in paise (₹1 = 100) */
+            companion_earnings_paise: number;
+            is_repeat: boolean;
+        };
+        BookingQuoteResponse: {
+            quote_id: string;
+            /** @description ISO 8601 date-time (UTC) */
+            expires_at: string;
+            booking_mode: components["schemas"]["BookingMode"];
+            forced_request_reason: "VENUE_PENDING_APPROVAL" | null;
+            companion: {
+                /** Format: uuid */
+                id: string;
+                display_name: string;
+            };
+            category: {
+                /** Format: uuid */
+                id: string;
+                code: components["schemas"]["CategoryCode"];
+                name: string;
+            };
+            activity: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            venue: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                venue_type: components["schemas"]["VenueType"];
+                pending_approval: boolean;
+            };
+            /** @description ISO 8601 date-time (UTC) */
+            start_at: string;
+            /** @description ISO 8601 date-time (UTC) */
+            end_at: string;
+            duration_minutes: number;
+            breakdown: components["schemas"]["BookingBreakdown"];
+            versions: {
+                settings_version: string;
+                /** @enum {string} */
+                commission_rule: "CATEGORY_DEFAULT" | "REPEAT_BOOKING";
+                commission_bps: number;
+                customer_fee_bps: number;
+                gst_bps: number;
+            };
+            cancellation: components["schemas"]["CancellationPolicy"];
+        };
+        BookingView: {
+            /** Format: uuid */
+            id: string;
+            ref: string;
+            status: components["schemas"]["BookingStatus"];
+            booking_mode: components["schemas"]["BookingMode"];
+            viewer: components["schemas"]["BookingParty"];
+            category: {
+                /** Format: uuid */
+                id: string;
+                code: components["schemas"]["CategoryCode"];
+                name: string;
+            };
+            activity: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            companion: {
+                /** Format: uuid */
+                id: string;
+                display_name: string;
+                photo_url: string | null;
+            };
+            customer: {
+                first_name: string;
+            };
+            venue: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                venue_type: components["schemas"]["VenueType"];
+                zone: string | null;
+                pending_approval: boolean;
+            } | null;
+            /** @description ISO 8601 date-time (UTC) */
+            start_at: string;
+            /** @description ISO 8601 date-time (UTC) */
+            end_at: string;
+            duration_minutes: number;
+            notes: string | null;
+            notes_masked: boolean;
+            money: {
+                /** @description Money in paise (₹1 = 100) */
+                subtotal_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                refunded_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                customer_fee_paise?: number;
+                /** @description Money in paise (₹1 = 100) */
+                gst_on_fee_paise?: number;
+                /** @description Money in paise (₹1 = 100) */
+                discount_paise?: number;
+                /** @description Money in paise (₹1 = 100) */
+                total_paise?: number;
+                /** @description Money in paise (₹1 = 100) */
+                commission_paise?: number;
+                /** @description Money in paise (₹1 = 100) */
+                gst_on_commission_paise?: number;
+                /** @description Money in paise (₹1 = 100) */
+                earnings_paise?: number;
+            };
+            due: {
+                companion_response_due_at: string | null;
+                payment_due_at: string | null;
+            };
+            payment: {
+                status: components["schemas"]["PaymentStatus"];
+                attempts: number;
+                in_flight: boolean;
+            } | null;
+            refunds: {
+                /** Format: uuid */
+                id: string;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                status: components["schemas"]["RefundStatus"];
+                reason_code: string | null;
+                processed_at: string | null;
+            }[];
+            check_in: {
+                /** @description ISO 8601 date-time (UTC) */
+                opens_at: string;
+                /** @description ISO 8601 date-time (UTC) */
+                closes_at: string;
+                customer_in_at: string | null;
+                companion_in_at: string | null;
+                customer_out_at: string | null;
+                companion_out_at: string | null;
+            };
+            boundaries: string[];
+            cancellation: components["schemas"]["CancellationPolicy"];
+            dispute: {
+                status: string;
+                issue_code: string | null;
+                outcome: string | null;
+            } | null;
+            dispute_window_ends_at: string | null;
+            timeline: {
+                from: components["schemas"]["BookingStatus"] | null;
+                to: components["schemas"]["BookingStatus"];
+                /** @enum {string} */
+                actor_type: "CUSTOMER" | "COMPANION" | "ADMIN" | "SYSTEM";
+                reason_code: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                at: string;
+            }[];
+            actions: {
+                can_pay: boolean;
+                can_cancel: boolean;
+                can_accept: boolean;
+                can_reject: boolean;
+                can_check_in: boolean;
+                can_check_out: boolean;
+                can_report_issue: boolean;
+            };
+        };
+        BookingResponse: {
+            booking: components["schemas"]["BookingView"];
+        };
+        BookingListResponse: {
+            /** @enum {string} */
+            tab: "upcoming" | "past" | "cancelled" | "requests";
+            items: {
+                /** Format: uuid */
+                id: string;
+                ref: string;
+                status: components["schemas"]["BookingStatus"];
+                /** @description ISO 8601 date-time (UTC) */
+                start_at: string;
+                /** @description ISO 8601 date-time (UTC) */
+                end_at: string;
+                duration_minutes: number;
+                activity: string;
+                category_code: components["schemas"]["CategoryCode"];
+                other_party: string;
+                photo_url: string | null;
+                venue: string | null;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                companion_response_due_at: string | null;
+                payment_due_at: string | null;
+                venue_pending_approval: boolean;
+            }[];
+        };
+        BookingPaymentResponse: {
+            /** Format: uuid */
+            payment_id: string;
+            attempt: number;
+            status: components["schemas"]["PaymentStatus"];
+            /** @enum {string} */
+            gateway: "RAZORPAY" | "CASHFREE" | "MOCK";
+            order_id: string;
+            /** @description Money in paise (₹1 = 100) */
+            amount_paise: number;
+            due_at: string | null;
+            client: ({
+                provider: string;
+                order_id: string;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                currency: string;
+                test_mode?: boolean;
+            } & {
+                [key: string]: unknown;
+            }) | null;
+        };
+        CancellationPreviewResponse: {
+            /** @enum {string} */
+            by: "CUSTOMER" | "COMPANION" | "PLATFORM";
+            /** @description Money in paise (₹1 = 100) */
+            paid_paise: number;
+            /** @description Money in paise (₹1 = 100) */
+            refund_paise: number;
+            /** @description Money in paise (₹1 = 100) */
+            companion_keeps_paise: number;
+            minutes_before_start: number;
+            rule: {
+                /** @enum {string} */
+                code: "NOT_PAID" | "FULL_REFUND_WINDOW" | "PARTIAL_REFUND_WINDOW" | "NO_REFUND_WINDOW" | "COMPANION_CANCELLED" | "PLATFORM_CANCELLED";
+                refund_bps: number;
+                text: string;
+            };
+            companion_penalty: boolean;
+        };
+        BookingCancelledResponse: {
+            refund: {
+                /** Format: uuid */
+                id: string;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                status: components["schemas"]["RefundStatus"];
+            } | null;
+            rule: {
+                /** @enum {string} */
+                code: "NOT_PAID" | "FULL_REFUND_WINDOW" | "PARTIAL_REFUND_WINDOW" | "NO_REFUND_WINDOW" | "COMPANION_CANCELLED" | "PLATFORM_CANCELLED";
+                refund_bps: number;
+                text: string;
+            };
+            booking: components["schemas"]["BookingView"];
+        };
+        MockPaymentOrderResponse: {
+            order_id: string;
+            /** @description Money in paise (₹1 = 100) */
+            amount_paise: number;
+            /** @enum {string} */
+            status: "CREATED" | "PENDING" | "CAPTURED" | "FAILED";
+            scenarios: components["schemas"]["MockPaymentScenario"][];
+            /** @constant */
+            test_mode: true;
+            booking_id: string | null;
+        };
+        MockCheckoutResponse: {
+            scenario: components["schemas"]["MockPaymentScenario"];
+            delivered: number[];
+            held: number;
+        };
+        MockFlushResponse: {
+            delivered: number[];
+        };
+        PaymentWebhookAck: {
+            /** @constant */
+            received: true;
+            duplicate: boolean;
+            outcome?: string | null;
+        };
+        AdminBookingsResponse: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                ref: string;
+                status: components["schemas"]["BookingStatus"];
+                booking_mode: components["schemas"]["BookingMode"];
+                category_code: components["schemas"]["CategoryCode"];
+                /** @description ISO 8601 date-time (UTC) */
+                start_at: string;
+                companion: string;
+                customer: string;
+                /** @description Money in paise (₹1 = 100) */
+                total_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                refunded_paise: number;
+                open_refunds: number;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+        };
+        AdminBookingResponse: {
+            /** Format: uuid */
+            id: string;
+            ref: string;
+            status: components["schemas"]["BookingStatus"];
+            booking_mode: components["schemas"]["BookingMode"];
+            /** @constant */
+            viewer: "STAFF";
+            category: {
+                /** Format: uuid */
+                id: string;
+                code: components["schemas"]["CategoryCode"];
+                name: string;
+            };
+            activity: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+            };
+            companion: {
+                /** Format: uuid */
+                id: string;
+                display_name: string;
+                photo_url: string | null;
+            };
+            customer: {
+                first_name: string;
+            };
+            venue: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                venue_type: components["schemas"]["VenueType"];
+                zone: string | null;
+                pending_approval: boolean;
+            } | null;
+            /** @description ISO 8601 date-time (UTC) */
+            start_at: string;
+            /** @description ISO 8601 date-time (UTC) */
+            end_at: string;
+            duration_minutes: number;
+            notes: string | null;
+            notes_masked: boolean;
+            money: {
+                /** @description Money in paise (₹1 = 100) */
+                subtotal_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                refunded_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                customer_fee_paise?: number;
+                /** @description Money in paise (₹1 = 100) */
+                gst_on_fee_paise?: number;
+                /** @description Money in paise (₹1 = 100) */
+                discount_paise?: number;
+                /** @description Money in paise (₹1 = 100) */
+                total_paise?: number;
+                /** @description Money in paise (₹1 = 100) */
+                commission_paise?: number;
+                /** @description Money in paise (₹1 = 100) */
+                gst_on_commission_paise?: number;
+                /** @description Money in paise (₹1 = 100) */
+                earnings_paise?: number;
+            };
+            due: {
+                companion_response_due_at: string | null;
+                payment_due_at: string | null;
+            };
+            payment: {
+                status: components["schemas"]["PaymentStatus"];
+                attempts: number;
+                in_flight: boolean;
+            } | null;
+            refunds: {
+                /** Format: uuid */
+                id: string;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                status: components["schemas"]["RefundStatus"];
+                reason_code: string | null;
+                processed_at: string | null;
+            }[];
+            check_in: {
+                /** @description ISO 8601 date-time (UTC) */
+                opens_at: string;
+                /** @description ISO 8601 date-time (UTC) */
+                closes_at: string;
+                customer_in_at: string | null;
+                companion_in_at: string | null;
+                customer_out_at: string | null;
+                companion_out_at: string | null;
+            };
+            boundaries: string[];
+            cancellation: components["schemas"]["CancellationPolicy"];
+            dispute: {
+                status: string;
+                issue_code: string | null;
+                outcome: string | null;
+            } | null;
+            dispute_window_ends_at: string | null;
+            timeline: {
+                from: components["schemas"]["BookingStatus"] | null;
+                to: components["schemas"]["BookingStatus"];
+                /** @enum {string} */
+                actor_type: "CUSTOMER" | "COMPANION" | "ADMIN" | "SYSTEM";
+                reason_code: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                at: string;
+            }[];
+            actions: {
+                can_pay: boolean;
+                can_cancel: boolean;
+                can_accept: boolean;
+                can_reject: boolean;
+                can_check_in: boolean;
+                can_check_out: boolean;
+                can_report_issue: boolean;
+            };
+            money_staff: {
+                /** @description Money in paise (₹1 = 100) */
+                subtotal_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                customer_fee_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                gst_on_fee_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                total_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                commission_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                gst_on_commission_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                companion_earnings_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                refunded_paise: number;
+                versions: {
+                    settings_version: string | null;
+                    settings: {
+                        [key: string]: unknown;
+                    } | null;
+                };
+            };
+            ledger: {
+                entries: {
+                    entry_group: string;
+                    /** @enum {string} */
+                    account: "CUSTOMER_PAID" | "CUSTOMER_REFUNDED" | "COMPANION_EARNINGS" | "PLATFORM_COMMISSION" | "GST_ON_COMMISSION" | "SERVICE_FEE" | "GST_ON_SERVICE_FEE" | "REFUND_DUE";
+                    /** @description Money in paise (₹1 = 100) */
+                    amount_paise: number;
+                    memo: string | null;
+                    /** @description ISO 8601 date-time (UTC) */
+                    created_at: string;
+                }[];
+                balances: {
+                    [key: string]: number;
+                };
+                /** @description Money in paise (₹1 = 100) */
+                customer_side_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                allocation_side_paise: number;
+            };
+            payments: {
+                /** Format: uuid */
+                id: string;
+                attempt: number;
+                gateway: string;
+                gateway_order_id: string | null;
+                gateway_payment_id: string | null;
+                status: components["schemas"]["PaymentStatus"];
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                amount_refunded_paise: number;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                captured_at: string | null;
+                failed_at: string | null;
+            }[];
+            payment_events: {
+                txn_type: string;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                status: string;
+                gateway_reference: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+            refunds_staff: {
+                /** Format: uuid */
+                id: string;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                status: components["schemas"]["RefundStatus"];
+                reason_code: string | null;
+                initiated_by: string;
+                requires_approval: boolean;
+                approval_request_id: string | null;
+                retry_count: number;
+                failure_reason: string | null;
+                processed_at: string | null;
+                allocation: {
+                    [key: string]: number;
+                };
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+            disputes: {
+                /** Format: uuid */
+                id: string;
+                status: string;
+                issue_code: string | null;
+                outcome: string | null;
+                customer_statement: string | null;
+                companion_statement: string | null;
+                refund_amount_paise: number | null;
+                resolution_notes: string | null;
+                resolved_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+            party_events: {
+                party: components["schemas"]["BookingParty"];
+                /** @enum {string} */
+                event_type: "NO_SHOW" | "REQUEST_EXPIRED" | "COMPANION_CANCELLED";
+                metadata: {
+                    [key: string]: unknown;
+                };
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+            earnings: {
+                earning_type: string;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                status: string;
+                available_at: string | null;
+                hold_reason: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+            approvals: {
+                /** Format: uuid */
+                id: string;
+                action_type: string;
+                status: string;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+            staff_transitions: components["schemas"]["BookingStatus"][];
+        };
+        DisputeResolvedResponse: {
+            outcome: components["schemas"]["DisputeResolution"];
+            refund: {
+                /** Format: uuid */
+                id: string;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                status: components["schemas"]["RefundStatus"];
+            } | null;
+            booking: components["schemas"]["AdminBookingResponse"];
+        };
+        PricingSettingsResponse: {
+            can_edit: boolean;
+            placeholder_notice: string;
+            items: {
+                key: string;
+                value: unknown;
+                description: string | null;
+                updated_at: string | null;
+                pending_change: {
+                    /** Format: uuid */
+                    approval_request_id: string;
+                    value: unknown;
+                    /** @description ISO 8601 date-time (UTC) */
+                    requested_at: string;
+                } | null;
+            }[];
+        };
+        SettingProposedResponse: {
+            /** @constant */
+            status: "PENDING_SECOND_APPROVAL";
+            /** Format: uuid */
+            approval_request_id: string;
+        };
         WebhookAck: {
             /** @constant */
             received: true;
@@ -2562,6 +3632,11 @@ export interface components {
                 /** @default false */
                 marketing: boolean;
             };
+        };
+        postCompanionBookingsByIdRejectBody: {
+            /** @enum {string} */
+            reason_code: "NOT_AVAILABLE" | "VENUE_NOT_SUITABLE" | "ACTIVITY_NOT_SUITABLE" | "TOO_SHORT_NOTICE" | "OTHER";
+            note?: string;
         };
         postCompanionApplyBody: {
             dob?: string;
@@ -2656,6 +3731,7 @@ export interface components {
                 max_duration_minutes: number;
                 min_notice_hours: number;
                 max_advance_days: number;
+                max_bookings_per_day?: number;
             };
         };
         postCompanionAvailabilityExceptionsBody: {
@@ -2674,6 +3750,8 @@ export interface components {
                 activity_id?: string;
                 hourly_rate_paise: number;
                 min_duration_minutes?: number;
+                /** @enum {string} */
+                booking_mode?: "INSTANT" | "REQUEST";
             }[];
         };
         postCompanionPauseBody: {
@@ -2809,6 +3887,53 @@ export interface components {
             categories: ("FRIEND" | "PLUS_ONE" | "CREW_CARE" | "CREW_EVENTS")[];
             note?: string;
         };
+        postBookingsQuoteBody: {
+            /** Format: uuid */
+            companion_id: string;
+            /** Format: uuid */
+            offering_id: string;
+            date: string;
+            start_time: string;
+            duration_minutes: number;
+            /** Format: uuid */
+            venue_id: string;
+            /** @enum {string} */
+            booking_mode?: "INSTANT" | "REQUEST";
+        };
+        postBookingsBody: {
+            quote_id: string;
+            notes?: string;
+        };
+        postBookingsByIdCancelBody: {
+            /** @enum {string} */
+            reason_code: "CHANGE_OF_PLANS" | "EMERGENCY" | "FEEL_UNSAFE" | "SCHEDULE_CONFLICT" | "VENUE_ISSUE" | "OTHER";
+            note?: string;
+        };
+        postBookingsByIdReportIssueBody: {
+            /** @enum {string} */
+            issue_code: "NO_SHOW" | "LATE_ARRIVAL" | "ENDED_EARLY" | "BOUNDARY_CROSSED" | "SAFETY_CONCERN" | "OTHER";
+            note?: string;
+        };
+        postAdminBookingsByIdCancelBody: {
+            /** @enum {string} */
+            reason_code: "SAFETY" | "VENUE_UNAVAILABLE" | "COMPANION_UNAVAILABLE" | "POLICY_VIOLATION" | "OTHER";
+            note: string;
+        };
+        postAdminBookingsByIdResolveBody: {
+            /** @enum {string} */
+            outcome: "RELEASE_TO_COMPANION" | "FULL_REFUND" | "PARTIAL_REFUND";
+            amount_paise?: number;
+            note: string;
+        };
+        postAdminSettingsPricingBody: {
+            key: string;
+            value: unknown;
+            reason: string;
+        };
+        postPaymentsMockOrdersByOrderIdCompleteBody: {
+            /** @enum {string} */
+            scenario: "SUCCESS" | "FAILED" | "PENDING_THEN_SUCCESS" | "DUPLICATE_WEBHOOK" | "LATE_SUCCESS" | "REFUND_FAIL_ONCE";
+        };
     };
     responses: never;
     parameters: never;
@@ -2871,6 +3996,140 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ActionResult"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminBookings: {
+        parameters: {
+            query?: {
+                status?: "DRAFT" | "REQUESTED" | "AWAITING_COMPANION" | "ACCEPTED" | "REJECTED" | "PAYMENT_PENDING" | "CONFIRMED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "EXPIRED" | "DISPUTED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                q?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminBookingsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminBookingsById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminBookingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminBookingsByIdCancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminBookingsByIdCancelBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminBookingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminBookingsByIdResolve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminBookingsByIdResolveBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisputeResolvedResponse"];
                 };
             };
             /** @description Error */
@@ -3143,6 +4402,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ActionResult"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminSettingsPricing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PricingSettingsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminSettingsPricing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminSettingsPricingBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingProposedResponse"];
                 };
             };
             /** @description Error */
@@ -4276,6 +5597,405 @@ export interface operations {
             };
         };
     };
+    getBookings: {
+        parameters: {
+            query?: {
+                tab?: "upcoming" | "past" | "cancelled";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingListResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postBookings: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description 8-60 characters; one per booking attempt */
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postBookingsBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getBookingsById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postBookingsByIdCancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postBookingsByIdCancelBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingCancelledResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getBookingsByIdCancellationPreview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CancellationPreviewResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postBookingsByIdCheckIn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postBookingsByIdCheckOut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postBookingsByIdPay: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingPaymentResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postBookingsByIdReportIssue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postBookingsByIdReportIssueBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getBookingsForm: {
+        parameters: {
+            query: {
+                companion_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingFormResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postBookingsQuote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postBookingsQuoteBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingQuoteResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getBookingsSlots: {
+        parameters: {
+            query: {
+                companion_id: string;
+                offering_id: string;
+                date: string;
+                duration_minutes: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingSlotsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     putCompanionActivities: {
         parameters: {
             query?: never;
@@ -4455,6 +6175,103 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AvailabilityResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getCompanionBookings: {
+        parameters: {
+            query?: {
+                status?: "requests" | "upcoming" | "past" | "cancelled";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingListResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postCompanionBookingsByIdAccept: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postCompanionBookingsByIdReject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postCompanionBookingsByIdRejectBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
                 };
             };
             /** @description Error */
@@ -5596,6 +7413,103 @@ export interface operations {
             };
         };
     };
+    getPaymentsMockOrdersByOrderId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MockPaymentOrderResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postPaymentsMockOrdersByOrderIdComplete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postPaymentsMockOrdersByOrderIdCompleteBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MockCheckoutResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postPaymentsMockOrdersByOrderIdFlush: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MockFlushResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     putStorageLocalUploadByToken: {
         parameters: {
             query?: never;
@@ -5745,6 +7659,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WebhookAck"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postWebhooksPaymentsByProvider: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                provider: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentWebhookAck"];
                 };
             };
             /** @description Error */
