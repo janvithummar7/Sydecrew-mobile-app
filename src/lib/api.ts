@@ -62,9 +62,10 @@ export const setSessionLostHandler = (fn: (() => void) | null) => {
 };
 
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-type Options = { method?: Method; body?: unknown; noRetry?: boolean };
+/** `headers`: extra request headers, e.g. Idempotency-Key for POST /bookings. */
+type Options = { method?: Method; body?: unknown; noRetry?: boolean; headers?: Record<string, string> };
 
-async function raw<T>(path: string, { method = 'GET', body }: Options): Promise<T> {
+async function raw<T>(path: string, { method = 'GET', body, headers: extra }: Options): Promise<T> {
   if (!API_URL) throw new ApiError(0, { code: 'CONFIG_MISSING', message: 'This build is not configured. Please update the app.' });
   let res: Response;
   const device = await deviceHeaders().catch(() => ({}) as Record<string, string>);
@@ -81,6 +82,7 @@ async function raw<T>(path: string, { method = 'GET', body }: Options): Promise<
         ...device,
         ...(body !== undefined ? { 'content-type': 'application/json' } : {}),
         ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}),
+        ...(extra ?? {}),
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
