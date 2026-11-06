@@ -6356,6 +6356,18 @@
               "additionalProperties": false
             }
           },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "actions": {
             "type": "object",
             "properties": {
@@ -6419,6 +6431,7 @@
           "dispute",
           "dispute_window_ends_at",
           "timeline",
+          "conversation_id",
           "actions"
         ],
         "additionalProperties": false
@@ -7499,6 +7512,18 @@
               "additionalProperties": false
             }
           },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "actions": {
             "type": "object",
             "properties": {
@@ -8174,6 +8199,7 @@
           "dispute",
           "dispute_window_ends_at",
           "timeline",
+          "conversation_id",
           "actions",
           "money_staff",
           "ledger",
@@ -8596,6 +8622,9 @@
                 "format": "uuid",
                 "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
               },
+              "other_party": {
+                "type": "string"
+              },
               "window_closes_at": {
                 "anyOf": [
                   {
@@ -8635,6 +8664,7 @@
             "required": [
               "id",
               "booking_id",
+              "other_party",
               "window_closes_at",
               "can_send",
               "closed_reason",
@@ -8939,6 +8969,45 @@
         },
         "required": [
           "incident"
+        ],
+        "additionalProperties": false
+      },
+      "PendingPingResponse": {
+        "type": "object",
+        "properties": {
+          "pending": {
+            "type": "boolean"
+          },
+          "ping": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "sent_at": {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  }
+                },
+                "required": [
+                  "id",
+                  "sent_at"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "pending",
+          "ping"
         ],
         "additionalProperties": false
       },
@@ -15371,6 +15440,45 @@
       }
     },
     "/api/v1/bookings/{id}/safety-ping": {
+      "get": {
+        "operationId": "getBookingsByIdSafetyPing",
+        "summary": "A safety ping waiting for my answer, if any",
+        "tags": [
+          "safety"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingPingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "operationId": "postBookingsByIdSafetyPing",
         "summary": "Answer a safety ping: OK, or not OK (raises an SOS)",

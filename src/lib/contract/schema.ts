@@ -1185,7 +1185,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** A safety ping waiting for my answer, if any */
+        get: operations["getBookingsByIdSafetyPing"];
         put?: never;
         /** Answer a safety ping: OK, or not OK (raises an SOS) */
         post: operations["postBookingsByIdSafetyPing"];
@@ -3711,6 +3712,7 @@ export interface components {
                 /** @description ISO 8601 date-time (UTC) */
                 at: string;
             }[];
+            conversation_id: string | null;
             actions: {
                 can_pay: boolean;
                 can_cancel: boolean;
@@ -3959,6 +3961,7 @@ export interface components {
                 /** @description ISO 8601 date-time (UTC) */
                 at: string;
             }[];
+            conversation_id: string | null;
             actions: {
                 can_pay: boolean;
                 can_cancel: boolean;
@@ -4192,6 +4195,7 @@ export interface components {
                 id: string;
                 /** Format: uuid */
                 booking_id: string;
+                other_party: string;
                 window_closes_at: string | null;
                 can_send: boolean;
                 closed_reason: components["schemas"]["ChatClosedReason"] | null;
@@ -4269,6 +4273,15 @@ export interface components {
                 /** @description ISO 8601 date-time (UTC) */
                 triggered_at: string;
                 help_message: string;
+            } | null;
+        };
+        PendingPingResponse: {
+            pending: boolean;
+            ping: {
+                /** Format: uuid */
+                id: string;
+                /** @description ISO 8601 date-time (UTC) */
+                sent_at: string;
             } | null;
         };
         PingAnsweredResponse: {
@@ -7411,6 +7424,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getBookingsByIdSafetyPing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingPingResponse"];
                 };
             };
             /** @description Error */
