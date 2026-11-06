@@ -149,6 +149,8 @@ export default function Discover() {
   const offline = !!failure?.offline;
   const view = discoverView({ list: result?.meta ?? null, optionsInPilot: options?.in_pilot ?? null, items: paged.items.length, loaded: !stale && paged.loaded, failed: !!failedNow });
   const n = activeFilterCount(filters);
+  // The waitlist city comes from the discovery options; the user's own city only when options have none.
+  const waitCity = options?.city_id ?? user?.city_id ?? null;
 
   const header = (
     <>
@@ -182,7 +184,13 @@ export default function Discover() {
 
   const empty =
     view === 'waitlist' ? (
-      <Waitlist city={result?.meta.city ?? options?.city ?? null} cityId={user?.city_id ?? null} zoneId={user?.zone_id ?? null} categoryId={filters.category} joined={!!result?.meta.waitlist?.joined} />
+      <Waitlist
+        city={result?.meta.city ?? options?.city ?? null}
+        cityId={waitCity}
+        zoneId={waitCity && waitCity === user?.city_id ? (user?.zone_id ?? null) : null}
+        categoryId={filters.category}
+        joined={!!result?.meta.waitlist?.joined}
+      />
     ) : view === 'loading' ? (
       <SkeletonList rows={4} />
     ) : view === 'error' ? (
