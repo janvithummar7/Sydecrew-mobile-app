@@ -61,6 +61,20 @@ export const setSessionLostHandler = (fn: (() => void) | null) => {
   onSessionLost = fn;
 };
 
+/** The current access token (the realtime socket authenticates with it). */
+export const getAccessToken = () => accessToken;
+const tokenListeners = new Set<(token: string | null) => void>();
+/** Called with the new token after a sign-in or refresh, and with null on sign-out. */
+export function onAccessToken(fn: (token: string | null) => void) {
+  tokenListeners.add(fn);
+  return () => {
+    tokenListeners.delete(fn);
+  };
+}
+const announce = () => {
+  for (const fn of tokenListeners) fn(accessToken);
+};
+
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 /** `headers`: extra request headers, e.g. Idempotency-Key for POST /bookings. */
 type Options = { method?: Method; body?: unknown; noRetry?: boolean; headers?: Record<string, string> };
@@ -113,6 +127,7 @@ async function raw<T>(path: string, { method = 'GET', body, headers: extra }: Op
 export async function storeSession(session: SessionResponse) {
   accessToken = session.access_token;
   if (session.refresh_token) await setRefreshToken(session.refresh_token);
+  announce();
 }
 
 /** Bumped on every sign-out, so a refresh that finishes afterwards cannot store its token. */
@@ -122,6 +137,7 @@ export async function clearSession() {
   generation += 1;
   accessToken = null;
   await setRefreshToken(null);
+  announce();
 }
 
 /** Uses the stored refresh token to get a new session. Concurrent callers share one request. */
