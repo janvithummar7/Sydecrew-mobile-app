@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { ApiError, authApi, clearSession, refreshSession, setSessionLostHandler, storeSession } from './api';
+import { unregisterPush } from './comms/push';
 import type { Me, SessionResponse } from './types';
 
 type Status = 'loading' | 'authenticated' | 'anonymous';
@@ -57,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    await unregisterPush(); // while the session is still valid: this device stops getting pushes
     await authApi.logout().catch(() => clearSession());
     setUserState(null);
     setStatus('anonymous');
