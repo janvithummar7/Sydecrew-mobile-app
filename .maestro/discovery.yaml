@@ -1,0 +1,72 @@
+# Discovery (Feature 3): Discover -> filter -> open a profile -> save -> report, then the Saved list.
+# Needs: an onboarded customer in a pilot city, at least one LIVE companion there, and a dev API.
+# Run: maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/discovery.yaml
+# Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+
+# Discover: real results, no sample data.
+- tapOn: "Discover"
+- assertNotVisible: "Sample — design preview only"
+- extendedWaitUntil:
+    visible:
+      id: "companion-card-.*"
+    timeout: 15000
+
+# Filter: open the sheet, sort by soonest, apply.
+- tapOn: "Filters.*"
+- assertVisible: "Sort by"
+- scrollUntilVisible:
+    element: "Available soonest"
+    centerElement: true
+- tapOn: "Available soonest"
+- tapOn: "Show companions"
+- extendedWaitUntil:
+    visible:
+      id: "companion-card-.*"
+    timeout: 15000
+
+# Open the first profile.
+- tapOn:
+    id: "companion-card-.*"
+    index: 0
+- assertVisible: "ID verified by Sydecrew"
+- assertVisible: "Booking opens soon"
+- assertVisible: "Request to book"
+
+# Save (idempotent: a profile saved by an earlier run shows "Saved"; tap until it is saved).
+- runFlow:
+    when:
+      visible: "Save"
+    commands:
+      - tapOn: "Save"
+      - assertVisible: "Saved to your list."
+- assertVisible: "Saved"
+
+# Report: choose a reason and send. A repeat run gets "already reported".
+- tapOn: "Report this profile"
+- assertVisible: "What is wrong?"
+- tapOn: "Fake profile or photos"
+- tapOn: "Send report"
+- assertVisible: "(Thank you\\. Our safety team will review this profile\\.|You already reported this profile\\. Our team is on it\\.)"
+
+# Saved list from the Profile tab shows the companion.
+- back
+- tapOn: "Profile"
+- tapOn: "Saved companions"
+- extendedWaitUntil:
+    visible:
+      id: "companion-card-.*"
+    timeout: 10000

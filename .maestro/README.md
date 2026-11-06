@@ -23,6 +23,13 @@ Customer shell smoke test (tabs, design previews, settings and legal), with an o
 maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/navigation.yaml
 ```
 
+Discovery (Feature 3): Discover, filter, open a profile, save, report, then the Saved list. Needs an onboarded
+customer in a pilot city and at least one LIVE companion there:
+
+```bash
+maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/discovery.yaml
+```
+
 The OTP is shown on screen by the development API (dev hint); pass the current code each run.
 The gallery picker and crop screen differ between Android versions: the photo steps use optional
 taps and may need adjusting for your device.
