@@ -43,6 +43,7 @@
     "eslint-config-expo": "~58.0.4",
     "openapi-typescript": "^7.13.0",
     "sharp": "^0.34.5",
+    "simple-git-hooks": "^2.14.0",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -50,7 +51,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint && node scripts/check-copy.js && node scripts/check-hex.js",
+    "lint": "expo lint && node scripts/check-copy.js && node scripts/check-hex.js && node scripts/secret-check.js --env",
     "lint:copy": "node scripts/check-copy.js",
     "test": "node --import ./test/resolve-ts.mjs --test \"test/**/*.test.ts\"",
     "typecheck": "tsc --noEmit",
@@ -59,12 +60,18 @@
     "tokens:check": "node scripts/tokens.js mobile --check",
     "contract:gen": "node scripts/contract.mjs",
     "contract:check": "node scripts/contract.mjs --check",
-    "brand:gen": "node scripts/brand.js"
+    "brand:gen": "node scripts/brand.js",
+    "prepare": "simple-git-hooks",
+    "precheck": "node scripts/secret-check.js --tracked",
+    "env:check": "node scripts/secret-check.js --env"
   },
   "private": true,
   "overrides": {
     "openapi-typescript": {
       "typescript": "$typescript"
     }
+  },
+  "simple-git-hooks": {
+    "pre-commit": "node scripts/secret-check.js --staged"
   }
 }
