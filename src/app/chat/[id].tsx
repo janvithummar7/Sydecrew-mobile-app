@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 import { FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
@@ -43,7 +43,6 @@ export default function Conversation() {
   const params = useLocalSearchParams<{ id: string; name?: string }>();
   const id = params.id;
   const rt = useRealtimeStatus();
-  const [name, setName] = useState(params.name ?? '');
   const [meta, setMeta] = useState<ConversationMeta | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [older, setOlder] = useState<string | null>(null);
@@ -99,11 +98,6 @@ export default function Conversation() {
     }, [loadLatest, markRead]),
   );
 
-  // Name for a chat opened from a booking or a notification (the list passes it).
-  useEffect(() => {
-    if (name || !id) return;
-    commsApi.conversations().then((r) => setName(r.items.find((c) => c.id === id)?.other_party ?? ''), () => undefined);
-  }, [id, name]);
 
   useRealtimeEvents((e) => {
     if ((e.type === 'message.new' || e.type === 'message.updated') && e.payload.conversation_id === id) {
@@ -183,7 +177,7 @@ export default function Conversation() {
     <View style={styles.header}>
       <View style={{ flex: 1, gap: space.xs }}>
         <BackBar />
-        <Text variant="heading" color={colors.textStrong} numberOfLines={1} accessibilityRole="header">{name || listCopy.title}</Text>
+        <Text variant="heading" color={colors.textStrong} numberOfLines={1} accessibilityRole="header">{meta?.other_party ?? params.name ?? listCopy.title}</Text>
         {meta?.can_send && meta.window_closes_at ? <Text variant="caption" color={colors.textSubtle}>{copy.closesAt(formatDateTimeIST(meta.window_closes_at))}</Text> : null}
       </View>
       <IconButton icon="ellipsis-horizontal" label={copy.more} onPress={() => setSheet('menu')} />
