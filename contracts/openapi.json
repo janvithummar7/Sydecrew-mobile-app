@@ -224,7 +224,8 @@
           "ACTIVE",
           "SUSPENDED",
           "BANNED",
-          "DEACTIVATED"
+          "DEACTIVATED",
+          "DELETED"
         ]
       },
       "ErrorCode": {
@@ -430,6 +431,28 @@
           "NO_OTHER_PARTY",
           "ALREADY_FROZEN",
           "USER_NOT_FOUND",
+          "ACCOUNT_DELETION_BLOCKED",
+          "ACCOUNT_DELETION_NOT_PENDING",
+          "ACCOUNT_DELETION_PENDING",
+          "APPEAL_NO_MONEY_CHANGE",
+          "CONSENT_NOT_GIVEN",
+          "CONSENT_NOT_WITHDRAWABLE",
+          "DATA_EXPORT_LINK_INVALID",
+          "DATA_EXPORT_NOT_FOUND",
+          "DATA_EXPORT_NOT_READY",
+          "DATA_EXPORT_TOO_SOON",
+          "LAST_SUPER_ADMIN",
+          "OTP_NOT_YOURS",
+          "PASSWORD_INCORRECT",
+          "STAFF_EMAIL_IN_USE",
+          "STAFF_ENROLMENT_REQUIRED",
+          "STAFF_INVITE_INVALID",
+          "STAFF_INVITE_NOT_OPEN",
+          "STAFF_INVITE_PENDING",
+          "STAFF_NOT_ACTIVE",
+          "STAFF_NOT_FOUND",
+          "STAFF_SELF_ACTION",
+          "STATEMENT_LINK_INVALID",
           "APPEAL_ALREADY_DECIDED",
           "APPEAL_ALREADY_SUBMITTED",
           "APPEAL_NOT_FOUND",
@@ -468,7 +491,12 @@
           "STATEMENT_ALREADY_SUBMITTED",
           "TICKET_ASSIGNED_TO_OTHER",
           "TICKET_CLOSED",
-          "TICKET_NOT_FOUND"
+          "TICKET_NOT_FOUND",
+          "NOTIFICATION_NOT_FOUND",
+          "NOTIFICATION_NOT_RETRYABLE",
+          "SMS_PROVIDER_NOT_CONFIGURED",
+          "EMAIL_PROVIDER_NOT_CONFIGURED",
+          "WHATSAPP_PROVIDER_NOT_CONFIGURED"
         ]
       },
       "ErrorResponse": {
@@ -6308,6 +6336,11 @@
               {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
                   "status": {
                     "type": "string"
                   },
@@ -6325,6 +6358,7 @@
                   }
                 },
                 "required": [
+                  "id",
                   "status",
                   "issue_code",
                   "outcome"
@@ -6335,6 +6369,19 @@
                 "type": "null"
               }
             ]
+          },
+          "dispute_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The dispute on this booking, if any (Feature 7)"
           },
           "dispute_window_ends_at": {
             "anyOf": [
@@ -6494,6 +6541,7 @@
           "boundaries",
           "cancellation",
           "dispute",
+          "dispute_id",
           "dispute_window_ends_at",
           "timeline",
           "conversation_id",
@@ -7491,6 +7539,11 @@
               {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
                   "status": {
                     "type": "string"
                   },
@@ -7508,6 +7561,7 @@
                   }
                 },
                 "required": [
+                  "id",
                   "status",
                   "issue_code",
                   "outcome"
@@ -7518,6 +7572,19 @@
                 "type": "null"
               }
             ]
+          },
+          "dispute_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The dispute on this booking, if any (Feature 7)"
           },
           "dispute_window_ends_at": {
             "anyOf": [
@@ -8291,6 +8358,7 @@
           "boundaries",
           "cancellation",
           "dispute",
+          "dispute_id",
           "dispute_window_ends_at",
           "timeline",
           "conversation_id",
@@ -13017,6 +13085,24 @@
         ],
         "additionalProperties": false
       },
+      "StaffRef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "display_name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "display_name"
+        ],
+        "additionalProperties": false
+      },
       "AdminDisputeResponse": {
         "type": "object",
         "properties": {
@@ -13358,6 +13444,26 @@
                             "type": "null"
                           }
                         ]
+                      },
+                      "original_decider": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/components/schemas/StaffRef"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "reviewer": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/components/schemas/StaffRef"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
                       }
                     },
                     "required": [
@@ -13368,9 +13474,31 @@
                       "reviewer_user_id",
                       "decision_reason",
                       "submitted_at",
-                      "decided_at"
+                      "decided_at",
+                      "original_decider",
+                      "reviewer"
                     ],
                     "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "claimed_by": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/StaffRef"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "resolved_by": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/StaffRef"
                   },
                   {
                     "type": "null"
@@ -13406,6 +13534,8 @@
               "earnings",
               "refunds",
               "appeal",
+              "claimed_by",
+              "resolved_by",
               "created_at"
             ],
             "additionalProperties": false
@@ -13895,6 +14025,26 @@
                             "type": "null"
                           }
                         ]
+                      },
+                      "original_decider": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/components/schemas/StaffRef"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "reviewer": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/components/schemas/StaffRef"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
                       }
                     },
                     "required": [
@@ -13905,9 +14055,31 @@
                       "reviewer_user_id",
                       "decision_reason",
                       "submitted_at",
-                      "decided_at"
+                      "decided_at",
+                      "original_decider",
+                      "reviewer"
                     ],
                     "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "claimed_by": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/StaffRef"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "resolved_by": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/StaffRef"
                   },
                   {
                     "type": "null"
@@ -13943,6 +14115,8 @@
               "earnings",
               "refunds",
               "appeal",
+              "claimed_by",
+              "resolved_by",
               "created_at"
             ],
             "additionalProperties": false
@@ -14018,6 +14192,16 @@
                     }
                   ]
                 },
+                "original_decider": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StaffRef"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "dispute_id": {
                   "type": "string",
                   "format": "uuid",
@@ -14040,6 +14224,7 @@
                 "submitted_at",
                 "decided_at",
                 "original_decider_user_id",
+                "original_decider",
                 "dispute_id",
                 "decision",
                 "booking_ref"
@@ -14878,6 +15063,16 @@
                     }
                   ]
                 },
+                "initiated_by_user": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StaffRef"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "created_at": {
                   "type": "string",
                   "description": "ISO 8601 date-time (UTC)"
@@ -14894,6 +15089,7 @@
                 "initiated_by",
                 "re_raised_from_refund_id",
                 "re_raised_as_refund_id",
+                "initiated_by_user",
                 "created_at"
               ],
               "additionalProperties": false
@@ -15102,6 +15298,842 @@
         },
         "required": [
           "receipt"
+        ],
+        "additionalProperties": false
+      },
+      "StatementLinkResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Short-lived signed link (5 minutes); no bearer token needed"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      },
+      "DataExportStateResponse": {
+        "type": "object",
+        "properties": {
+          "export": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "QUEUED",
+                      "READY",
+                      "EXPIRED",
+                      "FAILED"
+                    ]
+                  },
+                  "ready_at": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "description": "ISO 8601 date-time (UTC)"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "expires_at": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "description": "ISO 8601 date-time (UTC)"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "download_count": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  }
+                },
+                "required": [
+                  "id",
+                  "status",
+                  "ready_at",
+                  "expires_at",
+                  "download_count",
+                  "created_at"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "next_request_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cooldown_days": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "export",
+          "next_request_at",
+          "cooldown_days"
+        ],
+        "additionalProperties": false
+      },
+      "DataExportLinkResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      },
+      "DeletionStateResponse": {
+        "type": "object",
+        "properties": {
+          "request": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "COOLING",
+                      "BLOCKED"
+                    ]
+                  },
+                  "scheduled_for": {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  "blocked": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "UPCOMING_BOOKING",
+                            "OPEN_DISPUTE",
+                            "REFUND_IN_PROGRESS",
+                            "NEGATIVE_BALANCE",
+                            "UNPAID_EARNINGS",
+                            "STAFF_ACCOUNT"
+                          ]
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "id",
+                  "status",
+                  "scheduled_for",
+                  "blocked"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "enum": [
+                    "UPCOMING_BOOKING",
+                    "OPEN_DISPUTE",
+                    "REFUND_IN_PROGRESS",
+                    "NEGATIVE_BALANCE",
+                    "UNPAID_EARNINGS",
+                    "STAFF_ACCOUNT"
+                  ]
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "message"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "cooling_days": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "request",
+          "blockers",
+          "cooling_days"
+        ],
+        "additionalProperties": false
+      },
+      "ConsentsResponse": {
+        "type": "object",
+        "properties": {
+          "consents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "granted": {
+                  "type": "boolean"
+                },
+                "version": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "withdrawable": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "type",
+                "granted",
+                "version",
+                "at",
+                "withdrawable"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "consents"
+        ],
+        "additionalProperties": false
+      },
+      "GrievanceOfficerResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "response_days": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "placeholder": {
+            "type": "boolean",
+            "description": "True until the founder fills in the real officer"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "response_days",
+          "placeholder"
+        ],
+        "additionalProperties": false
+      },
+      "StaffListResponse": {
+        "type": "object",
+        "properties": {
+          "staff": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "full_name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "status": {
+                  "$ref": "#/components/schemas/UserStatus"
+                },
+                "mfa_enabled": {
+                  "type": "boolean"
+                },
+                "mfa_enrolled_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "last_login_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "roles": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "full_name",
+                "email",
+                "status",
+                "mfa_enabled",
+                "mfa_enrolled_at",
+                "last_login_at",
+                "created_at",
+                "roles"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "invites": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "full_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "role_code": {
+                  "type": "string"
+                },
+                "purpose": {
+                  "type": "string",
+                  "enum": [
+                    "ONBOARD",
+                    "MFA_RESET"
+                  ]
+                },
+                "expires_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "accepted_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "revoked_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "expired": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "email",
+                "full_name",
+                "role_code",
+                "purpose",
+                "expires_at",
+                "accepted_at",
+                "revoked_at",
+                "created_at",
+                "expired"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "staff",
+          "invites"
+        ],
+        "additionalProperties": false
+      },
+      "StaffInvitedResponse": {
+        "type": "object",
+        "properties": {
+          "invite": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "expires_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              "dev_link": {
+                "description": "Development only",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "expires_at"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "invite"
+        ],
+        "additionalProperties": false
+      },
+      "RevokedResponse": {
+        "type": "object",
+        "properties": {
+          "revoked": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "revoked"
+        ],
+        "additionalProperties": false
+      },
+      "RequestedResponse": {
+        "type": "object",
+        "properties": {
+          "requested": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "requested"
+        ],
+        "additionalProperties": false
+      },
+      "StaffDeactivatedResponse": {
+        "type": "object",
+        "properties": {
+          "deactivated": {
+            "type": "boolean",
+            "const": true
+          },
+          "released": {
+            "type": "object",
+            "properties": {
+              "verifications": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "disputes": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "tickets": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "reports": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "invites": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "on_call": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "verifications",
+              "disputes",
+              "tickets",
+              "reports",
+              "invites",
+              "on_call"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "deactivated",
+          "released"
+        ],
+        "additionalProperties": false
+      },
+      "StaffInviteResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "full_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "role": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "ONBOARD",
+              "MFA_RESET"
+            ]
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          }
+        },
+        "required": [
+          "email",
+          "full_name",
+          "role",
+          "purpose",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      },
+      "StaffInviteAcceptedResponse": {
+        "type": "object",
+        "properties": {
+          "recovery_codes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "recovery_codes",
+          "email"
+        ],
+        "additionalProperties": false
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok"
+          },
+          "db": {
+            "type": "string",
+            "const": "up"
+          }
+        },
+        "required": [
+          "status",
+          "db"
+        ],
+        "additionalProperties": false
+      },
+      "ReadyResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ready"
+          },
+          "checks": {
+            "type": "object",
+            "properties": {
+              "db": {
+                "type": "string",
+                "enum": [
+                  "up",
+                  "down",
+                  "skipped",
+                  "pending"
+                ]
+              },
+              "redis": {
+                "type": "string",
+                "enum": [
+                  "up",
+                  "down",
+                  "skipped",
+                  "pending"
+                ]
+              },
+              "migrations": {
+                "type": "string",
+                "enum": [
+                  "up",
+                  "down",
+                  "skipped",
+                  "pending"
+                ]
+              }
+            },
+            "required": [
+              "db",
+              "redis",
+              "migrations"
+            ],
+            "additionalProperties": false
+          },
+          "pending_migrations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "status",
+          "checks"
+        ],
+        "additionalProperties": false
+      },
+      "NotificationFailure": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "template_code": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "IN_APP",
+              "PUSH",
+              "EMAIL",
+              "SMS",
+              "WHATSAPP"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "SENDING",
+              "SENT",
+              "DELIVERED",
+              "FAILED",
+              "DEAD",
+              "READ"
+            ]
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "last_error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "recipient": {
+            "description": "Masked phone / email; the message text is never shown",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "request_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "last_attempt_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          }
+        },
+        "required": [
+          "id",
+          "template_code",
+          "channel",
+          "status",
+          "attempts",
+          "last_error",
+          "recipient",
+          "user_id",
+          "request_id",
+          "last_attempt_at",
+          "created_at",
+          "updated_at"
+        ],
+        "additionalProperties": false
+      },
+      "NotificationFailuresResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationFailure"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "NotificationRetriedResponse": {
+        "type": "object",
+        "properties": {
+          "notification": {
+            "$ref": "#/components/schemas/NotificationFailure"
+          }
+        },
+        "required": [
+          "notification"
         ],
         "additionalProperties": false
       },
@@ -15420,6 +16452,19 @@
         "required": [
           "reason_code"
         ]
+      },
+      "postCompanionPayoutsByIdStatementLinkBody": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "default": "html",
+            "type": "string",
+            "enum": [
+              "html",
+              "csv"
+            ]
+          }
+        }
       },
       "postCompanionPayoutAccountBody": {
         "type": "object",
@@ -16857,6 +17902,140 @@
         },
         "required": [
           "body"
+        ]
+      },
+      "postMeDeleteAccountStartBody": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "password"
+        ]
+      },
+      "postMeDeleteAccountBody": {
+        "type": "object",
+        "properties": {
+          "otp_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{6}$"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "otp_id",
+          "code"
+        ]
+      },
+      "postStaffInvitesByTokenStartBody": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 72,
+            "allOf": [
+              {
+                "pattern": "[A-Za-z]"
+              },
+              {
+                "pattern": "\\d"
+              }
+            ]
+          },
+          "full_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150
+          }
+        },
+        "required": [
+          "password"
+        ]
+      },
+      "postStaffInvitesByTokenActivateBody": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{6}$"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "postAdminStaffInvitesBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 255,
+            "format": "email",
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          },
+          "full_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 150
+          },
+          "role_code": {
+            "type": "string",
+            "enum": [
+              "SUPER_ADMIN",
+              "OPS_MANAGER",
+              "SENIOR_OPS",
+              "VERIFICATION_EXECUTIVE",
+              "FINANCE_EXECUTIVE",
+              "TS_AGENT",
+              "TS_MANAGER",
+              "SUPPORT_EXECUTIVE",
+              "SAFETY_DESK"
+            ]
+          }
+        },
+        "required": [
+          "email",
+          "full_name",
+          "role_code"
+        ]
+      },
+      "postAdminStaffByIdMfaResetBody": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "postAdminStaffByIdDeactivateBody": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "reason"
         ]
       },
       "postConversationsByIdMessagesBody": {
@@ -18927,6 +20106,104 @@
         }
       }
     },
+    "/api/v1/admin/notifications/{id}/retry": {
+      "post": {
+        "operationId": "postAdminNotificationsByIdRetry",
+        "summary": "Queue a failed or dead notification again (attempts reset)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationRetriedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/notifications/failures": {
+      "get": {
+        "operationId": "getAdminNotificationsFailures",
+        "summary": "Notifications that failed or went DEAD after every retry (recipient masked, no message text)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": "DEAD",
+              "type": "string",
+              "enum": [
+                "DEAD",
+                "FAILED"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationFailuresResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/payout-accounts": {
       "get": {
         "operationId": "getAdminPayoutAccounts",
@@ -19813,6 +21090,221 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/postAdminSettingsPricingBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff": {
+      "get": {
+        "operationId": "getAdminStaff",
+        "summary": "Staff accounts and open invites",
+        "tags": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffListResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{id}/deactivate": {
+      "post": {
+        "operationId": "postAdminStaffByIdDeactivate",
+        "summary": "Offboard: deactivate, sign out everywhere, release claims, leave the on-call list",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffDeactivatedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminStaffByIdDeactivateBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{id}/mfa-reset": {
+      "post": {
+        "operationId": "postAdminStaffByIdMfaReset",
+        "summary": "Ask to reset a staff member's authenticator (a second super admin approves)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminStaffByIdMfaResetBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/invites": {
+      "post": {
+        "operationId": "postAdminStaffInvites",
+        "summary": "Invite a staff member (single-use link, 48 h; password and authenticator in one flow)",
+        "tags": [
+          "admin"
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffInvitedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminStaffInvitesBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/invites/{id}/revoke": {
+      "post": {
+        "operationId": "postAdminStaffInvitesByIdRevoke",
+        "summary": "Revoke an open invite",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevokedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -23485,6 +24977,104 @@
         }
       }
     },
+    "/api/v1/companion/payouts/{id}/statement-link": {
+      "post": {
+        "operationId": "postCompanionPayoutsByIdStatementLink",
+        "summary": "A 5-minute link to a payout statement (HTML or CSV) for the share sheet",
+        "tags": [
+          "payouts"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatementLinkResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postCompanionPayoutsByIdStatementLinkBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/companion/payouts/statement": {
+      "get": {
+        "operationId": "getCompanionPayoutsStatement",
+        "summary": "A payout statement from a short-lived signed link (no session; logged)",
+        "tags": [
+          "payouts"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 600
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/companion/photos/{id}": {
       "delete": {
         "operationId": "deleteCompanionPhotosById",
@@ -25297,6 +26887,400 @@
         }
       }
     },
+    "/api/v1/legal/grievance-officer": {
+      "get": {
+        "operationId": "getLegalGrievanceOfficer",
+        "summary": "The grievance officer (DPDP Act 2023 / IT Rules)",
+        "tags": [
+          "privacy"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrievanceOfficerResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/consents": {
+      "get": {
+        "operationId": "getMeConsents",
+        "summary": "Your consents and which ones you can withdraw",
+        "tags": [
+          "privacy"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/consents/{type}/withdraw": {
+      "post": {
+        "operationId": "postMeConsentsByTypeWithdraw",
+        "summary": "Withdraw a consent (marketing, location sharing, face checks for re-verification)",
+        "tags": [
+          "privacy"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/data-export": {
+      "get": {
+        "operationId": "getMeDataExport",
+        "summary": "Your latest data export and when you can ask again",
+        "tags": [
+          "privacy"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataExportStateResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postMeDataExport",
+        "summary": "Ask for a copy of your data (once a week); you are told when it is ready",
+        "tags": [
+          "privacy"
+        ],
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataExportStateResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/data-export/{id}/link": {
+      "post": {
+        "operationId": "postMeDataExportByIdLink",
+        "summary": "A short-lived download link for a ready export (every download is logged)",
+        "tags": [
+          "privacy"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataExportLinkResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/data-export/download": {
+      "get": {
+        "operationId": "getMeDataExportDownload",
+        "summary": "Download an export with the short-lived link token (no session needed; logged)",
+        "tags": [
+          "privacy"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/delete-account": {
+      "get": {
+        "operationId": "getMeDeleteAccount",
+        "summary": "Deletion status and anything that has to finish first",
+        "tags": [
+          "privacy"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletionStateResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postMeDeleteAccount",
+        "summary": "Delete my account, step 2: the code. Deleted after the cooling period unless you cancel",
+        "tags": [
+          "privacy"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletionStateResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postMeDeleteAccountBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/delete-account/cancel": {
+      "post": {
+        "operationId": "postMeDeleteAccountCancel",
+        "summary": "Cancel a scheduled deletion",
+        "tags": [
+          "privacy"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletionStateResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/delete-account/start": {
+      "post": {
+        "operationId": "postMeDeleteAccountStart",
+        "summary": "Delete my account, step 1: your password; a one-time code is sent",
+        "tags": [
+          "privacy"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChallengeResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postMeDeleteAccountStartBody"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/messages/{id}/report": {
       "post": {
         "operationId": "postMessagesByIdReport",
@@ -25980,6 +27964,152 @@
         }
       }
     },
+    "/api/v1/staff-invites/{token}": {
+      "get": {
+        "operationId": "getStaffInvitesByToken",
+        "summary": "An invite: email, role, purpose, expiry",
+        "tags": [
+          "admin"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffInviteResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff-invites/{token}/activate": {
+      "post": {
+        "operationId": "postStaffInvitesByTokenActivate",
+        "summary": "Enter a code from the authenticator app: two-step sign-in is on; recovery codes are shown once",
+        "tags": [
+          "admin"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffInviteAcceptedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postStaffInvitesByTokenActivateBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/staff-invites/{token}/start": {
+      "post": {
+        "operationId": "postStaffInvitesByTokenStart",
+        "summary": "Set your password (new staff) or confirm it (MFA reset); returns the authenticator secret",
+        "tags": [
+          "admin"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MfaEnrollResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postStaffInvitesByTokenStartBody"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/storage/local/upload/{token}": {
       "put": {
         "operationId": "putStorageLocalUploadByToken",
@@ -26541,7 +28671,7 @@
     "MFA_ENROLLMENT_REQUIRED": "Set up two-step sign-in to continue.",
     "MFA_REQUIRED": "Enter the code from your authenticator app.",
     "MFA_STEP_UP_REQUIRED": "Confirm the code from your authenticator app to continue.",
-    "MFA_CODE_INVALID": "That code is not right. Check your authenticator app and try again.",
+    "MFA_CODE_INVALID": "That code is not right. Check the time on your phone and try again.",
     "MFA_TOKEN_INVALID": "Your sign-in took too long. Please start again.",
     "MFA_ALREADY_ENABLED": "Two-step sign-in is already set up.",
     "MFA_NOT_STARTED": "Start the set-up again.",
@@ -26700,6 +28830,28 @@
     "NO_OTHER_PARTY": "There is no other party on this incident.",
     "ALREADY_FROZEN": "The other party is already frozen.",
     "USER_NOT_FOUND": "User not found.",
+    "ACCOUNT_DELETION_BLOCKED": "Some things need to finish before your account can be deleted.",
+    "ACCOUNT_DELETION_NOT_PENDING": "Your account is not scheduled for deletion.",
+    "ACCOUNT_DELETION_PENDING": "Your account is already scheduled for deletion.",
+    "APPEAL_NO_MONEY_CHANGE": "This outcome does not change the money. Keep the decision instead.",
+    "CONSENT_NOT_GIVEN": "You have not given this consent.",
+    "CONSENT_NOT_WITHDRAWABLE": "This consent is needed to use Sydecrew. To stop, delete your account instead.",
+    "DATA_EXPORT_LINK_INVALID": "This download link has expired. Make a new one in Settings.",
+    "DATA_EXPORT_NOT_FOUND": "Export not found.",
+    "DATA_EXPORT_NOT_READY": "Your data is still being prepared.",
+    "DATA_EXPORT_TOO_SOON": "You can ask for a copy of your data once a week.",
+    "LAST_SUPER_ADMIN": "This is the last active super admin.",
+    "OTP_NOT_YOURS": "This code was not sent to you.",
+    "PASSWORD_INCORRECT": "That password is not right.",
+    "STAFF_EMAIL_IN_USE": "An account with this email already exists.",
+    "STAFF_ENROLMENT_REQUIRED": "Set up your account with the invite link from your email. Ask a super admin for a new one if it expired.",
+    "STAFF_INVITE_INVALID": "This invite link is no longer valid. Ask a super admin for a new one.",
+    "STAFF_INVITE_NOT_OPEN": "This invite was already used or revoked.",
+    "STAFF_INVITE_PENDING": "This person already has an open invite. Revoke it to send a new one.",
+    "STAFF_NOT_ACTIVE": "This staff account is not active.",
+    "STAFF_NOT_FOUND": "Staff member not found.",
+    "STAFF_SELF_ACTION": "Ask another super admin to do this for your own account.",
+    "STATEMENT_LINK_INVALID": "This link has expired. Open the statement again from the app.",
     "APPEAL_ALREADY_DECIDED": "This appeal was already decided.",
     "APPEAL_ALREADY_SUBMITTED": "This decision was already appealed.",
     "APPEAL_NOT_FOUND": "Appeal not found.",
@@ -26738,6 +28890,11 @@
     "STATEMENT_ALREADY_SUBMITTED": "You have already added your statement.",
     "TICKET_ASSIGNED_TO_OTHER": "Someone else is working on this ticket.",
     "TICKET_CLOSED": "This ticket is closed. Open a new one if you still need help.",
-    "TICKET_NOT_FOUND": "Ticket not found."
+    "TICKET_NOT_FOUND": "Ticket not found.",
+    "NOTIFICATION_NOT_FOUND": "Notification not found.",
+    "NOTIFICATION_NOT_RETRYABLE": "Only failed or dead notifications can be retried.",
+    "SMS_PROVIDER_NOT_CONFIGURED": "Text messages cannot be sent right now.",
+    "EMAIL_PROVIDER_NOT_CONFIGURED": "Emails cannot be sent right now.",
+    "WHATSAPP_PROVIDER_NOT_CONFIGURED": "WhatsApp messages are not available yet."
   }
 }

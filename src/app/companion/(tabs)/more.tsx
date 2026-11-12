@@ -35,6 +35,7 @@ export default function More() {
         <LinkRow label={nav.disputes} detail={nav.disputesDetail} onPress={go('/disputes')} />
         <LinkRow label={nav.sos} detail={nav.sosDetail} onPress={go('/safety/sos')} />
         <LinkRow label={nav.safetyContacts} detail={nav.safetyContactsDetail} onPress={go('/safety/contacts')} />
+        <LinkRow label={nav.privacy} detail={nav.privacyDetail} onPress={go('/settings/privacy')} />
         <LinkRow label={nav.settings} onPress={go('/settings')} />
       </View>
       <RoleSwitch to="customer" />

@@ -527,6 +527,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/notifications/{id}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Queue a failed or dead notification again (attempts reset) */
+        post: operations["postAdminNotificationsByIdRetry"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/notifications/failures": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Notifications that failed or went DEAD after every retry (recipient masked, no message text) */
+        get: operations["getAdminNotificationsFailures"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/payout-accounts": {
         parameters: {
             query?: never;
@@ -796,6 +830,91 @@ export interface paths {
         put?: never;
         /** Propose a settings change (a second approver with settings.pricing.edit applies it) */
         post: operations["postAdminSettingsPricing"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/staff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Staff accounts and open invites */
+        get: operations["getAdminStaff"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/staff/{id}/deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Offboard: deactivate, sign out everywhere, release claims, leave the on-call list */
+        post: operations["postAdminStaffByIdDeactivate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/staff/{id}/mfa-reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ask to reset a staff member's authenticator (a second super admin approves) */
+        post: operations["postAdminStaffByIdMfaReset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/staff/invites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invite a staff member (single-use link, 48 h; password and authenticator in one flow) */
+        post: operations["postAdminStaffInvites"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/staff/invites/{id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke an open invite */
+        post: operations["postAdminStaffInvitesByIdRevoke"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2084,6 +2203,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/companion/payouts/{id}/statement-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A 5-minute link to a payout statement (HTML or CSV) for the share sheet */
+        post: operations["postCompanionPayoutsByIdStatementLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/companion/payouts/statement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A payout statement from a short-lived signed link (no session; logged) */
+        get: operations["getCompanionPayoutsStatement"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/companion/photos/{id}": {
         parameters: {
             query?: never;
@@ -2701,6 +2854,161 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/legal/grievance-officer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The grievance officer (DPDP Act 2023 / IT Rules) */
+        get: operations["getLegalGrievanceOfficer"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/consents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your consents and which ones you can withdraw */
+        get: operations["getMeConsents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/consents/{type}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw a consent (marketing, location sharing, face checks for re-verification) */
+        post: operations["postMeConsentsByTypeWithdraw"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/data-export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your latest data export and when you can ask again */
+        get: operations["getMeDataExport"];
+        put?: never;
+        /** Ask for a copy of your data (once a week); you are told when it is ready */
+        post: operations["postMeDataExport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/data-export/{id}/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A short-lived download link for a ready export (every download is logged) */
+        post: operations["postMeDataExportByIdLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/data-export/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download an export with the short-lived link token (no session needed; logged) */
+        get: operations["getMeDataExportDownload"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/delete-account": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Deletion status and anything that has to finish first */
+        get: operations["getMeDeleteAccount"];
+        put?: never;
+        /** Delete my account, step 2: the code. Deleted after the cooling period unless you cancel */
+        post: operations["postMeDeleteAccount"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/delete-account/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel a scheduled deletion */
+        post: operations["postMeDeleteAccountCancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/delete-account/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Delete my account, step 1: your password; a one-time code is sent */
+        post: operations["postMeDeleteAccountStart"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/messages/{id}/report": {
         parameters: {
             query?: never;
@@ -2974,6 +3282,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/staff-invites/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** An invite: email, role, purpose, expiry */
+        get: operations["getStaffInvitesByToken"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff-invites/{token}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Enter a code from the authenticator app: two-step sign-in is on; recovery codes are shown once */
+        post: operations["postStaffInvitesByTokenActivate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/staff-invites/{token}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set your password (new staff) or confirm it (MFA reset); returns the authenticator secret */
+        post: operations["postStaffInvitesByTokenStart"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/storage/local/upload/{token}": {
         parameters: {
             query?: never;
@@ -3201,9 +3560,9 @@ export interface components {
         /** @enum {string} */
         RoleCode: "CUSTOMER" | "COMPANION" | "SUPER_ADMIN" | "OPS_MANAGER" | "SENIOR_OPS" | "VERIFICATION_EXECUTIVE" | "FINANCE_EXECUTIVE" | "TS_AGENT" | "TS_MANAGER" | "SUPPORT_EXECUTIVE" | "SAFETY_DESK";
         /** @enum {string} */
-        UserStatus: "PENDING" | "ACTIVE" | "SUSPENDED" | "BANNED" | "DEACTIVATED";
+        UserStatus: "PENDING" | "ACTIVE" | "SUSPENDED" | "BANNED" | "DEACTIVATED" | "DELETED";
         /** @enum {string} */
-        ErrorCode: "VALIDATION_FAILED" | "BAD_JSON" | "INVALID_INPUT" | "INVALID_REFERENCE" | "CONFLICT" | "NOT_FOUND" | "INTERNAL_ERROR" | "RATE_LIMITED" | "INVALID_STATUS_TRANSITION" | "CONTRACT_MISMATCH" | "AUTH_REQUIRED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "SESSION_ENDED" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ACCOUNT_SUSPENDED" | "ACCOUNT_EXISTS" | "ACCOUNT_NOT_FOUND" | "PHONE_NOT_VERIFIED" | "EMAIL_NOT_VERIFIED" | "INELIGIBLE_AGE" | "LINK_INVALID" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_USED" | "OTP_LOCKED" | "OTP_COOLDOWN" | "OTP_NOT_FOUND" | "OTP_RESEND_LIMIT" | "OTP_RESEND_TOO_SOON" | "OTP_SEND_LIMIT" | "OTP_SEND_FAILED" | "STAFF_ONLY" | "IP_NOT_ALLOWED" | "PERMISSION_DENIED" | "ROLE_REQUIRED" | "MFA_ENROLLMENT_REQUIRED" | "MFA_REQUIRED" | "MFA_STEP_UP_REQUIRED" | "MFA_CODE_INVALID" | "MFA_TOKEN_INVALID" | "MFA_ALREADY_ENABLED" | "MFA_NOT_STARTED" | "SECOND_APPROVER_REQUIRED" | "COMPANION_NOT_FOUND" | "PROFILE_UNAVAILABLE" | "APPLICATION_LOCKED" | "APPLICATION_INCOMPLETE" | "PROFILE_LOCKED" | "REAPPLY_BLOCKED" | "REAPPLY_COOLDOWN" | "CONTENT_NOT_ALLOWED" | "BELOW_CATEGORY_MIN_AGE" | "ACTIVITY_CATEGORY_MISMATCH" | "PHOTO_LIMIT" | "PHOTO_MINIMUM" | "PHOTO_NOT_FOUND" | "UPLOAD_NOT_FOUND" | "UPLOAD_ALREADY_RECEIVED" | "UPLOAD_MISMATCH" | "UPLOAD_NOT_PENDING" | "UPLOAD_MISSING" | "UPLOAD_CORRUPTED" | "UPLOAD_URL_EXPIRED" | "UPLOAD_TYPE_MISMATCH" | "UPLOAD_TOO_LARGE" | "UPLOAD_EMPTY" | "FILE_TOO_LARGE" | "IMAGE_UNREADABLE" | "UNSUPPORTED_IMAGE_TYPE" | "IMAGE_TOO_SMALL" | "VIEW_URL_EXPIRED" | "DOCUMENT_TYPE_REQUIRED" | "DOCUMENT_TYPE_UNAVAILABLE" | "AADHAAR_IMAGE_NOT_ALLOWED" | "VERIFICATION_NOT_OPEN" | "AUTO_CHECK_COOLDOWN" | "MANUAL_REVIEW_REQUIRED" | "LIVENESS_BY_UPLOAD" | "LIVENESS_SESSION_MISMATCH" | "DIGILOCKER_UNAVAILABLE" | "DIGILOCKER_NOT_STARTED" | "DIGILOCKER_FAILED" | "KYC_PROVIDER_NOT_CONFIGURED" | "INVALID_SIGNATURE" | "VERIFICATION_NOT_FOUND" | "NOT_IN_REVIEW" | "CLAIMED_BY_OTHER" | "CLAIM_REQUIRED" | "NOT_CLAIMED_BY_YOU" | "BLOCKED_BY_FLAG" | "FACE_MATCH_REQUIRED" | "APPROVAL_ALREADY_PENDING" | "APPROVAL_NOT_FOUND" | "APPROVAL_NOT_PENDING" | "APPROVAL_EXPIRED" | "NOT_AUTO_REJECTED" | "NEWER_ATTEMPT_EXISTS" | "DOCUMENT_NOT_FOUND" | "DOCUMENT_UNAVAILABLE" | "FLAG_NOT_FOUND" | "FLAG_NOT_OPEN" | "NOT_SUSPENDED" | "NOT_PENDING" | "CATEGORY_NOT_FOUND" | "NOT_APPROVED" | "NOT_READY" | "SETUP_INCOMPLETE" | "REVERIFICATION_DUE" | "NOT_LIVE" | "NOT_PAUSED" | "RATE_OUT_OF_BAND" | "AVAILABILITY_OVERLAP" | "EXCEPTION_NOT_FOUND" | "ONBOARDING_REQUIRED" | "VENUE_NOT_FOUND" | "REPORT_NOT_FOUND" | "REPORT_CLOSED" | "BOOKING_NOT_FOUND" | "OFFERING_UNAVAILABLE" | "PLUS_ONE_NOT_OPEN" | "VENUE_NOT_ALLOWED" | "VENUE_UNAVAILABLE" | "INSTANT_NOT_AVAILABLE" | "DURATION_OUT_OF_RANGE" | "TOO_SOON" | "TOO_FAR_AHEAD" | "DATE_BLOCKED" | "OUTSIDE_AVAILABILITY" | "DAILY_LIMIT_REACHED" | "SLOT_UNAVAILABLE" | "CUSTOMER_TIME_CONFLICT" | "QUOTE_NOT_FOUND" | "QUOTE_EXPIRED" | "QUOTE_ALREADY_USED" | "IDEMPOTENCY_KEY_REQUIRED" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_MISMATCH" | "ACCOUNT_RESTRICTED" | "CUSTOMER_ONLY" | "COMPANION_ONLY" | "COMPANION_NOT_LIVE" | "REQUEST_EXPIRED" | "REQUEST_WITHDRAWN" | "NOT_PAYABLE" | "PAYMENT_WINDOW_CLOSED" | "PAYMENT_IN_PROGRESS" | "PAYMENT_ALREADY_ATTEMPTED" | "PAYMENT_NOT_FOUND" | "PAYMENT_PROVIDER_NOT_CONFIGURED" | "NOT_CANCELLABLE" | "USE_REJECT" | "MEETING_STARTED" | "NOTHING_TO_REFUND" | "REFUND_TOO_LARGE" | "REFUND_NOT_PENDING" | "CHECK_IN_NOT_AVAILABLE" | "CHECK_IN_NOT_OPEN" | "CHECK_IN_CLOSED" | "CHECK_OUT_NOT_AVAILABLE" | "ISSUE_WINDOW_CLOSED" | "NOT_DISPUTED" | "DISPUTE_ALREADY_RESOLVED" | "WEBHOOK_SIGNATURE_INVALID" | "WEBHOOK_INVALID" | "WEBHOOK_PROCESSING_FAILED" | "CONVERSATION_NOT_FOUND" | "CONVERSATION_BLOCKED" | "CHAT_CLOSED" | "MESSAGE_RATE_LIMITED" | "MESSAGE_NOT_FOUND" | "CANNOT_REPORT_OWN" | "MESSAGE_NOT_HELD" | "DEVICE_ID_REQUIRED" | "CALL_NOT_AVAILABLE" | "CALL_WINDOW_CLOSED" | "CALL_BLOCKED" | "CALL_LIMIT_REACHED" | "CALL_PROVIDER_NOT_CONFIGURED" | "CALL_SESSION_NOT_FOUND" | "DESK_PHONE_NOT_SET" | "NO_PHONE" | "TRUSTED_CONTACT_LIMIT" | "TRUSTED_CONTACT_EXISTS" | "TRUSTED_CONTACT_NOT_FOUND" | "INVITE_NOT_FOUND" | "LOCATION_WINDOW_CLOSED" | "LOCATION_SHARING_OFF" | "LOCATION_TOO_FREQUENT" | "SHARE_NOT_FOUND" | "SHARE_ENDED" | "INCIDENT_NOT_FOUND" | "INCIDENT_ALREADY_ACKNOWLEDGED" | "INCIDENT_NOT_ACKNOWLEDGED" | "INCIDENT_CLOSED" | "NO_OTHER_PARTY" | "ALREADY_FROZEN" | "USER_NOT_FOUND" | "APPEAL_ALREADY_DECIDED" | "APPEAL_ALREADY_SUBMITTED" | "APPEAL_NOT_FOUND" | "APPEAL_OUTCOME_NOT_SUPPORTED" | "APPEAL_REVIEWER_CONFLICT" | "APPEAL_WINDOW_CLOSED" | "COMPANION_PROFILE_NOT_FOUND" | "COMPANION_STILL_SUSPENDED" | "DISPUTE_AWAITING_RESPONSE" | "DISPUTE_CLAIMED_BY_OTHER" | "DISPUTE_CLOSED_FOR_STATEMENTS" | "DISPUTE_NOT_APPEALABLE" | "DISPUTE_NOT_CLAIMED" | "DISPUTE_NOT_DECIDABLE" | "DISPUTE_NOT_FOUND" | "DISPUTE_RESPONSE_CLOSED" | "EARNING_TRANSITION_INVALID" | "NO_RECEIPT_YET" | "PAYOUT_ACCOUNT_CHANGE_IN_PROGRESS" | "PAYOUT_ACCOUNT_MISSING" | "PAYOUT_ACCOUNT_NOT_FOUND" | "PAYOUT_ACCOUNT_NOT_IN_REVIEW" | "PAYOUT_ACCOUNT_UNCHANGED" | "PAYOUT_BATCH_NOT_AWAITING_APPROVAL" | "PAYOUT_BATCH_NOT_FOUND" | "PAYOUT_HOLD_NOT_ACTIVE" | "PAYOUT_HOLD_NOT_FOUND" | "PAYOUT_NOT_FOUND" | "PAYOUT_NOT_RETRYABLE" | "PAYOUT_PROVIDER_NOT_CONFIGURED" | "REFUND_ALREADY_RE_RAISED" | "REFUND_DISPUTE_DECIDE_AGAIN" | "REFUND_NOT_FOUND" | "REFUND_NOT_REJECTED" | "STAFF_CANNOT_CHANGE_PAYOUT_ACCOUNT" | "STATEMENT_ALREADY_SUBMITTED" | "TICKET_ASSIGNED_TO_OTHER" | "TICKET_CLOSED" | "TICKET_NOT_FOUND";
+        ErrorCode: "VALIDATION_FAILED" | "BAD_JSON" | "INVALID_INPUT" | "INVALID_REFERENCE" | "CONFLICT" | "NOT_FOUND" | "INTERNAL_ERROR" | "RATE_LIMITED" | "INVALID_STATUS_TRANSITION" | "CONTRACT_MISMATCH" | "AUTH_REQUIRED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "SESSION_ENDED" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ACCOUNT_SUSPENDED" | "ACCOUNT_EXISTS" | "ACCOUNT_NOT_FOUND" | "PHONE_NOT_VERIFIED" | "EMAIL_NOT_VERIFIED" | "INELIGIBLE_AGE" | "LINK_INVALID" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_USED" | "OTP_LOCKED" | "OTP_COOLDOWN" | "OTP_NOT_FOUND" | "OTP_RESEND_LIMIT" | "OTP_RESEND_TOO_SOON" | "OTP_SEND_LIMIT" | "OTP_SEND_FAILED" | "STAFF_ONLY" | "IP_NOT_ALLOWED" | "PERMISSION_DENIED" | "ROLE_REQUIRED" | "MFA_ENROLLMENT_REQUIRED" | "MFA_REQUIRED" | "MFA_STEP_UP_REQUIRED" | "MFA_CODE_INVALID" | "MFA_TOKEN_INVALID" | "MFA_ALREADY_ENABLED" | "MFA_NOT_STARTED" | "SECOND_APPROVER_REQUIRED" | "COMPANION_NOT_FOUND" | "PROFILE_UNAVAILABLE" | "APPLICATION_LOCKED" | "APPLICATION_INCOMPLETE" | "PROFILE_LOCKED" | "REAPPLY_BLOCKED" | "REAPPLY_COOLDOWN" | "CONTENT_NOT_ALLOWED" | "BELOW_CATEGORY_MIN_AGE" | "ACTIVITY_CATEGORY_MISMATCH" | "PHOTO_LIMIT" | "PHOTO_MINIMUM" | "PHOTO_NOT_FOUND" | "UPLOAD_NOT_FOUND" | "UPLOAD_ALREADY_RECEIVED" | "UPLOAD_MISMATCH" | "UPLOAD_NOT_PENDING" | "UPLOAD_MISSING" | "UPLOAD_CORRUPTED" | "UPLOAD_URL_EXPIRED" | "UPLOAD_TYPE_MISMATCH" | "UPLOAD_TOO_LARGE" | "UPLOAD_EMPTY" | "FILE_TOO_LARGE" | "IMAGE_UNREADABLE" | "UNSUPPORTED_IMAGE_TYPE" | "IMAGE_TOO_SMALL" | "VIEW_URL_EXPIRED" | "DOCUMENT_TYPE_REQUIRED" | "DOCUMENT_TYPE_UNAVAILABLE" | "AADHAAR_IMAGE_NOT_ALLOWED" | "VERIFICATION_NOT_OPEN" | "AUTO_CHECK_COOLDOWN" | "MANUAL_REVIEW_REQUIRED" | "LIVENESS_BY_UPLOAD" | "LIVENESS_SESSION_MISMATCH" | "DIGILOCKER_UNAVAILABLE" | "DIGILOCKER_NOT_STARTED" | "DIGILOCKER_FAILED" | "KYC_PROVIDER_NOT_CONFIGURED" | "INVALID_SIGNATURE" | "VERIFICATION_NOT_FOUND" | "NOT_IN_REVIEW" | "CLAIMED_BY_OTHER" | "CLAIM_REQUIRED" | "NOT_CLAIMED_BY_YOU" | "BLOCKED_BY_FLAG" | "FACE_MATCH_REQUIRED" | "APPROVAL_ALREADY_PENDING" | "APPROVAL_NOT_FOUND" | "APPROVAL_NOT_PENDING" | "APPROVAL_EXPIRED" | "NOT_AUTO_REJECTED" | "NEWER_ATTEMPT_EXISTS" | "DOCUMENT_NOT_FOUND" | "DOCUMENT_UNAVAILABLE" | "FLAG_NOT_FOUND" | "FLAG_NOT_OPEN" | "NOT_SUSPENDED" | "NOT_PENDING" | "CATEGORY_NOT_FOUND" | "NOT_APPROVED" | "NOT_READY" | "SETUP_INCOMPLETE" | "REVERIFICATION_DUE" | "NOT_LIVE" | "NOT_PAUSED" | "RATE_OUT_OF_BAND" | "AVAILABILITY_OVERLAP" | "EXCEPTION_NOT_FOUND" | "ONBOARDING_REQUIRED" | "VENUE_NOT_FOUND" | "REPORT_NOT_FOUND" | "REPORT_CLOSED" | "BOOKING_NOT_FOUND" | "OFFERING_UNAVAILABLE" | "PLUS_ONE_NOT_OPEN" | "VENUE_NOT_ALLOWED" | "VENUE_UNAVAILABLE" | "INSTANT_NOT_AVAILABLE" | "DURATION_OUT_OF_RANGE" | "TOO_SOON" | "TOO_FAR_AHEAD" | "DATE_BLOCKED" | "OUTSIDE_AVAILABILITY" | "DAILY_LIMIT_REACHED" | "SLOT_UNAVAILABLE" | "CUSTOMER_TIME_CONFLICT" | "QUOTE_NOT_FOUND" | "QUOTE_EXPIRED" | "QUOTE_ALREADY_USED" | "IDEMPOTENCY_KEY_REQUIRED" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_MISMATCH" | "ACCOUNT_RESTRICTED" | "CUSTOMER_ONLY" | "COMPANION_ONLY" | "COMPANION_NOT_LIVE" | "REQUEST_EXPIRED" | "REQUEST_WITHDRAWN" | "NOT_PAYABLE" | "PAYMENT_WINDOW_CLOSED" | "PAYMENT_IN_PROGRESS" | "PAYMENT_ALREADY_ATTEMPTED" | "PAYMENT_NOT_FOUND" | "PAYMENT_PROVIDER_NOT_CONFIGURED" | "NOT_CANCELLABLE" | "USE_REJECT" | "MEETING_STARTED" | "NOTHING_TO_REFUND" | "REFUND_TOO_LARGE" | "REFUND_NOT_PENDING" | "CHECK_IN_NOT_AVAILABLE" | "CHECK_IN_NOT_OPEN" | "CHECK_IN_CLOSED" | "CHECK_OUT_NOT_AVAILABLE" | "ISSUE_WINDOW_CLOSED" | "NOT_DISPUTED" | "DISPUTE_ALREADY_RESOLVED" | "WEBHOOK_SIGNATURE_INVALID" | "WEBHOOK_INVALID" | "WEBHOOK_PROCESSING_FAILED" | "CONVERSATION_NOT_FOUND" | "CONVERSATION_BLOCKED" | "CHAT_CLOSED" | "MESSAGE_RATE_LIMITED" | "MESSAGE_NOT_FOUND" | "CANNOT_REPORT_OWN" | "MESSAGE_NOT_HELD" | "DEVICE_ID_REQUIRED" | "CALL_NOT_AVAILABLE" | "CALL_WINDOW_CLOSED" | "CALL_BLOCKED" | "CALL_LIMIT_REACHED" | "CALL_PROVIDER_NOT_CONFIGURED" | "CALL_SESSION_NOT_FOUND" | "DESK_PHONE_NOT_SET" | "NO_PHONE" | "TRUSTED_CONTACT_LIMIT" | "TRUSTED_CONTACT_EXISTS" | "TRUSTED_CONTACT_NOT_FOUND" | "INVITE_NOT_FOUND" | "LOCATION_WINDOW_CLOSED" | "LOCATION_SHARING_OFF" | "LOCATION_TOO_FREQUENT" | "SHARE_NOT_FOUND" | "SHARE_ENDED" | "INCIDENT_NOT_FOUND" | "INCIDENT_ALREADY_ACKNOWLEDGED" | "INCIDENT_NOT_ACKNOWLEDGED" | "INCIDENT_CLOSED" | "NO_OTHER_PARTY" | "ALREADY_FROZEN" | "USER_NOT_FOUND" | "ACCOUNT_DELETION_BLOCKED" | "ACCOUNT_DELETION_NOT_PENDING" | "ACCOUNT_DELETION_PENDING" | "APPEAL_NO_MONEY_CHANGE" | "CONSENT_NOT_GIVEN" | "CONSENT_NOT_WITHDRAWABLE" | "DATA_EXPORT_LINK_INVALID" | "DATA_EXPORT_NOT_FOUND" | "DATA_EXPORT_NOT_READY" | "DATA_EXPORT_TOO_SOON" | "LAST_SUPER_ADMIN" | "OTP_NOT_YOURS" | "PASSWORD_INCORRECT" | "STAFF_EMAIL_IN_USE" | "STAFF_ENROLMENT_REQUIRED" | "STAFF_INVITE_INVALID" | "STAFF_INVITE_NOT_OPEN" | "STAFF_INVITE_PENDING" | "STAFF_NOT_ACTIVE" | "STAFF_NOT_FOUND" | "STAFF_SELF_ACTION" | "STATEMENT_LINK_INVALID" | "APPEAL_ALREADY_DECIDED" | "APPEAL_ALREADY_SUBMITTED" | "APPEAL_NOT_FOUND" | "APPEAL_OUTCOME_NOT_SUPPORTED" | "APPEAL_REVIEWER_CONFLICT" | "APPEAL_WINDOW_CLOSED" | "COMPANION_PROFILE_NOT_FOUND" | "COMPANION_STILL_SUSPENDED" | "DISPUTE_AWAITING_RESPONSE" | "DISPUTE_CLAIMED_BY_OTHER" | "DISPUTE_CLOSED_FOR_STATEMENTS" | "DISPUTE_NOT_APPEALABLE" | "DISPUTE_NOT_CLAIMED" | "DISPUTE_NOT_DECIDABLE" | "DISPUTE_NOT_FOUND" | "DISPUTE_RESPONSE_CLOSED" | "EARNING_TRANSITION_INVALID" | "NO_RECEIPT_YET" | "PAYOUT_ACCOUNT_CHANGE_IN_PROGRESS" | "PAYOUT_ACCOUNT_MISSING" | "PAYOUT_ACCOUNT_NOT_FOUND" | "PAYOUT_ACCOUNT_NOT_IN_REVIEW" | "PAYOUT_ACCOUNT_UNCHANGED" | "PAYOUT_BATCH_NOT_AWAITING_APPROVAL" | "PAYOUT_BATCH_NOT_FOUND" | "PAYOUT_HOLD_NOT_ACTIVE" | "PAYOUT_HOLD_NOT_FOUND" | "PAYOUT_NOT_FOUND" | "PAYOUT_NOT_RETRYABLE" | "PAYOUT_PROVIDER_NOT_CONFIGURED" | "REFUND_ALREADY_RE_RAISED" | "REFUND_DISPUTE_DECIDE_AGAIN" | "REFUND_NOT_FOUND" | "REFUND_NOT_REJECTED" | "STAFF_CANNOT_CHANGE_PAYOUT_ACCOUNT" | "STATEMENT_ALREADY_SUBMITTED" | "TICKET_ASSIGNED_TO_OTHER" | "TICKET_CLOSED" | "TICKET_NOT_FOUND" | "NOTIFICATION_NOT_FOUND" | "NOTIFICATION_NOT_RETRYABLE" | "SMS_PROVIDER_NOT_CONFIGURED" | "EMAIL_PROVIDER_NOT_CONFIGURED" | "WHATSAPP_PROVIDER_NOT_CONFIGURED";
         ErrorResponse: {
             error: {
                 /** @description Stable machine code; see ErrorCode and contracts/errors.json */
@@ -4433,10 +4792,14 @@ export interface components {
             boundaries: string[];
             cancellation: components["schemas"]["CancellationPolicy"];
             dispute: {
+                /** Format: uuid */
+                id: string;
                 status: string;
                 issue_code: string | null;
                 outcome: string | null;
             } | null;
+            /** @description The dispute on this booking, if any (Feature 7) */
+            dispute_id: string | null;
             dispute_window_ends_at: string | null;
             timeline: {
                 from: components["schemas"]["BookingStatus"] | null;
@@ -4690,10 +5053,14 @@ export interface components {
             boundaries: string[];
             cancellation: components["schemas"]["CancellationPolicy"];
             dispute: {
+                /** Format: uuid */
+                id: string;
                 status: string;
                 issue_code: string | null;
                 outcome: string | null;
             } | null;
+            /** @description The dispute on this booking, if any (Feature 7) */
+            dispute_id: string | null;
             dispute_window_ends_at: string | null;
             timeline: {
                 from: components["schemas"]["BookingStatus"] | null;
@@ -5814,6 +6181,11 @@ export interface components {
                 created_at: string;
             }[];
         };
+        StaffRef: {
+            /** Format: uuid */
+            id: string;
+            display_name: string;
+        };
         AdminDisputeResponse: {
             dispute: {
                 /** Format: uuid */
@@ -5881,7 +6253,11 @@ export interface components {
                     decision_reason: string | null;
                     submitted_at: string | null;
                     decided_at: string | null;
+                    original_decider: components["schemas"]["StaffRef"] | null;
+                    reviewer: components["schemas"]["StaffRef"] | null;
                 } | null;
+                claimed_by: components["schemas"]["StaffRef"] | null;
+                resolved_by: components["schemas"]["StaffRef"] | null;
                 /** @description ISO 8601 date-time (UTC) */
                 created_at: string;
             };
@@ -5982,7 +6358,11 @@ export interface components {
                     decision_reason: string | null;
                     submitted_at: string | null;
                     decided_at: string | null;
+                    original_decider: components["schemas"]["StaffRef"] | null;
+                    reviewer: components["schemas"]["StaffRef"] | null;
                 } | null;
+                claimed_by: components["schemas"]["StaffRef"] | null;
+                resolved_by: components["schemas"]["StaffRef"] | null;
                 /** @description ISO 8601 date-time (UTC) */
                 created_at: string;
             };
@@ -5997,6 +6377,7 @@ export interface components {
                 submitted_at: string | null;
                 decided_at: string | null;
                 original_decider_user_id: string | null;
+                original_decider: components["schemas"]["StaffRef"] | null;
                 /** Format: uuid */
                 dispute_id: string;
                 decision: string | null;
@@ -6152,6 +6533,7 @@ export interface components {
                 initiated_by: string;
                 re_raised_from_refund_id: string | null;
                 re_raised_as_refund_id: string | null;
+                initiated_by_user: components["schemas"]["StaffRef"] | null;
                 /** @description ISO 8601 date-time (UTC) */
                 created_at: string;
             }[];
@@ -6202,6 +6584,190 @@ export interface components {
                 net_paid_paise: number;
                 note: string;
             };
+        };
+        StatementLinkResponse: {
+            /** @description Short-lived signed link (5 minutes); no bearer token needed */
+            url: string;
+            /** @description ISO 8601 date-time (UTC) */
+            expires_at: string;
+        };
+        DataExportStateResponse: {
+            export: {
+                /** Format: uuid */
+                id: string;
+                /** @enum {string} */
+                status: "QUEUED" | "READY" | "EXPIRED" | "FAILED";
+                ready_at: string | null;
+                expires_at: string | null;
+                download_count: number;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            } | null;
+            next_request_at: string | null;
+            cooldown_days: number;
+        };
+        DataExportLinkResponse: {
+            url: string;
+            /** @description ISO 8601 date-time (UTC) */
+            expires_at: string;
+        };
+        DeletionStateResponse: {
+            request: {
+                /** Format: uuid */
+                id: string;
+                /** @enum {string} */
+                status: "COOLING" | "BLOCKED";
+                /** @description ISO 8601 date-time (UTC) */
+                scheduled_for: string;
+                blocked: {
+                    /** @enum {string} */
+                    code: "UPCOMING_BOOKING" | "OPEN_DISPUTE" | "REFUND_IN_PROGRESS" | "NEGATIVE_BALANCE" | "UNPAID_EARNINGS" | "STAFF_ACCOUNT";
+                    message: string;
+                }[];
+            } | null;
+            blockers: {
+                /** @enum {string} */
+                code: "UPCOMING_BOOKING" | "OPEN_DISPUTE" | "REFUND_IN_PROGRESS" | "NEGATIVE_BALANCE" | "UNPAID_EARNINGS" | "STAFF_ACCOUNT";
+                message: string;
+            }[];
+            cooling_days: number;
+        };
+        ConsentsResponse: {
+            consents: {
+                type: string;
+                granted: boolean;
+                version: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                at: string;
+                withdrawable: boolean;
+            }[];
+        };
+        GrievanceOfficerResponse: {
+            name: string;
+            email: string;
+            response_days: number;
+            /** @description True until the founder fills in the real officer */
+            placeholder: boolean;
+        };
+        StaffListResponse: {
+            staff: {
+                /** Format: uuid */
+                id: string;
+                full_name: string;
+                email: string;
+                status: components["schemas"]["UserStatus"];
+                mfa_enabled: boolean;
+                mfa_enrolled_at: string | null;
+                last_login_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                roles: string[];
+            }[];
+            invites: {
+                /** Format: uuid */
+                id: string;
+                email: string;
+                full_name: string | null;
+                role_code: string;
+                /** @enum {string} */
+                purpose: "ONBOARD" | "MFA_RESET";
+                /** @description ISO 8601 date-time (UTC) */
+                expires_at: string;
+                accepted_at: string | null;
+                revoked_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                expired: boolean;
+            }[];
+        };
+        StaffInvitedResponse: {
+            invite: {
+                /** Format: uuid */
+                id: string;
+                /** @description ISO 8601 date-time (UTC) */
+                expires_at: string;
+                /** @description Development only */
+                dev_link?: string;
+            };
+        };
+        RevokedResponse: {
+            /** @constant */
+            revoked: true;
+        };
+        RequestedResponse: {
+            /** @constant */
+            requested: true;
+        };
+        StaffDeactivatedResponse: {
+            /** @constant */
+            deactivated: true;
+            released: {
+                verifications: number;
+                disputes: number;
+                tickets: number;
+                reports: number;
+                invites: number;
+                on_call: number;
+            };
+        };
+        StaffInviteResponse: {
+            email: string;
+            full_name: string | null;
+            role: string;
+            /** @enum {string} */
+            purpose: "ONBOARD" | "MFA_RESET";
+            /** @description ISO 8601 date-time (UTC) */
+            expires_at: string;
+        };
+        StaffInviteAcceptedResponse: {
+            recovery_codes: string[];
+            email: string;
+        };
+        HealthResponse: {
+            /** @constant */
+            status: "ok";
+            /** @constant */
+            db: "up";
+        };
+        ReadyResponse: {
+            /** @constant */
+            status: "ready";
+            checks: {
+                /** @enum {string} */
+                db: "up" | "down" | "skipped" | "pending";
+                /** @enum {string} */
+                redis: "up" | "down" | "skipped" | "pending";
+                /** @enum {string} */
+                migrations: "up" | "down" | "skipped" | "pending";
+            };
+            pending_migrations?: string[];
+        };
+        NotificationFailure: {
+            /** Format: uuid */
+            id: string;
+            template_code: string | null;
+            /** @enum {string} */
+            channel: "IN_APP" | "PUSH" | "EMAIL" | "SMS" | "WHATSAPP";
+            /** @enum {string} */
+            status: "QUEUED" | "SENDING" | "SENT" | "DELIVERED" | "FAILED" | "DEAD" | "READ";
+            attempts: number;
+            last_error: string | null;
+            /** @description Masked phone / email; the message text is never shown */
+            recipient: string | null;
+            /** Format: uuid */
+            user_id: string;
+            request_id: string | null;
+            last_attempt_at: string | null;
+            /** @description ISO 8601 date-time (UTC) */
+            created_at: string;
+            /** @description ISO 8601 date-time (UTC) */
+            updated_at: string;
+        };
+        NotificationFailuresResponse: {
+            items: components["schemas"]["NotificationFailure"][];
+        };
+        NotificationRetriedResponse: {
+            notification: components["schemas"]["NotificationFailure"];
         };
         WebhookAck: {
             /** @constant */
@@ -6288,6 +6854,13 @@ export interface components {
             /** @enum {string} */
             reason_code: "NOT_AVAILABLE" | "VENUE_NOT_SUITABLE" | "ACTIVITY_NOT_SUITABLE" | "TOO_SHORT_NOTICE" | "OTHER";
             note?: string;
+        };
+        postCompanionPayoutsByIdStatementLinkBody: {
+            /**
+             * @default html
+             * @enum {string}
+             */
+            format: "html" | "csv";
         };
         postCompanionPayoutAccountBody: {
             account_number: string;
@@ -6621,6 +7194,35 @@ export interface components {
         };
         postSupportTicketsByIdMessagesBody: {
             body: string;
+        };
+        postMeDeleteAccountStartBody: {
+            password: string;
+        };
+        postMeDeleteAccountBody: {
+            /** Format: uuid */
+            otp_id: string;
+            code: string;
+            reason?: string;
+        };
+        postStaffInvitesByTokenStartBody: {
+            password: string & (unknown & unknown);
+            full_name?: string;
+        };
+        postStaffInvitesByTokenActivateBody: {
+            code: string;
+        };
+        postAdminStaffInvitesBody: {
+            /** Format: email */
+            email: string;
+            full_name: string;
+            /** @enum {string} */
+            role_code: "SUPER_ADMIN" | "OPS_MANAGER" | "SENIOR_OPS" | "VERIFICATION_EXECUTIVE" | "FINANCE_EXECUTIVE" | "TS_AGENT" | "TS_MANAGER" | "SUPPORT_EXECUTIVE" | "SAFETY_DESK";
+        };
+        postAdminStaffByIdMfaResetBody: {
+            reason: string;
+        };
+        postAdminStaffByIdDeactivateBody: {
+            reason: string;
         };
         postConversationsByIdMessagesBody: {
             body?: string;
@@ -7803,6 +8405,69 @@ export interface operations {
             };
         };
     };
+    postAdminNotificationsByIdRetry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationRetriedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminNotificationsFailures: {
+        parameters: {
+            query?: {
+                status?: "DEAD" | "FAILED";
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationFailuresResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getAdminPayoutAccounts: {
         parameters: {
             query?: {
@@ -8410,6 +9075,169 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SettingProposedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminStaff: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffListResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminStaffByIdDeactivate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminStaffByIdDeactivateBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffDeactivatedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminStaffByIdMfaReset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminStaffByIdMfaResetBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminStaffInvites: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminStaffInvitesBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffInvitedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminStaffInvitesByIdRevoke: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevokedResponse"];
                 };
             };
             /** @description Error */
@@ -11110,6 +11938,74 @@ export interface operations {
             };
         };
     };
+    postCompanionPayoutsByIdStatementLink: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postCompanionPayoutsByIdStatementLinkBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatementLinkResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getCompanionPayoutsStatement: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/octet-stream": string;
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     deleteCompanionPhotosById: {
         parameters: {
             query?: never;
@@ -12430,6 +13326,341 @@ export interface operations {
             };
         };
     };
+    getLegalGrievanceOfficer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrievanceOfficerResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getMeConsents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postMeConsentsByTypeWithdraw: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                type: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getMeDataExport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataExportStateResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postMeDataExport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataExportStateResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postMeDataExportByIdLink: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataExportLinkResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getMeDataExportDownload: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/octet-stream": string;
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getMeDeleteAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletionStateResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postMeDeleteAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postMeDeleteAccountBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletionStateResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postMeDeleteAccountCancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletionStateResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postMeDeleteAccountStart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postMeDeleteAccountStartBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChallengeResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     postMessagesByIdReport: {
         parameters: {
             query?: never;
@@ -12957,6 +14188,107 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TrustedContactAddedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getStaffInvitesByToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffInviteResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postStaffInvitesByTokenActivate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postStaffInvitesByTokenActivateBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffInviteAcceptedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postStaffInvitesByTokenStart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postStaffInvitesByTokenStartBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MfaEnrollResponse"];
                 };
             };
             /** @description Error */

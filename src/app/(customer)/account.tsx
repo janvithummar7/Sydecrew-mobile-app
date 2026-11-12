@@ -66,6 +66,7 @@ export default function Account() {
         <LinkRow label={nav.safetyContacts} detail={nav.safetyContactsDetail} onPress={() => router.push('/safety/contacts')} />
         <LinkRow label={nav.support} detail={nav.supportDetail} onPress={() => router.push('/support')} />
         <LinkRow label={nav.disputes} detail={nav.disputesDetail} onPress={() => router.push('/disputes')} />
+        <LinkRow label={nav.privacy} detail={nav.privacyDetail} onPress={() => router.push('/settings/privacy')} />
         <LinkRow label={nav.settings} onPress={() => router.push('/settings')} />
       </View>
       <RoleSwitch to="companion" />
