@@ -13,7 +13,11 @@
       "supportsTablet": false,
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "associatedDomains": [
+        "applinks:sydecrew.com",
+        "applinks:www.sydecrew.com"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +27,89 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.sydecrew.app"
+      "package": "com.sydecrew.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "sydecrew.com",
+              "pathPrefix": "/bookings"
+            },
+            {
+              "scheme": "https",
+              "host": "sydecrew.com",
+              "pathPrefix": "/messages"
+            },
+            {
+              "scheme": "https",
+              "host": "sydecrew.com",
+              "pathPrefix": "/earnings"
+            },
+            {
+              "scheme": "https",
+              "host": "sydecrew.com",
+              "pathPrefix": "/disputes"
+            },
+            {
+              "scheme": "https",
+              "host": "sydecrew.com",
+              "pathPrefix": "/support"
+            },
+            {
+              "scheme": "https",
+              "host": "sydecrew.com",
+              "pathPrefix": "/safety"
+            },
+            {
+              "scheme": "https",
+              "host": "sydecrew.com",
+              "pathPrefix": "/settings"
+            },
+            {
+              "scheme": "https",
+              "host": "www.sydecrew.com",
+              "pathPrefix": "/bookings"
+            },
+            {
+              "scheme": "https",
+              "host": "www.sydecrew.com",
+              "pathPrefix": "/messages"
+            },
+            {
+              "scheme": "https",
+              "host": "www.sydecrew.com",
+              "pathPrefix": "/earnings"
+            },
+            {
+              "scheme": "https",
+              "host": "www.sydecrew.com",
+              "pathPrefix": "/disputes"
+            },
+            {
+              "scheme": "https",
+              "host": "www.sydecrew.com",
+              "pathPrefix": "/support"
+            },
+            {
+              "scheme": "https",
+              "host": "www.sydecrew.com",
+              "pathPrefix": "/safety"
+            },
+            {
+              "scheme": "https",
+              "host": "www.sydecrew.com",
+              "pathPrefix": "/settings"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "output": "single",
@@ -75,7 +161,13 @@
         }
       ],
       "expo-status-bar",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "@sentry/react-native",
+        {
+          "disableAutoUpload": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
