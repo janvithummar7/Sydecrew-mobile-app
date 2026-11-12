@@ -1,0 +1,58 @@
+# Sydecrew mobile CI (Feature 7). The job names below are the required status checks.
+# No secrets are used: the Android export is an offline JS bundle, not an EAS build.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: mobile / checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24 # unit tests run .ts through Node's type stripping
+          cache: npm
+      - run: npm ci
+      - name: Secret scan (tracked files)
+        run: npm run precheck
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint (expo lint, copy, hex, env example)
+        run: npm run lint
+      - name: Design tokens are up to date
+        run: npm run tokens:check
+      - name: Contract is up to date
+        run: npm run contract:check
+      - name: Unit tests
+        run: npm test
+
+  doctor:
+    name: mobile / expo-doctor and Android export
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: expo-doctor
+        run: npx expo-doctor
+      - name: Android export (offline bundle)
+        run: npx expo export --platform android --output-dir dist-android
+        env:
+          EXPO_OFFLINE: '1'
