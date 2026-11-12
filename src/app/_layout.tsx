@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Stack, useRouter, type Href } from 'expo-router';
 import * as Linking from 'expo-linking';
+import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
@@ -11,7 +12,8 @@ import { ToastProvider } from '@/components/ui/Misc';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { RealtimeProvider } from '@/lib/comms/realtime-context';
 import { RoleProvider, useRole } from '@/lib/role';
-import { deepLinkPath, isCustomer, isPublicLink, routeFor } from '@/lib/routing';
+import { deepLinkPath, isCustomer, isPublicLink, routeFor, shellFor } from '@/lib/routing';
+import { pushPath, pushRoute } from '@/lib/nav/pushLinks';
 import { colors } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -54,6 +56,21 @@ function RootNavigator() {
     }
   }, [status, user, router]);
 
+  // Push taps (carry-over gap §5.3), cold start and background: data.path -> the screen for this user's shell.
+  // Unknown or unsafe paths open the home screen. Each notification is handled once; taps while signed out wait for sign-in.
+  const lastResponse = Notifications.useLastNotificationResponse();
+  const handledPush = useRef<string | null>(null);
+  useEffect(() => {
+    if (!lastResponse || status !== 'authenticated' || !user || user.is_staff) return;
+    const key = lastResponse.notification.request.identifier;
+    if (handledPush.current === key) return;
+    handledPush.current = key;
+    const role = shellFor(user, preferred);
+    const to = pushRoute(pushPath(lastResponse.notification.request.content.data), role) ?? routeFor(user, preferred);
+    router.push(to as Href);
+    void Notifications.clearLastNotificationResponseAsync?.().catch(() => undefined);
+  }, [lastResponse, status, user, preferred, router]);
+
   if (status === 'loading' || !ready) return null; // the native splash stays up
 
   const signedIn = status === 'authenticated' && !!user;
@@ -90,6 +107,8 @@ function RootNavigator() {
         <Stack.Screen name="chat" />
         <Stack.Screen name="safety" />
         <Stack.Screen name="settings" />
+        <Stack.Screen name="support" />
+        <Stack.Screen name="disputes" />
       </Stack.Protected>
     </Stack>
   );
