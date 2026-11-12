@@ -1,0 +1,76 @@
+# Companion earnings (Feature 6): five tabs -> Earnings summary -> add a payout account -> masked afterwards -> More.
+# Needs: an approved companion account with NO payout account change in progress, and the API with PAYOUT_PROVIDER=mock.
+#   maestro test -e EMAIL=companion@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/earnings-payout-account.yaml
+# Uses a test account number; nothing is paid. Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+# The companion tab bar: Dashboard, Bookings, Messages, Earnings, More (at most five).
+- assertVisible: "Dashboard"
+- assertVisible: "Earnings"
+- assertVisible: "More"
+- assertNotVisible: "Availability"
+- tapOn: "Earnings"
+- assertVisible: "Ready for the next payout"
+- assertVisible: "How you get paid"
+- assertVisible: ".*never take money from your bank account.*"
+- assertNotVisible: "Coming soon — payouts are not open yet"
+- scrollUntilVisible:
+    element: "Add bank account|Change or check your payout account"
+- tapOn: "Add bank account|Change or check your payout account"
+- assertVisible: "Payout account"
+- assertVisible: ".*small test deposit.*"
+- assertVisible: ".*must match your verified ID.*"
+- tapOn: "Add bank account|Change bank account"
+# A mismatched confirmation is caught on the device.
+- tapOn:
+    id: "account-number"
+- inputText: "123456789012"
+- tapOn:
+    id: "account-confirm"
+- inputText: "123456789013"
+- tapOn:
+    id: "account-ifsc"
+- inputText: "HDFC0001234"
+- tapOn:
+    id: "account-holder"
+- inputText: "Maestro Companion"
+- hideKeyboard
+- tapOn: "Save account"
+- assertVisible: "The two account numbers do not match."
+- tapOn:
+    id: "account-confirm"
+- eraseText: 20
+- inputText: "123456789012"
+- hideKeyboard
+- tapOn: "Save account"
+- assertVisible: "Saved. We are checking your account now.|Being set up"
+# Only the last 4 digits are shown from now on.
+- assertVisible: ".*•••• 9012.*"
+- assertNotVisible: ".*123456789012.*"
+- back
+# Payouts list.
+- tapOn: "Earnings"
+- scrollUntilVisible:
+    element: "Payouts"
+- tapOn: "Payouts"
+- assertVisible: "No payouts yet|PO-.*"
+- back
+# Everything else lives under More, with the same screens.
+- tapOn: "More"
+- assertVisible: "Profile"
+- assertVisible: "Availability"
+- assertVisible: "Help and support"
+- tapOn: "Availability"
+- assertVisible: "Availability.*"

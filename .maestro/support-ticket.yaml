@@ -1,0 +1,41 @@
+# Support inbox (Feature 6): open a request -> it appears -> reply. Either role.
+#   maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/support-ticket.yaml
+# A staff reply (web admin) before the last step makes it fuller, but is not required.
+# Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+# Customer: Profile -> Help and support. Companion: More -> Help and support.
+- tapOn: "Profile|More"
+- scrollUntilVisible:
+    element: "Help and support"
+- tapOn: "Help and support"
+- assertVisible: "Ask for help"
+- tapOn: "Ask for help"
+- tapOn: "My account"
+- tapOn: "Subject"
+- inputText: "Changing my display name"
+- tapOn: "How can we help?"
+- inputText: "How do I change the name other people see on Sydecrew?"
+- hideKeyboard
+- tapOn: "Send"
+- assertVisible: "Changing my display name"
+- assertVisible: "You · .*"
+- tapOn: "Your reply"
+- inputText: "Thank you, also my area is wrong."
+- hideKeyboard
+- tapOn: "Send reply"
+- assertVisible: "Thank you, also my area is wrong."
+- back
+- assertVisible: "Changing my display name"

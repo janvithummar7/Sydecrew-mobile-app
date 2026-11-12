@@ -1,0 +1,59 @@
+# Complaint -> dispute statement (Feature 6), customer side.
+# Needs: a customer account with a COMPLETED (or in-progress) booking that can still report an issue, and the API
+# opening a dispute for booking complaints (NO_SHOW etc.). One photo in the device gallery for the evidence step.
+#   maestro test -e EMAIL=customer@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/complaint-dispute.yaml
+# Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+- tapOn: "Bookings"
+- tapOn: "Past"
+- tapOn:
+    text: ".*Completed.*"
+    index: 0
+- scrollUntilVisible:
+    element: "Report an issue"
+- tapOn: "Report an issue"
+# The complaint form (POST /complaints), not the old sheet.
+- assertVisible: "Report a problem"
+# Safety types warn before sending.
+- tapOn: "I felt unsafe"
+- assertVisible: "If you are in danger, call 112 now.*"
+- tapOn: "They did not come"
+- assertNotVisible: "If you are in danger, call 112 now.*"
+- tapOn: "Tell us more"
+- inputText: "My companion did not arrive at the venue and did not reply."
+- hideKeyboard
+- tapOn: "Send report"
+- assertVisible: "Thank you for telling us"
+- tapOn: "See the dispute"
+- assertVisible: "Add your statement by.*"
+- tapOn: "Your statement"
+- inputText: "I waited at the venue for 45 minutes. The chat shows my messages."
+- hideKeyboard
+- runFlow:
+    when:
+      visible: "Add photos"
+    commands:
+      - tapOn: "Add photos"
+      - tapOn:
+          id: ".*thumbnail.*|.*photo.*"
+          index: 0
+          optional: true
+      - tapOn:
+          text: "Select|Done|Add"
+          optional: true
+- tapOn: "Add statement"
+- assertVisible: "Statement added. Thank you.|You"
+- assertNotVisible: "Add statement"

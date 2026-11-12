@@ -65,3 +65,21 @@ not been run on a device yet.
 The OTP is shown on screen by the development API (dev hint); pass the current code each run.
 The gallery picker and crop screen differ between Android versions: the photo steps use optional
 taps and may need adjusting for your device.
+
+Payouts, disputes and support (Feature 6). Development build, the API with `PAYOUT_PROVIDER=mock`:
+
+```bash
+# Companion: five tabs -> Earnings -> add a payout account (mismatch caught, then saved, only last 4 shown) -> Payouts -> More
+maestro test -e EMAIL=companion@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/earnings-payout-account.yaml
+# Customer: a past booking -> Report an issue (complaint form) -> the dispute -> add a statement with a photo
+maestro test -e EMAIL=customer@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/complaint-dispute.yaml
+# Either role: Help and support -> ask for help -> reply
+maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/support-ticket.yaml
+```
+
+Push deep links are not covered by a flow: Maestro cannot deliver a push notification or tap one, and
+`openLink` only exercises URL deep links (sydecrew://), not the notification-response path. The mapping from
+`data.path` to a screen is unit-tested instead (`test/feature6.test.ts`, `pushRoute`). To check by hand on a device:
+send a push to the device's Expo token (https://expo.dev/notifications) with
+`{"data": {"type": "test", "id": "x", "path": "/support"}}`, then tap it with the app closed (cold start) and again
+with the app in the background; both open Help and support. An unknown path (e.g. `"//evil.com"`) opens the home screen.
