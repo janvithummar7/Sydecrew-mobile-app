@@ -21,6 +21,8 @@ const TABLE: [RegExp, To, To][] = [
   [new RegExp(`^/support/(${ID})$`), (id) => `/support/${id}`, (id) => `/support/${id}`],
   [/^\/safety$/, () => '/safety/sos', () => '/safety/sos'],
   [/^\/safety\/contacts$/, () => '/safety/contacts', () => '/safety/contacts'],
+  [/^\/settings$/, () => '/settings', () => '/settings'],
+  [/^\/settings\/privacy$/, () => '/settings/privacy', () => '/settings/privacy'],
 ];
 
 export function pushRoute(path: unknown, role: Role): string | null {
@@ -35,6 +37,28 @@ export function pushRoute(path: unknown, role: Role): string | null {
     return to ? to(m[1] ?? '') : null;
   }
   return null;
+}
+
+/**
+ * Universal / app links (Feature 7): https://sydecrew.com/... and
+ * https://www.sydecrew.com/... open the same screens as a push `path`.
+ * Returns the URL's path (query and fragment dropped) when the link is ours,
+ * or null when it is not (other hosts, http, other schemes, user-info or port
+ * tricks): those are ignored. The path is NOT validated here: `linkRoute`
+ * passes it through `pushRoute`, so unknown or unsafe paths open home.
+ */
+export function universalLinkPath(url: unknown): string | null {
+  if (typeof url !== 'string' || url.length > 500) return null;
+  const m = /^https:\/\/(?:www\.)?sydecrew\.com(?=[/?#]|$)([^?#]*)/i.exec(url);
+  if (!m) return null;
+  return m[1] || '/';
+}
+
+/** The in-app route for a universal link: null = not ours (ignore); otherwise a route, home when unknown. */
+export function linkRoute(url: unknown, role: Role, home: string): string | null {
+  const path = universalLinkPath(url);
+  if (path === null) return null;
+  return pushRoute(path, role) ?? home;
 }
 
 /** The `path` from a notification's data, if any. */

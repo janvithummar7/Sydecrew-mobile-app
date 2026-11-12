@@ -6,7 +6,7 @@ import { EmptyState } from '@/components/ui/States';
 import { Screen } from '@/components/ui/Screen';
 import { useAuth } from '@/lib/auth';
 import { staff } from '@/content/common';
-import { SITE_URL } from './settings';
+import { SITE_URL } from '@/lib/site';
 
 /** Staff accounts: the admin is web only (two-step sign-in), so the app only offers the website and log out. */
 export default function Staff() {
