@@ -43,6 +43,13 @@ export const payout = {
   paidAt: 'Paid on',
   lines: 'What this payout covers',
   failed: 'This payout did not go through. We will try again; nothing is lost.',
+  statement: 'Statement',
+  statementHtml: 'View statement',
+  statementHtmlHint: 'Opens the statement in the browser',
+  statementCsv: 'Share as spreadsheet (CSV)',
+  statementCsvHint: 'Opens the share sheet with a download link',
+  statementCsvTitle: (ref: string) => `Sydecrew payout statement ${ref}`,
+  statementNote: 'Links work for 5 minutes. Open the statement again here for a new one.',
 };
 
 export const account = {

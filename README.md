@@ -54,7 +54,7 @@ In development the app warns in the console when Android is pointed at `localhos
 
 **Discovery** (Feature 3, customer shell only): `/discover` lists LIVE companions in the customer's city (GET /discovery/companions) with quick category chips and a filters sheet (category, activity, area, languages, interests, date, time of day or an exact time, duration, price, sort). Filters can be passed as route params (`/discover?category=…`). The list is a FlatList with fixed-height memoised cards (`getItemLayout`, `expo-image` memory + disk cache), cursor infinite scroll and pull-to-refresh. Offline keeps the last results under the offline banner. Outside a pilot area it shows the waitlist. `/companions/[id]` is the public profile: Save, Report, and a disabled "Request to book" ("Booking opens soon"). `/companions/saved` and `/companions/recent` reuse the same list. The pure helpers in `src/lib/discovery/` (filters ⇄ query, paging, list layout and memo) are unit-tested.
 
-**Companion tabs** (`companion/(tabs)/`): Dashboard (one screen state and call to action per status), Profile, Availability and Rates (once approved), Status (timeline and fix list), Earnings (once approved; placeholder). Application screens: `companion/index`, `apply`, `photos`, `categories`, `identity`, `capture`, `review`, `go-live`, and `companion/preview` ("Preview your public profile": GET /companion/public-preview, the same view customers see). Profile editing includes interests and "show my age".
+**Companion tabs** (`companion/(tabs)/`): Dashboard (one screen state and call to action per status), Profile, Availability and Rates (once approved), Status (timeline and fix list), Earnings (once approved: balances, earnings, payouts and statements). Application screens: `companion/index`, `apply`, `photos`, `categories`, `identity`, `capture`, `review`, `go-live`, and `companion/preview` ("Preview your public profile": GET /companion/public-preview, the same view customers see). Profile editing includes interests and "show my age".
 
 | `next_step` | Screen |
 | --- | --- |
@@ -70,7 +70,11 @@ Accounts with both roles start in the customer shell and switch with "Switch to 
 
 **Design previews** (`preview/`): booking details, review and pay, booking day and check-in, SOS. They use the one fixture file `src/content/samples.ts`, show "Coming soon — not bookable yet", and make no booking or payment calls. The SOS preview's emergency call (112) is real.
 
-**Settings** (`/settings`): terms, privacy, refunds and community guidelines open on the website (`EXPO_PUBLIC_SITE_URL`), marked "Draft — pending legal review", plus a grievance officer placeholder.
+**Settings** (`/settings`): terms, privacy, refunds and community guidelines open on the website (`EXPO_PUBLIC_SITE_URL`), marked "Draft — pending legal review". **Privacy and your data** (`/settings/privacy`, from Profile and More): data export (a short-lived download link opened in the in-app browser), consents (withdraw marketing, location sharing, face checks), delete account (blockers, password then a one-time code, 7-day cooling, cancel), and the grievance officer from the API (marked while it is a placeholder).
+
+**Universal links** (Feature 7): `https://sydecrew.com/...` and `https://www.sydecrew.com/...` (paths `/bookings`, `/messages`, `/earnings`, `/disputes`, `/support`, `/safety`, `/settings`) open the app (`app.json` `associatedDomains` / `intentFilters` with `autoVerify`). `src/app/+native-intent.tsx` rewrites them to `/link?to=<path>`, which opens the same screen as a push `path` (`src/lib/nav/pushLinks.ts`); unknown paths open home, other hosts are ignored, and a link opened while signed out waits for sign-in. The website must serve `/.well-known/apple-app-site-association` and `/.well-known/assetlinks.json` for both hosts.
+
+**Crash reporting** (Feature 7): Sentry (`@sentry/react-native`) starts only when `EXPO_PUBLIC_SENTRY_DSN` is set. No session replay, screenshots or view hierarchy; `sendDefaultPii: false`; every event and breadcrumb goes through `src/lib/scrub.ts`. Source maps and debug symbols are uploaded only when `SENTRY_AUTH_TOKEN` (with `SENTRY_ORG`, `SENTRY_PROJECT`) is set at build time (`app.config.js`).
 
 ## Companion details
 

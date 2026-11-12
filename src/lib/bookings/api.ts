@@ -8,7 +8,6 @@ import type {
   BookingSlots,
   CancelInput,
   CancellationPreview,
-  IssueInput,
   MockCheckout,
   MockOrder,
   MockScenario,
@@ -41,7 +40,6 @@ export const bookingsApi = {
   cancel: (id: string, body: CancelInput) => api<BookingCancelled>(`/bookings/${enc(id)}/cancel`, { method: 'POST', body }),
   checkIn: (id: string) => unwrap(api<BookingResponse>(`/bookings/${enc(id)}/check-in`, { method: 'POST', body: {} })),
   checkOut: (id: string) => unwrap(api<BookingResponse>(`/bookings/${enc(id)}/check-out`, { method: 'POST', body: {} })),
-  reportIssue: (id: string, body: IssueInput) => unwrap(api<BookingResponse>(`/bookings/${enc(id)}/report-issue`, { method: 'POST', body })),
 
   // Companion inbox
   companionList: (status: 'requests' | 'upcoming' | 'past' | 'cancelled') => api<BookingList>(`/companion/bookings?status=${status}`),

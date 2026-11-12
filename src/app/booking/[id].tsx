@@ -18,7 +18,7 @@ import { bookingsApi } from '@/lib/bookings/api';
 import { actionList, companionLines, countdown, customerMoneyLines, durationLabel, isBookingDay, statusView, type ActionKey } from '@/lib/bookings/helpers';
 import type { Booking } from '@/lib/bookings/types';
 import { errorView } from '@/lib/errors';
-import { hasReceipt } from '@/lib/support/helpers';
+import { disputeIdOf, hasReceipt } from '@/lib/support/helpers';
 import { receipt as receiptCopy } from '@/content/support';
 import { formatINR } from '@/lib/money';
 import { formatDateTimeIST } from '@/lib/time';
@@ -75,6 +75,7 @@ export default function BookingDetail() {
   const answer = b.status === 'AWAITING_COMPANION' ? countdown(b.due.companion_response_due_at, now) : null;
   const payDue = b.status === 'PAYMENT_PENDING' ? countdown(b.due.payment_due_at, now) : null;
   const actions = actionList(b.actions);
+  const disputeId = disputeIdOf(b);
 
   const run = async (key: ActionKey) => {
     if (acting.current) return;
@@ -160,7 +161,9 @@ export default function BookingDetail() {
       </View>
 
       {hasReceipt(b) ? <Button variant="secondary" onPress={() => router.push({ pathname: '/booking/[id]/receipt', params: { id: b.id } })}>{receiptCopy.open}</Button> : null}
-      {b.status === 'DISPUTED' ? <Button variant="ghost" onPress={() => router.push('/disputes')}>See the dispute</Button> : null}
+      {/* Feature 7: the booking carries its dispute id, so this opens the dispute itself (the list is the fallback). */}
+      {disputeId ? <Button variant="ghost" onPress={() => router.push({ pathname: '/disputes/[id]', params: { id: disputeId } })}>See the dispute</Button> : null}
+      {!disputeId && b.status === 'DISPUTED' ? <Button variant="ghost" onPress={() => router.push('/disputes')}>See the dispute</Button> : null}
 
       {b.refunds.length ? (
         <View style={{ gap: space.sm }}>

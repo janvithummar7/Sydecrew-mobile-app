@@ -1,4 +1,5 @@
 import { api } from '../api';
+import type { StatementFormat } from './helpers';
 import type { EarningStatus, Earnings, EarningsSummary, Payout, PayoutAccountInput, PayoutAccountState, Payouts } from './types';
 
 const enc = encodeURIComponent;
@@ -12,6 +13,9 @@ export const payoutsApi = {
   },
   payouts: () => api<Payouts>('/companion/payouts'),
   payout: (id: string) => api<{ payout: Payout }>(`/companion/payouts/${enc(id)}`).then((r) => r.payout),
+  /** A 5-minute signed link to the payout statement; it needs no bearer token (Feature 7). */
+  statementLink: (id: string, format: StatementFormat) =>
+    api<{ url: string; expires_at: string }>(`/companion/payouts/${enc(id)}/statement-link`, { method: 'POST', body: { format } }),
   account: () => api<PayoutAccountState>('/companion/payout-account'),
   saveAccount: (body: PayoutAccountInput) => api<PayoutAccountState>('/companion/payout-account', { method: 'POST', body }),
 };

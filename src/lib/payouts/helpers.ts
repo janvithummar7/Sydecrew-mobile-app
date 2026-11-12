@@ -67,3 +67,16 @@ export function validateAccount(raw: AccountForm): AccountErrors {
   if (f.account_holder_name.length < 2 || f.account_holder_name.length > 120) e.account_holder_name = 'Enter the name on the account, as on your verified ID.';
   return e;
 }
+
+export type StatementFormat = 'html' | 'csv';
+
+/**
+ * How a payout statement is opened (Feature 7): HTML is read in the in-app
+ * browser; CSV is a file for a spreadsheet, so it goes to the share sheet
+ * (Drive, Files, email, a spreadsheet app).
+ */
+export const statementAction = (format: StatementFormat): 'browser' | 'share' => (format === 'csv' ? 'share' : 'browser');
+
+/** Only an https (or, in development, http) link from the API is opened or shared. */
+export const isOpenableLink = (url: unknown, dev = false): url is string =>
+  typeof url === 'string' && (dev ? /^https?:\/\/\S+$/i : /^https:\/\/\S+$/i).test(url);

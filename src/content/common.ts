@@ -41,7 +41,6 @@ export const safety = {
 export const placeholders = {
   title: 'Coming soon — not bookable yet',
   body: 'This screen shows how the feature will look. It uses clearly labelled sample data and makes no bookings or payments.',
-  sampleLabel: 'Sample',
 } as const;
 
 export const nav = {
@@ -58,6 +57,8 @@ export const nav = {
   becomeCompanion: 'Become a companion',
   previewProfile: 'Preview your public profile',
   settings: 'Settings and legal',
+  privacy: 'Privacy and your data',
+  privacyDetail: 'Download your data, consents, delete your account',
   sos: 'SOS and safety',
   sosDetail: 'Call 112, alert our 24×7 safety desk',
   safetyContacts: 'Safety contacts',
@@ -72,8 +73,6 @@ export const legal = {
     { key: 'refunds', title: 'Cancellation and refunds', path: '/legal/refunds' },
     { key: 'guidelines', title: 'Community guidelines', path: '/legal/community-guidelines' },
   ],
-  grievanceTitle: 'Grievance officer',
-  grievanceBody: 'Details of our grievance officer will be published here before launch.',
 } as const;
 
 export const staff = {

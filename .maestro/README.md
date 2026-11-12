@@ -83,3 +83,11 @@ Push deep links are not covered by a flow: Maestro cannot deliver a push notific
 send a push to the device's Expo token (https://expo.dev/notifications) with
 `{"data": {"type": "test", "id": "x", "path": "/support"}}`, then tap it with the app closed (cold start) and again
 with the app in the background; both open Help and support. An unknown path (e.g. `"//evil.com"`) opens the home screen.
+
+Privacy and your data (Feature 7): data export request, consents, grievance officer, and delete account
+(blockers, or password -> code -> scheduled -> cancel, so the account is left as it was). Either role.
+Not run here (no device or emulator in this environment):
+
+```bash
+maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 -e DELETE_OTP=123456 .maestro/privacy.yaml
+```

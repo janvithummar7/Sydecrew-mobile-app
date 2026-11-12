@@ -69,3 +69,13 @@ export const hasReceipt = (b: { viewer: string; payment: { status: string } | nu
 
 /** The request body enum is inline in the contract (no component schema), so the list lives here. */
 export const TicketCategoryValues = Object.keys(ticketCategories) as TicketCategory[];
+
+/**
+ * The dispute on a booking (Feature 7: bookings carry `dispute_id` and
+ * `dispute.id`), so booking detail opens /disputes/<id> directly. Only an id
+ * that looks like one is used; anything else falls back to the disputes list.
+ */
+export function disputeIdOf(b: { dispute_id?: string | null; dispute?: { id?: string | null } | null }): string | null {
+  const id = b.dispute_id ?? b.dispute?.id ?? null;
+  return typeof id === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(id) ? id : null;
+}

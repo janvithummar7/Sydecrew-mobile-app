@@ -7,10 +7,10 @@ import { TextField } from '@/components/ui/Field';
 import { Sheet } from '@/components/ui/Sheet';
 import { SkeletonList } from '@/components/ui/States';
 import { Text } from '@/components/ui/Text';
-import { cancel as cancelCopy, issue as issueCopy, reject as rejectCopy } from '@/content/bookings';
+import { cancel as cancelCopy, reject as rejectCopy } from '@/content/bookings';
 import { bookingsApi } from '@/lib/bookings/api';
 import type { Booking, CancellationPreview } from '@/lib/bookings/types';
-import { BookingCancelReasonValues, BookingIssueValues, BookingRejectReasonValues } from '@/lib/contract/enums';
+import { BookingCancelReasonValues, BookingRejectReasonValues } from '@/lib/contract/enums';
 import { errorView } from '@/lib/errors';
 import { formatINR } from '@/lib/money';
 import { colors, space } from '@/theme';
@@ -77,44 +77,6 @@ export function CancelSheet({ booking, visible, onClose, onDone }: { booking: Bo
         <TextField label={cancelCopy.note} value={note} onChangeText={setNote} maxLength={1000} multiline />
         <Button variant="danger" onPress={submit} loading={busy} disabled={!reason || !preview}>{cancelCopy.confirm}</Button>
         <Button variant="ghost" onPress={onClose}>{cancelCopy.keep}</Button>
-      </ScrollView>
-    </Sheet>
-  );
-}
-
-export function IssueSheet({ booking, visible, onClose, onDone }: { booking: Booking; visible: boolean; onClose: () => void; onDone: Done }) {
-  const [reason, setReason] = useState<(typeof BookingIssueValues)[number] | null>(null);
-  const [note, setNote] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const sending = useRef(false);
-  const submit = async () => {
-    if (!reason || sending.current) return;
-    sending.current = true;
-    setBusy(true);
-    try {
-      onDone(await bookingsApi.reportIssue(booking.id, { issue_code: reason, ...(note.trim() ? { note: note.trim() } : {}) }));
-      onClose();
-    } catch (err) {
-      setError(errorView(err).message);
-    } finally {
-      sending.current = false;
-      setBusy(false);
-    }
-  };
-  return (
-    <Sheet visible={visible} onClose={onClose} title={issueCopy.title}>
-      <ScrollView contentContainerStyle={{ gap: space.md }}>
-        <Text variant="small" color={colors.text}>{issueCopy.body}</Text>
-        {error ? <Alert>{error}</Alert> : null}
-        <Text variant="small" weight="600" color={colors.textStrong}>{issueCopy.reason}</Text>
-        <ChipRow>
-          {BookingIssueValues.map((r) => (
-            <Chip key={r} radio label={issueCopy.reasons[r]} selected={reason === r} onPress={() => setReason(r)} />
-          ))}
-        </ChipRow>
-        <TextField label={issueCopy.note} value={note} onChangeText={setNote} maxLength={1000} multiline />
-        <Button onPress={submit} loading={busy} disabled={!reason}>{issueCopy.submit}</Button>
       </ScrollView>
     </Sheet>
   );
