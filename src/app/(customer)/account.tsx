@@ -64,6 +64,8 @@ export default function Account() {
         <LinkRow label={user.companion ? nav.companion.dashboard : nav.becomeCompanion} detail={user.companion ? undefined : 'Platonic company at approved public venues, on your own hours.'} onPress={() => router.push(COMPANION_HOME)} />
         <LinkRow label={nav.sos} detail={nav.sosDetail} onPress={() => router.push('/safety/sos')} />
         <LinkRow label={nav.safetyContacts} detail={nav.safetyContactsDetail} onPress={() => router.push('/safety/contacts')} />
+        <LinkRow label={nav.support} detail={nav.supportDetail} onPress={() => router.push('/support')} />
+        <LinkRow label={nav.disputes} detail={nav.disputesDetail} onPress={() => router.push('/disputes')} />
         <LinkRow label={nav.settings} onPress={() => router.push('/settings')} />
       </View>
       <RoleSwitch to="companion" />

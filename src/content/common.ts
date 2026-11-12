@@ -46,7 +46,13 @@ export const placeholders = {
 
 export const nav = {
   customer: { home: 'Home', discover: 'Discover', bookings: 'Bookings', messages: 'Messages', profile: 'Profile' },
-  companion: { dashboard: 'Dashboard', bookings: 'Bookings', messages: 'Messages', profile: 'Profile', availability: 'Availability', rates: 'Rates', status: 'Status', earnings: 'Earnings' },
+  companion: { dashboard: 'Dashboard', bookings: 'Bookings', messages: 'Messages', profile: 'Profile', availability: 'Availability', rates: 'Rates', status: 'Status', earnings: 'Earnings', more: 'More' },
+  support: 'Help and support',
+  supportDetail: 'Ask us anything, report a problem',
+  disputes: 'Disputes',
+  disputesDetail: 'Issues being reviewed, and decisions',
+  payoutAccount: 'Payout account',
+  payoutAccountDetail: 'The bank account your earnings go to',
   switchToCompanion: 'Switch to companion',
   switchToCustomer: 'Switch to customer',
   becomeCompanion: 'Become a companion',

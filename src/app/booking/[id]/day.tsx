@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { BackBar } from '@/components/account/BackBar';
-import { IssueSheet } from '@/components/bookings/Sheets';
 import { CallAndChat, LocationShare, PingPrompt } from '@/components/comms/BookingComms';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -40,7 +39,6 @@ export default function BookingDay() {
   const [state, setState] = useState<{ error: string | null; offline: boolean }>({ error: null, offline: false });
   const [busy, setBusy] = useState<'in' | 'out' | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [issue, setIssue] = useState(false);
   const acting = useRef(false);
 
   const load = useCallback(() => {
@@ -131,9 +129,8 @@ export default function BookingDay() {
           </Card>
         </View>
       ) : null}
-      {b.actions.can_report_issue ? <Button variant="ghost" onPress={() => setIssue(true)}>{detailCopy.actions.report_issue}</Button> : null}
+      {b.actions.can_report_issue ? <Button variant="ghost" onPress={() => router.push({ pathname: '/support/report', params: { booking: b.id } })}>{detailCopy.actions.report_issue}</Button> : null}
       <SafetyCallout sos />
-      <IssueSheet booking={b} visible={issue} onClose={() => setIssue(false)} onDone={setB} />
     </Screen>
   );
 }

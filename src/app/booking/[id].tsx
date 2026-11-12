@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { BackBar } from '@/components/account/BackBar';
 import { PolicyCard, PriceLines, Timeline } from '@/components/bookings/Parts';
-import { CancelSheet, IssueSheet, RejectSheet } from '@/components/bookings/Sheets';
+import { CancelSheet, RejectSheet } from '@/components/bookings/Sheets';
 import { CallAndChat } from '@/components/comms/BookingComms';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -18,6 +18,8 @@ import { bookingsApi } from '@/lib/bookings/api';
 import { actionList, companionLines, countdown, customerMoneyLines, durationLabel, isBookingDay, statusView, type ActionKey } from '@/lib/bookings/helpers';
 import type { Booking } from '@/lib/bookings/types';
 import { errorView } from '@/lib/errors';
+import { hasReceipt } from '@/lib/support/helpers';
+import { receipt as receiptCopy } from '@/content/support';
 import { formatINR } from '@/lib/money';
 import { formatDateTimeIST } from '@/lib/time';
 import { colors, space } from '@/theme';
@@ -35,7 +37,7 @@ export default function BookingDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [b, setB] = useState<Booking | null>(null);
   const [state, setState] = useState<{ error: string | null; offline: boolean; gone: boolean }>({ error: null, offline: false, gone: false });
-  const [sheet, setSheet] = useState<'cancel' | 'issue' | 'reject' | null>(null);
+  const [sheet, setSheet] = useState<'cancel' | 'reject' | null>(null);
   const [busy, setBusy] = useState<ActionKey | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const acting = useRef(false);
@@ -79,7 +81,8 @@ export default function BookingDetail() {
     if (key === 'pay') return router.push({ pathname: '/booking/[id]/pay', params: { id: b.id } });
     if (key === 'check_in' || key === 'check_out') return router.push({ pathname: '/booking/[id]/day', params: { id: b.id } });
     if (key === 'cancel' || key === 'reject') return setSheet(key);
-    if (key === 'report_issue') return setSheet('issue');
+    // Feature 6: the complaint form (POST /complaints); the old report-issue endpoint stays as a wrapper on the API.
+    if (key === 'report_issue') return router.push({ pathname: '/support/report', params: { booking: b.id } });
     // accept
     acting.current = true;
     setBusy(key);
@@ -156,6 +159,9 @@ export default function BookingDetail() {
         {b.viewer === 'CUSTOMER' && ['CONFIRMED', 'IN_PROGRESS'].includes(b.status) ? <Text variant="caption" color={colors.textMuted}>{copy.held}</Text> : null}
       </View>
 
+      {hasReceipt(b) ? <Button variant="secondary" onPress={() => router.push({ pathname: '/booking/[id]/receipt', params: { id: b.id } })}>{receiptCopy.open}</Button> : null}
+      {b.status === 'DISPUTED' ? <Button variant="ghost" onPress={() => router.push('/disputes')}>See the dispute</Button> : null}
+
       {b.refunds.length ? (
         <View style={{ gap: space.sm }}>
           <Text variant="eyebrow" color={colors.textSubtle}>{copy.refunds}</Text>
@@ -192,7 +198,6 @@ export default function BookingDetail() {
       </View>
 
       <CancelSheet booking={b} visible={sheet === 'cancel'} onClose={() => setSheet(null)} onDone={setB} />
-      <IssueSheet booking={b} visible={sheet === 'issue'} onClose={() => setSheet(null)} onDone={setB} />
       <RejectSheet booking={b} visible={sheet === 'reject'} onClose={() => setSheet(null)} onDone={(x) => (setB(x), toast(copy.declined))} />
     </Screen>
   );
