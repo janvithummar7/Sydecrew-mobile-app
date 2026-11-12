@@ -1,5 +1,39 @@
 /* GENERATED from contracts/*.json by scripts/contract.mjs. Do not edit; run `npm run contract:gen`. */
 export interface paths {
+    "/api/v1/admin/appeals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dispute appeals */
+        get: operations["getAdminAppeals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/appeals/{id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide an appeal (never the original decider). OVERTURN changes the money through the ledger. */
+        post: operations["postAdminAppealsByIdDecide"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/approvals": {
         parameters: {
             query?: never;
@@ -164,6 +198,108 @@ export interface paths {
         put?: never;
         /** Suspend a companion */
         post: operations["postAdminCompanionsByIdSuspend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/disputes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dispute queue: oldest first, with deadlines and claims */
+        get: operations["getAdminDisputes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/disputes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One dispute with statements and system evidence (every read is access-logged) */
+        get: operations["getAdminDisputesById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/disputes/{id}/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Claim a dispute (a lease; only the holder can decide) */
+        post: operations["postAdminDisputesByIdClaim"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/disputes/{id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide a dispute: release, full refund or partial refund (largest remainder); optional strike */
+        post: operations["postAdminDisputesByIdDecide"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/disputes/{id}/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Give a claimed dispute back to the queue */
+        post: operations["postAdminDisputesByIdRelease"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/disputes/{id}/transcript": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The booking chat transcript (access-logged) */
+        get: operations["getAdminDisputesByIdTranscript"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -391,6 +527,229 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/payout-accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Payout accounts by status (no numbers; last 4 digits) */
+        get: operations["getAdminPayoutAccounts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payout-accounts/{id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide an account that needs review. Approval keeps the cooling hold; staff can never enter or change an account. */
+        post: operations["postAdminPayoutAccountsByIdDecide"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payout-holds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Payout holds */
+        get: operations["getAdminPayoutHolds"];
+        put?: never;
+        /** Hold a companion's payouts (unsent payouts are pulled at once) */
+        post: operations["postAdminPayoutHolds"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payout-holds/{id}/release": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Release a hold (a Trust & Safety hold needs a second approver) */
+        post: operations["postAdminPayoutHoldsByIdRelease"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payouts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Payouts (Finance) */
+        get: operations["getAdminPayouts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payouts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One payout with its lines (Finance) */
+        get: operations["getAdminPayoutsById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payouts/{id}/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send a payout that is waiting for a retry now */
+        post: operations["postAdminPayoutsByIdRetry"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payouts/batches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Payout batches (Finance) */
+        get: operations["getAdminPayoutsBatches"];
+        put?: never;
+        /** Build the payout batch for a date now (idempotent per date). Above the threshold it waits for a second approver. */
+        post: operations["postAdminPayoutsBatches"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payouts/batches/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One payout batch with its payouts (Finance) */
+        get: operations["getAdminPayoutsBatchesById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payouts/batches/{id}/request-approval": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ask for the second approval of a batch the weekly job built (maker-checker) */
+        post: operations["postAdminPayoutsBatchesByIdRequestApproval"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payouts/reconcile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run payout reconciliation and the money invariants now */
+        post: operations["postAdminPayoutsReconcile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/refunds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Refunds (Finance), with re-raise links */
+        get: operations["getAdminRefunds"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/refunds/{id}/re-raise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Raise a rejected refund again (once; the approval rule applies again) */
+        post: operations["postAdminRefundsByIdReRaise"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/reports": {
         parameters: {
             query?: never;
@@ -437,6 +796,91 @@ export interface paths {
         put?: never;
         /** Propose a settings change (a second approver with settings.pricing.edit applies it) */
         post: operations["postAdminSettingsPricing"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/support/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Support queue by first-response SLA */
+        get: operations["getAdminSupportTickets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/support/tickets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One ticket with internal notes */
+        get: operations["getAdminSupportTicketsById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/support/tickets/{id}/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Assign a ticket to me */
+        post: operations["postAdminSupportTicketsByIdClaim"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/support/tickets/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reply to the user (or add an internal note); contact details are masked */
+        post: operations["postAdminSupportTicketsByIdMessages"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/support/tickets/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set a ticket status */
+        post: operations["postAdminSupportTicketsByIdStatus"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1161,6 +1605,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/bookings/{id}/receipt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Payment receipt for a booking (labelled "Receipt", not a tax invoice); ?format=html for a printable page */
+        get: operations["getBookingsByIdReceipt"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/bookings/{id}/report-issue": {
         parameters: {
             query?: never;
@@ -1452,6 +1913,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/companion/earnings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Earnings, newest first (booking, status, when it becomes available or was paid) */
+        get: operations["getCompanionEarnings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/companion/earnings/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Earnings balances, the next payout date and the payout account (last 4 digits) */
+        get: operations["getCompanionEarningsSummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/companion/go-live": {
         parameters: {
             query?: never;
@@ -1514,6 +2009,75 @@ export interface paths {
         put?: never;
         /** Pause a live profile */
         post: operations["postCompanionPause"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/companion/payout-account": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The payout account (last 4 digits only) and any change in progress */
+        get: operations["getCompanionPayoutAccount"];
+        put?: never;
+        /** Add or change the payout account: penny-drop, name match with the verified name, then a cooling hold. You are told on every channel. */
+        post: operations["postCompanionPayoutAccount"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/companion/payouts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Payouts, newest first */
+        get: operations["getCompanionPayouts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/companion/payouts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One payout with the bookings it paid */
+        get: operations["getCompanionPayoutsById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/companion/payouts/{id}/statement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Payout statement as HTML (printable) or CSV; never the full account number */
+        get: operations["getCompanionPayoutsByIdStatement"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1794,6 +2358,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/complaints": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Make a complaint. Safety types reach the safety desk; booking-linked ones hold the payment while it is decided. */
+        post: operations["postComplaints"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/conversations": {
         parameters: {
             query?: never;
@@ -2029,6 +2610,91 @@ export interface paths {
         put?: never;
         /** Join the waitlist for a city (and optionally an area / category) */
         post: operations["postDiscoveryWaitlist"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/disputes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My disputes */
+        get: operations["getDisputes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/disputes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One dispute (statements of the other side are shown once it is decided) */
+        get: operations["getDisputesById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/disputes/{id}/appeal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Appeal the decision (once, within the appeal window); a different senior reviewer decides */
+        post: operations["postDisputesByIdAppeal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/disputes/{id}/evidence-upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload URL for one evidence photo (re-encoded, EXIF removed) */
+        post: operations["postDisputesByIdEvidenceUploadUrl"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/disputes/{id}/statements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add your statement (once; text plus up to 5 photos) before the deadline */
+        post: operations["postDisputesByIdStatements"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2342,6 +3008,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/support/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My support tickets */
+        get: operations["getSupportTickets"];
+        put?: never;
+        /** Open a support ticket (contact details are masked) */
+        post: operations["postSupportTickets"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/support/tickets/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One ticket and its replies */
+        get: operations["getSupportTicketsById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/support/tickets/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reply on a ticket */
+        post: operations["postSupportTicketsByIdMessages"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/venues": {
         parameters: {
             query?: never;
@@ -2427,6 +3145,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/webhooks/payouts/{provider}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Payout provider webhook (HMAC over the raw body; idempotent per event id) */
+        post: operations["postWebhooksPayoutsByProvider"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2468,7 +3203,7 @@ export interface components {
         /** @enum {string} */
         UserStatus: "PENDING" | "ACTIVE" | "SUSPENDED" | "BANNED" | "DEACTIVATED";
         /** @enum {string} */
-        ErrorCode: "VALIDATION_FAILED" | "BAD_JSON" | "INVALID_INPUT" | "INVALID_REFERENCE" | "CONFLICT" | "NOT_FOUND" | "INTERNAL_ERROR" | "RATE_LIMITED" | "INVALID_STATUS_TRANSITION" | "CONTRACT_MISMATCH" | "AUTH_REQUIRED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "SESSION_ENDED" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ACCOUNT_SUSPENDED" | "ACCOUNT_EXISTS" | "ACCOUNT_NOT_FOUND" | "PHONE_NOT_VERIFIED" | "EMAIL_NOT_VERIFIED" | "INELIGIBLE_AGE" | "LINK_INVALID" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_USED" | "OTP_LOCKED" | "OTP_COOLDOWN" | "OTP_NOT_FOUND" | "OTP_RESEND_LIMIT" | "OTP_RESEND_TOO_SOON" | "OTP_SEND_LIMIT" | "OTP_SEND_FAILED" | "STAFF_ONLY" | "IP_NOT_ALLOWED" | "PERMISSION_DENIED" | "ROLE_REQUIRED" | "MFA_ENROLLMENT_REQUIRED" | "MFA_REQUIRED" | "MFA_STEP_UP_REQUIRED" | "MFA_CODE_INVALID" | "MFA_TOKEN_INVALID" | "MFA_ALREADY_ENABLED" | "MFA_NOT_STARTED" | "SECOND_APPROVER_REQUIRED" | "COMPANION_NOT_FOUND" | "PROFILE_UNAVAILABLE" | "APPLICATION_LOCKED" | "APPLICATION_INCOMPLETE" | "PROFILE_LOCKED" | "REAPPLY_BLOCKED" | "REAPPLY_COOLDOWN" | "CONTENT_NOT_ALLOWED" | "BELOW_CATEGORY_MIN_AGE" | "ACTIVITY_CATEGORY_MISMATCH" | "PHOTO_LIMIT" | "PHOTO_MINIMUM" | "PHOTO_NOT_FOUND" | "UPLOAD_NOT_FOUND" | "UPLOAD_ALREADY_RECEIVED" | "UPLOAD_MISMATCH" | "UPLOAD_NOT_PENDING" | "UPLOAD_MISSING" | "UPLOAD_CORRUPTED" | "UPLOAD_URL_EXPIRED" | "UPLOAD_TYPE_MISMATCH" | "UPLOAD_TOO_LARGE" | "UPLOAD_EMPTY" | "FILE_TOO_LARGE" | "IMAGE_UNREADABLE" | "UNSUPPORTED_IMAGE_TYPE" | "IMAGE_TOO_SMALL" | "VIEW_URL_EXPIRED" | "DOCUMENT_TYPE_REQUIRED" | "DOCUMENT_TYPE_UNAVAILABLE" | "AADHAAR_IMAGE_NOT_ALLOWED" | "VERIFICATION_NOT_OPEN" | "AUTO_CHECK_COOLDOWN" | "MANUAL_REVIEW_REQUIRED" | "LIVENESS_BY_UPLOAD" | "LIVENESS_SESSION_MISMATCH" | "DIGILOCKER_UNAVAILABLE" | "DIGILOCKER_NOT_STARTED" | "DIGILOCKER_FAILED" | "KYC_PROVIDER_NOT_CONFIGURED" | "INVALID_SIGNATURE" | "VERIFICATION_NOT_FOUND" | "NOT_IN_REVIEW" | "CLAIMED_BY_OTHER" | "CLAIM_REQUIRED" | "NOT_CLAIMED_BY_YOU" | "BLOCKED_BY_FLAG" | "FACE_MATCH_REQUIRED" | "APPROVAL_ALREADY_PENDING" | "APPROVAL_NOT_FOUND" | "APPROVAL_NOT_PENDING" | "APPROVAL_EXPIRED" | "NOT_AUTO_REJECTED" | "NEWER_ATTEMPT_EXISTS" | "DOCUMENT_NOT_FOUND" | "DOCUMENT_UNAVAILABLE" | "FLAG_NOT_FOUND" | "FLAG_NOT_OPEN" | "NOT_SUSPENDED" | "NOT_PENDING" | "CATEGORY_NOT_FOUND" | "NOT_APPROVED" | "NOT_READY" | "SETUP_INCOMPLETE" | "REVERIFICATION_DUE" | "NOT_LIVE" | "NOT_PAUSED" | "RATE_OUT_OF_BAND" | "AVAILABILITY_OVERLAP" | "EXCEPTION_NOT_FOUND" | "ONBOARDING_REQUIRED" | "VENUE_NOT_FOUND" | "REPORT_NOT_FOUND" | "REPORT_CLOSED" | "BOOKING_NOT_FOUND" | "OFFERING_UNAVAILABLE" | "PLUS_ONE_NOT_OPEN" | "VENUE_NOT_ALLOWED" | "VENUE_UNAVAILABLE" | "INSTANT_NOT_AVAILABLE" | "DURATION_OUT_OF_RANGE" | "TOO_SOON" | "TOO_FAR_AHEAD" | "DATE_BLOCKED" | "OUTSIDE_AVAILABILITY" | "DAILY_LIMIT_REACHED" | "SLOT_UNAVAILABLE" | "CUSTOMER_TIME_CONFLICT" | "QUOTE_NOT_FOUND" | "QUOTE_EXPIRED" | "QUOTE_ALREADY_USED" | "IDEMPOTENCY_KEY_REQUIRED" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_MISMATCH" | "ACCOUNT_RESTRICTED" | "CUSTOMER_ONLY" | "COMPANION_ONLY" | "COMPANION_NOT_LIVE" | "REQUEST_EXPIRED" | "REQUEST_WITHDRAWN" | "NOT_PAYABLE" | "PAYMENT_WINDOW_CLOSED" | "PAYMENT_IN_PROGRESS" | "PAYMENT_ALREADY_ATTEMPTED" | "PAYMENT_NOT_FOUND" | "PAYMENT_PROVIDER_NOT_CONFIGURED" | "NOT_CANCELLABLE" | "USE_REJECT" | "MEETING_STARTED" | "NOTHING_TO_REFUND" | "REFUND_TOO_LARGE" | "REFUND_NOT_PENDING" | "CHECK_IN_NOT_AVAILABLE" | "CHECK_IN_NOT_OPEN" | "CHECK_IN_CLOSED" | "CHECK_OUT_NOT_AVAILABLE" | "ISSUE_WINDOW_CLOSED" | "NOT_DISPUTED" | "DISPUTE_ALREADY_RESOLVED" | "WEBHOOK_SIGNATURE_INVALID" | "WEBHOOK_INVALID" | "WEBHOOK_PROCESSING_FAILED" | "CONVERSATION_NOT_FOUND" | "CONVERSATION_BLOCKED" | "CHAT_CLOSED" | "MESSAGE_RATE_LIMITED" | "MESSAGE_NOT_FOUND" | "CANNOT_REPORT_OWN" | "MESSAGE_NOT_HELD" | "DEVICE_ID_REQUIRED" | "CALL_NOT_AVAILABLE" | "CALL_WINDOW_CLOSED" | "CALL_BLOCKED" | "CALL_LIMIT_REACHED" | "CALL_PROVIDER_NOT_CONFIGURED" | "CALL_SESSION_NOT_FOUND" | "DESK_PHONE_NOT_SET" | "NO_PHONE" | "TRUSTED_CONTACT_LIMIT" | "TRUSTED_CONTACT_EXISTS" | "TRUSTED_CONTACT_NOT_FOUND" | "INVITE_NOT_FOUND" | "LOCATION_WINDOW_CLOSED" | "LOCATION_SHARING_OFF" | "LOCATION_TOO_FREQUENT" | "SHARE_NOT_FOUND" | "SHARE_ENDED" | "INCIDENT_NOT_FOUND" | "INCIDENT_ALREADY_ACKNOWLEDGED" | "INCIDENT_NOT_ACKNOWLEDGED" | "INCIDENT_CLOSED" | "NO_OTHER_PARTY" | "ALREADY_FROZEN" | "USER_NOT_FOUND";
+        ErrorCode: "VALIDATION_FAILED" | "BAD_JSON" | "INVALID_INPUT" | "INVALID_REFERENCE" | "CONFLICT" | "NOT_FOUND" | "INTERNAL_ERROR" | "RATE_LIMITED" | "INVALID_STATUS_TRANSITION" | "CONTRACT_MISMATCH" | "AUTH_REQUIRED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "SESSION_ENDED" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ACCOUNT_SUSPENDED" | "ACCOUNT_EXISTS" | "ACCOUNT_NOT_FOUND" | "PHONE_NOT_VERIFIED" | "EMAIL_NOT_VERIFIED" | "INELIGIBLE_AGE" | "LINK_INVALID" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_USED" | "OTP_LOCKED" | "OTP_COOLDOWN" | "OTP_NOT_FOUND" | "OTP_RESEND_LIMIT" | "OTP_RESEND_TOO_SOON" | "OTP_SEND_LIMIT" | "OTP_SEND_FAILED" | "STAFF_ONLY" | "IP_NOT_ALLOWED" | "PERMISSION_DENIED" | "ROLE_REQUIRED" | "MFA_ENROLLMENT_REQUIRED" | "MFA_REQUIRED" | "MFA_STEP_UP_REQUIRED" | "MFA_CODE_INVALID" | "MFA_TOKEN_INVALID" | "MFA_ALREADY_ENABLED" | "MFA_NOT_STARTED" | "SECOND_APPROVER_REQUIRED" | "COMPANION_NOT_FOUND" | "PROFILE_UNAVAILABLE" | "APPLICATION_LOCKED" | "APPLICATION_INCOMPLETE" | "PROFILE_LOCKED" | "REAPPLY_BLOCKED" | "REAPPLY_COOLDOWN" | "CONTENT_NOT_ALLOWED" | "BELOW_CATEGORY_MIN_AGE" | "ACTIVITY_CATEGORY_MISMATCH" | "PHOTO_LIMIT" | "PHOTO_MINIMUM" | "PHOTO_NOT_FOUND" | "UPLOAD_NOT_FOUND" | "UPLOAD_ALREADY_RECEIVED" | "UPLOAD_MISMATCH" | "UPLOAD_NOT_PENDING" | "UPLOAD_MISSING" | "UPLOAD_CORRUPTED" | "UPLOAD_URL_EXPIRED" | "UPLOAD_TYPE_MISMATCH" | "UPLOAD_TOO_LARGE" | "UPLOAD_EMPTY" | "FILE_TOO_LARGE" | "IMAGE_UNREADABLE" | "UNSUPPORTED_IMAGE_TYPE" | "IMAGE_TOO_SMALL" | "VIEW_URL_EXPIRED" | "DOCUMENT_TYPE_REQUIRED" | "DOCUMENT_TYPE_UNAVAILABLE" | "AADHAAR_IMAGE_NOT_ALLOWED" | "VERIFICATION_NOT_OPEN" | "AUTO_CHECK_COOLDOWN" | "MANUAL_REVIEW_REQUIRED" | "LIVENESS_BY_UPLOAD" | "LIVENESS_SESSION_MISMATCH" | "DIGILOCKER_UNAVAILABLE" | "DIGILOCKER_NOT_STARTED" | "DIGILOCKER_FAILED" | "KYC_PROVIDER_NOT_CONFIGURED" | "INVALID_SIGNATURE" | "VERIFICATION_NOT_FOUND" | "NOT_IN_REVIEW" | "CLAIMED_BY_OTHER" | "CLAIM_REQUIRED" | "NOT_CLAIMED_BY_YOU" | "BLOCKED_BY_FLAG" | "FACE_MATCH_REQUIRED" | "APPROVAL_ALREADY_PENDING" | "APPROVAL_NOT_FOUND" | "APPROVAL_NOT_PENDING" | "APPROVAL_EXPIRED" | "NOT_AUTO_REJECTED" | "NEWER_ATTEMPT_EXISTS" | "DOCUMENT_NOT_FOUND" | "DOCUMENT_UNAVAILABLE" | "FLAG_NOT_FOUND" | "FLAG_NOT_OPEN" | "NOT_SUSPENDED" | "NOT_PENDING" | "CATEGORY_NOT_FOUND" | "NOT_APPROVED" | "NOT_READY" | "SETUP_INCOMPLETE" | "REVERIFICATION_DUE" | "NOT_LIVE" | "NOT_PAUSED" | "RATE_OUT_OF_BAND" | "AVAILABILITY_OVERLAP" | "EXCEPTION_NOT_FOUND" | "ONBOARDING_REQUIRED" | "VENUE_NOT_FOUND" | "REPORT_NOT_FOUND" | "REPORT_CLOSED" | "BOOKING_NOT_FOUND" | "OFFERING_UNAVAILABLE" | "PLUS_ONE_NOT_OPEN" | "VENUE_NOT_ALLOWED" | "VENUE_UNAVAILABLE" | "INSTANT_NOT_AVAILABLE" | "DURATION_OUT_OF_RANGE" | "TOO_SOON" | "TOO_FAR_AHEAD" | "DATE_BLOCKED" | "OUTSIDE_AVAILABILITY" | "DAILY_LIMIT_REACHED" | "SLOT_UNAVAILABLE" | "CUSTOMER_TIME_CONFLICT" | "QUOTE_NOT_FOUND" | "QUOTE_EXPIRED" | "QUOTE_ALREADY_USED" | "IDEMPOTENCY_KEY_REQUIRED" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_MISMATCH" | "ACCOUNT_RESTRICTED" | "CUSTOMER_ONLY" | "COMPANION_ONLY" | "COMPANION_NOT_LIVE" | "REQUEST_EXPIRED" | "REQUEST_WITHDRAWN" | "NOT_PAYABLE" | "PAYMENT_WINDOW_CLOSED" | "PAYMENT_IN_PROGRESS" | "PAYMENT_ALREADY_ATTEMPTED" | "PAYMENT_NOT_FOUND" | "PAYMENT_PROVIDER_NOT_CONFIGURED" | "NOT_CANCELLABLE" | "USE_REJECT" | "MEETING_STARTED" | "NOTHING_TO_REFUND" | "REFUND_TOO_LARGE" | "REFUND_NOT_PENDING" | "CHECK_IN_NOT_AVAILABLE" | "CHECK_IN_NOT_OPEN" | "CHECK_IN_CLOSED" | "CHECK_OUT_NOT_AVAILABLE" | "ISSUE_WINDOW_CLOSED" | "NOT_DISPUTED" | "DISPUTE_ALREADY_RESOLVED" | "WEBHOOK_SIGNATURE_INVALID" | "WEBHOOK_INVALID" | "WEBHOOK_PROCESSING_FAILED" | "CONVERSATION_NOT_FOUND" | "CONVERSATION_BLOCKED" | "CHAT_CLOSED" | "MESSAGE_RATE_LIMITED" | "MESSAGE_NOT_FOUND" | "CANNOT_REPORT_OWN" | "MESSAGE_NOT_HELD" | "DEVICE_ID_REQUIRED" | "CALL_NOT_AVAILABLE" | "CALL_WINDOW_CLOSED" | "CALL_BLOCKED" | "CALL_LIMIT_REACHED" | "CALL_PROVIDER_NOT_CONFIGURED" | "CALL_SESSION_NOT_FOUND" | "DESK_PHONE_NOT_SET" | "NO_PHONE" | "TRUSTED_CONTACT_LIMIT" | "TRUSTED_CONTACT_EXISTS" | "TRUSTED_CONTACT_NOT_FOUND" | "INVITE_NOT_FOUND" | "LOCATION_WINDOW_CLOSED" | "LOCATION_SHARING_OFF" | "LOCATION_TOO_FREQUENT" | "SHARE_NOT_FOUND" | "SHARE_ENDED" | "INCIDENT_NOT_FOUND" | "INCIDENT_ALREADY_ACKNOWLEDGED" | "INCIDENT_NOT_ACKNOWLEDGED" | "INCIDENT_CLOSED" | "NO_OTHER_PARTY" | "ALREADY_FROZEN" | "USER_NOT_FOUND" | "APPEAL_ALREADY_DECIDED" | "APPEAL_ALREADY_SUBMITTED" | "APPEAL_NOT_FOUND" | "APPEAL_OUTCOME_NOT_SUPPORTED" | "APPEAL_REVIEWER_CONFLICT" | "APPEAL_WINDOW_CLOSED" | "COMPANION_PROFILE_NOT_FOUND" | "COMPANION_STILL_SUSPENDED" | "DISPUTE_AWAITING_RESPONSE" | "DISPUTE_CLAIMED_BY_OTHER" | "DISPUTE_CLOSED_FOR_STATEMENTS" | "DISPUTE_NOT_APPEALABLE" | "DISPUTE_NOT_CLAIMED" | "DISPUTE_NOT_DECIDABLE" | "DISPUTE_NOT_FOUND" | "DISPUTE_RESPONSE_CLOSED" | "EARNING_TRANSITION_INVALID" | "NO_RECEIPT_YET" | "PAYOUT_ACCOUNT_CHANGE_IN_PROGRESS" | "PAYOUT_ACCOUNT_MISSING" | "PAYOUT_ACCOUNT_NOT_FOUND" | "PAYOUT_ACCOUNT_NOT_IN_REVIEW" | "PAYOUT_ACCOUNT_UNCHANGED" | "PAYOUT_BATCH_NOT_AWAITING_APPROVAL" | "PAYOUT_BATCH_NOT_FOUND" | "PAYOUT_HOLD_NOT_ACTIVE" | "PAYOUT_HOLD_NOT_FOUND" | "PAYOUT_NOT_FOUND" | "PAYOUT_NOT_RETRYABLE" | "PAYOUT_PROVIDER_NOT_CONFIGURED" | "REFUND_ALREADY_RE_RAISED" | "REFUND_DISPUTE_DECIDE_AGAIN" | "REFUND_NOT_FOUND" | "REFUND_NOT_REJECTED" | "STAFF_CANNOT_CHANGE_PAYOUT_ACCOUNT" | "STATEMENT_ALREADY_SUBMITTED" | "TICKET_ASSIGNED_TO_OTHER" | "TICKET_CLOSED" | "TICKET_NOT_FOUND";
         ErrorResponse: {
             error: {
                 /** @description Stable machine code; see ErrorCode and contracts/errors.json */
@@ -4015,7 +4750,7 @@ export interface components {
                 entries: {
                     entry_group: string;
                     /** @enum {string} */
-                    account: "CUSTOMER_PAID" | "CUSTOMER_REFUNDED" | "COMPANION_EARNINGS" | "PLATFORM_COMMISSION" | "GST_ON_COMMISSION" | "SERVICE_FEE" | "GST_ON_SERVICE_FEE" | "REFUND_DUE";
+                    account: "CUSTOMER_PAID" | "CUSTOMER_REFUNDED" | "COMPANION_EARNINGS" | "PLATFORM_COMMISSION" | "GST_ON_COMMISSION" | "SERVICE_FEE" | "GST_ON_SERVICE_FEE" | "REFUND_DUE" | "PAID_OUT" | "TDS_WITHHELD";
                     /** @description Money in paise (₹1 = 100) */
                     amount_paise: number;
                     memo: string | null;
@@ -4513,6 +5248,961 @@ export interface components {
             /** @enum {string} */
             moderation: "APPROVED" | "REJECTED";
         };
+        /** @enum {string} */
+        EarningStatus: "PENDING" | "ON_HOLD" | "AVAILABLE" | "IN_BATCH" | "PAID" | "FAILED" | "REVERSED" | "CLAWBACK";
+        /** @enum {string} */
+        PayoutStatus: "PENDING" | "AWAITING_APPROVAL" | "PROCESSING" | "PAID" | "FAILED" | "ON_HOLD" | "CANCELLED" | "REVERSED";
+        /** @enum {string} */
+        PayoutBatchStatus: "DRAFT" | "AWAITING_APPROVAL" | "APPROVED" | "PROCESSING" | "COMPLETED" | "PARTIALLY_FAILED" | "CANCELLED";
+        /** @enum {string} */
+        PayoutAccountStatus: "PENDING_VERIFICATION" | "VERIFIED" | "NEEDS_REVIEW" | "REJECTED" | "COOLING" | "SUPERSEDED";
+        /** @enum {string} */
+        ComplaintType: "NO_SHOW" | "LATE" | "SERVICE_QUALITY" | "BOUNDARY_VIOLATION" | "BILLING" | "PAYMENT_FAILED" | "SAFETY" | "HARASSMENT" | "THREAT" | "ASSAULT" | "UNSAFE_SITUATION" | "OTHER";
+        /** @enum {string} */
+        DisputeStatus: "OPEN" | "AWAITING_RESPONSE" | "UNDER_REVIEW" | "RESOLVED" | "APPEALED" | "CLOSED";
+        /** @enum {string} */
+        TicketStatus: "OPEN" | "IN_PROGRESS" | "PENDING_USER" | "RESOLVED" | "CLOSED";
+        /** @enum {string} */
+        PayoutHoldSource: "FINANCE" | "TRUST_SAFETY" | "SYSTEM";
+        PayoutAccountResponse: {
+            current: {
+                /** Format: uuid */
+                id: string;
+                status: components["schemas"]["PayoutAccountStatus"];
+                /** @description Only the last 4 digits are ever returned */
+                account_last4: string;
+                ifsc: string;
+                bank_name: string | null;
+                account_holder_name: string;
+                name_match_score: number | null;
+                cooling_until: string | null;
+                verified_at: string | null;
+                failure_reason: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            } | null;
+            pending: {
+                /** Format: uuid */
+                id: string;
+                status: components["schemas"]["PayoutAccountStatus"];
+                /** @description Only the last 4 digits are ever returned */
+                account_last4: string;
+                ifsc: string;
+                bank_name: string | null;
+                account_holder_name: string;
+                name_match_score: number | null;
+                cooling_until: string | null;
+                verified_at: string | null;
+                failure_reason: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            } | null;
+            last_rejected: {
+                /** Format: uuid */
+                id: string;
+                status: components["schemas"]["PayoutAccountStatus"];
+                /** @description Only the last 4 digits are ever returned */
+                account_last4: string;
+                ifsc: string;
+                bank_name: string | null;
+                account_holder_name: string;
+                name_match_score: number | null;
+                cooling_until: string | null;
+                verified_at: string | null;
+                failure_reason: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            } | null;
+            cooling_hours: number;
+        };
+        EarningsSummaryResponse: {
+            balances: {
+                /** @description Money in paise (₹1 = 100) */
+                pending: number;
+                /** @description Money in paise (₹1 = 100) */
+                on_hold: number;
+                /** @description Money in paise (₹1 = 100) */
+                available: number;
+                /** @description Money in paise (₹1 = 100) */
+                in_batch: number;
+                /** @description Money in paise (₹1 = 100) */
+                clawback: number;
+                /** @description Money in paise (₹1 = 100) */
+                paid: number;
+            };
+            next_payout_date: string;
+            /** @description Money in paise (₹1 = 100) */
+            min_payout_paise: number;
+            tds_bps: number;
+            on_hold: boolean;
+            account: {
+                last4: string;
+                bank_name: string | null;
+            } | null;
+            last_payout: {
+                /** Format: uuid */
+                id: string;
+                payout_ref: string;
+                status: components["schemas"]["PayoutStatus"];
+                /** @description Money in paise (₹1 = 100) */
+                gross_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                tds_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                deductions_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                net_paise: number;
+                account_last4: string | null;
+                bank_name: string | null;
+                utr: string | null;
+                failure_reason: string | null;
+                cycle_date: string | null;
+                paid_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            } | null;
+        };
+        EarningsResponse: {
+            earnings: {
+                /** Format: uuid */
+                id: string;
+                type: string;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                status: components["schemas"]["EarningStatus"];
+                booking_ref: string | null;
+                start_at: string | null;
+                available_at: string | null;
+                paid_at: string | null;
+                payout_ref: string | null;
+                on_hold_reason: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+            next_before: string | null;
+        };
+        PayoutsResponse: {
+            payouts: {
+                /** Format: uuid */
+                id: string;
+                payout_ref: string;
+                status: components["schemas"]["PayoutStatus"];
+                /** @description Money in paise (₹1 = 100) */
+                gross_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                tds_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                deductions_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                net_paise: number;
+                account_last4: string | null;
+                bank_name: string | null;
+                utr: string | null;
+                failure_reason: string | null;
+                cycle_date: string | null;
+                paid_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+        };
+        PayoutResponse: {
+            payout: {
+                /** Format: uuid */
+                id: string;
+                payout_ref: string;
+                status: components["schemas"]["PayoutStatus"];
+                /** @description Money in paise (₹1 = 100) */
+                gross_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                tds_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                deductions_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                net_paise: number;
+                account_last4: string | null;
+                bank_name: string | null;
+                utr: string | null;
+                failure_reason: string | null;
+                cycle_date: string | null;
+                paid_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                lines: {
+                    /** Format: uuid */
+                    id: string;
+                    type: string;
+                    /** @description Money in paise (₹1 = 100) */
+                    amount_paise: number;
+                    booking_ref: string | null;
+                    start_at: string | null;
+                    description: string | null;
+                }[];
+            };
+        };
+        AdminPayoutsResponse: {
+            payouts: {
+                /** Format: uuid */
+                id: string;
+                payout_ref: string;
+                status: components["schemas"]["PayoutStatus"];
+                /** @description Money in paise (₹1 = 100) */
+                gross_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                tds_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                deductions_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                net_paise: number;
+                account_last4: string | null;
+                bank_name: string | null;
+                utr: string | null;
+                failure_reason: string | null;
+                cycle_date: string | null;
+                paid_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                /** Format: uuid */
+                companion_profile_id: string;
+                companion_display_name: string;
+                retry_count: number;
+            }[];
+        };
+        AdminPayoutResponse: {
+            payout: {
+                /** Format: uuid */
+                id: string;
+                payout_ref: string;
+                status: components["schemas"]["PayoutStatus"];
+                /** @description Money in paise (₹1 = 100) */
+                gross_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                tds_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                deductions_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                net_paise: number;
+                account_last4: string | null;
+                bank_name: string | null;
+                utr: string | null;
+                failure_reason: string | null;
+                cycle_date: string | null;
+                paid_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                /** Format: uuid */
+                companion_profile_id: string;
+                companion_display_name: string;
+                retry_count: number;
+                lines: {
+                    /** Format: uuid */
+                    id: string;
+                    type: string;
+                    /** @description Money in paise (₹1 = 100) */
+                    amount_paise: number;
+                    booking_ref: string | null;
+                    start_at: string | null;
+                    description: string | null;
+                }[];
+            };
+        };
+        PayoutBatchesResponse: {
+            batches: {
+                /** Format: uuid */
+                id: string;
+                batch_ref: string;
+                cycle_date: string;
+                status: components["schemas"]["PayoutBatchStatus"];
+                payout_count: number;
+                /** @description Money in paise (₹1 = 100) */
+                total_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                tds_paise: number;
+                failed_count: number;
+                approval_request_id: string | null;
+                approved_at: string | null;
+                processed_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+        };
+        PayoutBatchResponse: {
+            batch: {
+                /** Format: uuid */
+                id: string;
+                batch_ref: string;
+                cycle_date: string;
+                status: components["schemas"]["PayoutBatchStatus"];
+                payout_count: number;
+                /** @description Money in paise (₹1 = 100) */
+                total_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                tds_paise: number;
+                failed_count: number;
+                approval_request_id: string | null;
+                approved_at: string | null;
+                processed_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            };
+            payouts: {
+                /** Format: uuid */
+                id: string;
+                payout_ref: string;
+                status: components["schemas"]["PayoutStatus"];
+                /** @description Money in paise (₹1 = 100) */
+                gross_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                tds_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                deductions_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                net_paise: number;
+                account_last4: string | null;
+                bank_name: string | null;
+                utr: string | null;
+                failure_reason: string | null;
+                cycle_date: string | null;
+                paid_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                /** Format: uuid */
+                companion_profile_id: string;
+                companion_display_name: string;
+                retry_count: number;
+            }[];
+        };
+        PayoutBatchBuiltResponse: {
+            batch: {
+                /** Format: uuid */
+                id: string;
+                batch_ref: string;
+                cycle_date: string;
+                status: components["schemas"]["PayoutBatchStatus"];
+                payout_count: number;
+                /** @description Money in paise (₹1 = 100) */
+                total_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                tds_paise: number;
+                failed_count: number;
+                approval_request_id: string | null;
+                approved_at: string | null;
+                processed_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            };
+            created: boolean;
+            skipped: {
+                held: number;
+                no_account: number;
+                below_minimum: number;
+            } | null;
+        };
+        PayoutBatchRefResponse: {
+            batch: {
+                /** Format: uuid */
+                id: string;
+                batch_ref: string;
+                cycle_date: string;
+                status: components["schemas"]["PayoutBatchStatus"];
+                payout_count: number;
+                /** @description Money in paise (₹1 = 100) */
+                total_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                tds_paise: number;
+                failed_count: number;
+                approval_request_id: string | null;
+                approved_at: string | null;
+                processed_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            };
+        };
+        AdminPayoutAccountsResponse: {
+            accounts: {
+                /** Format: uuid */
+                id: string;
+                status: components["schemas"]["PayoutAccountStatus"];
+                /** @description Only the last 4 digits are ever returned */
+                account_last4: string;
+                ifsc: string;
+                bank_name: string | null;
+                account_holder_name: string;
+                name_match_score: number | null;
+                cooling_until: string | null;
+                verified_at: string | null;
+                failure_reason: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                /** Format: uuid */
+                companion_profile_id: string;
+                reviewed_at: string | null;
+                review_notes: string | null;
+                companion_display_name?: string | null;
+            }[];
+        };
+        AdminPayoutAccountResponse: {
+            account: {
+                /** Format: uuid */
+                id: string;
+                status: components["schemas"]["PayoutAccountStatus"];
+                /** @description Only the last 4 digits are ever returned */
+                account_last4: string;
+                ifsc: string;
+                bank_name: string | null;
+                account_holder_name: string;
+                name_match_score: number | null;
+                cooling_until: string | null;
+                verified_at: string | null;
+                failure_reason: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                /** Format: uuid */
+                companion_profile_id: string;
+                reviewed_at: string | null;
+                review_notes: string | null;
+                companion_display_name?: string | null;
+            };
+        };
+        PayoutHoldsResponse: {
+            holds: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                companion_profile_id: string;
+                companion_display_name: string;
+                source: components["schemas"]["PayoutHoldSource"];
+                reason: string;
+                /** @enum {string} */
+                status: "ACTIVE" | "RELEASE_PENDING" | "RELEASED";
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                released_at: string | null;
+            }[];
+        };
+        PayoutHoldResponse: {
+            hold: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                companion_profile_id: string;
+                companion_display_name: string;
+                source: components["schemas"]["PayoutHoldSource"];
+                reason: string;
+                /** @enum {string} */
+                status: "ACTIVE" | "RELEASE_PENDING" | "RELEASED";
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                released_at: string | null;
+            };
+        };
+        PayoutReconcileResponse: {
+            checked: number;
+            paid: number;
+            failed: number;
+            reversed: number;
+            still_processing: number;
+            mismatches: number;
+            /** Format: uuid */
+            run_id: string;
+        };
+        PayoutWebhookAck: {
+            /** @constant */
+            received: true;
+            duplicate: boolean;
+            outcome: string | null;
+        };
+        ComplaintCreatedResponse: {
+            complaint: {
+                /** Format: uuid */
+                id: string;
+                complaint_ref: string;
+                type: components["schemas"]["ComplaintType"];
+                status: string;
+                /** @description ISO 8601 date-time (UTC) */
+                sla_due_at: string;
+                routed_to_safety: boolean;
+                dispute_id: string | null;
+                /** Format: uuid */
+                support_ticket_id: string;
+            };
+        };
+        DisputeResponse: {
+            dispute: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                booking_id: string;
+                booking_ref: string;
+                status: components["schemas"]["DisputeStatus"];
+                issue_code: string | null;
+                my_party: components["schemas"]["BookingParty"];
+                respondent_party: string | null;
+                response_due_at: string | null;
+                can_add_statement: boolean;
+                statements: {
+                    party: components["schemas"]["BookingParty"];
+                    body: string;
+                    image_count: number;
+                    /** @description ISO 8601 date-time (UTC) */
+                    created_at: string;
+                }[];
+                other_party_responded: boolean;
+                decision: components["schemas"]["DisputeResolution"] | null;
+                decision_text: string | null;
+                refund_paise: number | null;
+                resolution_notes: string | null;
+                resolved_at: string | null;
+                appeal_deadline_at: string | null;
+                can_appeal: boolean;
+                appeal: {
+                    /** Format: uuid */
+                    id: string;
+                    /** @enum {string} */
+                    status: "SUBMITTED" | "IN_REVIEW" | "UPHELD" | "OVERTURNED";
+                    submitted_at: string | null;
+                    decided_at: string | null;
+                    decision_reason: string | null;
+                } | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            };
+        };
+        DisputesResponse: {
+            disputes: {
+                /** Format: uuid */
+                id: string;
+                status: components["schemas"]["DisputeStatus"];
+                issue_code: string | null;
+                decision: string | null;
+                response_due_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                booking_ref: string;
+            }[];
+        };
+        EvidenceUploadResponse: {
+            /** Format: uuid */
+            asset_id: string;
+            upload: {
+                url: string;
+                method: string;
+            } & {
+                [key: string]: unknown;
+            };
+        };
+        DisputeQueueResponse: {
+            disputes: {
+                /** Format: uuid */
+                id: string;
+                booking_ref: string;
+                status: components["schemas"]["DisputeStatus"];
+                issue_code: string | null;
+                respondent_party: string | null;
+                response_due_at: string | null;
+                statements: number;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                age_hours: number;
+                claimed_by: {
+                    /** Format: uuid */
+                    user_id: string;
+                    name: string | null;
+                    /** @description ISO 8601 date-time (UTC) */
+                    until: string;
+                } | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+        };
+        AdminDisputeResponse: {
+            dispute: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                booking_id: string;
+                booking_ref: string;
+                booking_status: components["schemas"]["BookingStatus"];
+                status: components["schemas"]["DisputeStatus"];
+                issue_code: string | null;
+                respondent_party: string | null;
+                response_due_at: string | null;
+                claimed_by_user_id: string | null;
+                claim_expires_at: string | null;
+                decision: components["schemas"]["DisputeResolution"] | null;
+                /** @description Money in paise (₹1 = 100) */
+                refund_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                clawback_paise: number;
+                resolution_notes: string | null;
+                resolved_by_user_id: string | null;
+                resolved_at: string | null;
+                appeal_deadline_at: string | null;
+                /** @description Money in paise (₹1 = 100) */
+                refundable_paise: number;
+                statements: {
+                    party: components["schemas"]["BookingParty"];
+                    body: string;
+                    images: {
+                        /** Format: uuid */
+                        id: string;
+                        url: string;
+                    }[];
+                    /** @description ISO 8601 date-time (UTC) */
+                    created_at: string;
+                }[];
+                evidence: {
+                    [key: string]: unknown;
+                };
+                earnings: {
+                    earning_type: string;
+                    /** @description Money in paise (₹1 = 100) */
+                    amount_paise: number;
+                    status: components["schemas"]["EarningStatus"];
+                    hold_reason: string | null;
+                }[];
+                refunds: {
+                    /** Format: uuid */
+                    id: string;
+                    /** @description Money in paise (₹1 = 100) */
+                    amount_paise: number;
+                    status: string;
+                    reason_code: string | null;
+                    /** @description ISO 8601 date-time (UTC) */
+                    created_at: string;
+                }[];
+                appeal: {
+                    /** Format: uuid */
+                    id: string;
+                    /** @enum {string} */
+                    status: "SUBMITTED" | "IN_REVIEW" | "UPHELD" | "OVERTURNED";
+                    statement: string | null;
+                    original_decider_user_id: string | null;
+                    reviewer_user_id: string | null;
+                    decision_reason: string | null;
+                    submitted_at: string | null;
+                    decided_at: string | null;
+                } | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            };
+        };
+        DisputeTranscriptResponse: {
+            messages: {
+                /** Format: uuid */
+                id: string;
+                /** @enum {string} */
+                from: "CUSTOMER" | "COMPANION" | "SYSTEM";
+                type: string;
+                body: string | null;
+                moderation: string;
+                /** @description ISO 8601 date-time (UTC) */
+                at: string;
+            }[];
+        };
+        DisputeClaimResponse: {
+            claimed: boolean;
+            claim_expires_at?: string | null;
+        };
+        DisputeDecidedResponse: {
+            outcome: components["schemas"]["DisputeResolution"];
+            refund: {
+                /** Format: uuid */
+                id: string;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                status: components["schemas"]["RefundStatus"];
+            } | null;
+            strike: {
+                strikes: number;
+                review: boolean;
+            } | null;
+            dispute: {
+                /** Format: uuid */
+                id: string;
+                /** Format: uuid */
+                booking_id: string;
+                booking_ref: string;
+                booking_status: components["schemas"]["BookingStatus"];
+                status: components["schemas"]["DisputeStatus"];
+                issue_code: string | null;
+                respondent_party: string | null;
+                response_due_at: string | null;
+                claimed_by_user_id: string | null;
+                claim_expires_at: string | null;
+                decision: components["schemas"]["DisputeResolution"] | null;
+                /** @description Money in paise (₹1 = 100) */
+                refund_paise: number;
+                /** @description Money in paise (₹1 = 100) */
+                clawback_paise: number;
+                resolution_notes: string | null;
+                resolved_by_user_id: string | null;
+                resolved_at: string | null;
+                appeal_deadline_at: string | null;
+                /** @description Money in paise (₹1 = 100) */
+                refundable_paise: number;
+                statements: {
+                    party: components["schemas"]["BookingParty"];
+                    body: string;
+                    images: {
+                        /** Format: uuid */
+                        id: string;
+                        url: string;
+                    }[];
+                    /** @description ISO 8601 date-time (UTC) */
+                    created_at: string;
+                }[];
+                evidence: {
+                    [key: string]: unknown;
+                };
+                earnings: {
+                    earning_type: string;
+                    /** @description Money in paise (₹1 = 100) */
+                    amount_paise: number;
+                    status: components["schemas"]["EarningStatus"];
+                    hold_reason: string | null;
+                }[];
+                refunds: {
+                    /** Format: uuid */
+                    id: string;
+                    /** @description Money in paise (₹1 = 100) */
+                    amount_paise: number;
+                    status: string;
+                    reason_code: string | null;
+                    /** @description ISO 8601 date-time (UTC) */
+                    created_at: string;
+                }[];
+                appeal: {
+                    /** Format: uuid */
+                    id: string;
+                    /** @enum {string} */
+                    status: "SUBMITTED" | "IN_REVIEW" | "UPHELD" | "OVERTURNED";
+                    statement: string | null;
+                    original_decider_user_id: string | null;
+                    reviewer_user_id: string | null;
+                    decision_reason: string | null;
+                    submitted_at: string | null;
+                    decided_at: string | null;
+                } | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            };
+        };
+        AppealsResponse: {
+            appeals: {
+                /** Format: uuid */
+                id: string;
+                /** @enum {string} */
+                status: "SUBMITTED" | "IN_REVIEW" | "UPHELD" | "OVERTURNED";
+                statement: string | null;
+                submitted_at: string | null;
+                decided_at: string | null;
+                original_decider_user_id: string | null;
+                /** Format: uuid */
+                dispute_id: string;
+                decision: string | null;
+                booking_ref: string;
+            }[];
+        };
+        AppealDecidedResponse: {
+            appeal: {
+                /** Format: uuid */
+                id: string;
+                /** @enum {string} */
+                status: "SUBMITTED" | "IN_REVIEW" | "UPHELD" | "OVERTURNED";
+                reviewer_user_id: string | null;
+                decision_reason: string | null;
+                decided_at: string | null;
+                /** Format: uuid */
+                dispute_id: string;
+            };
+        };
+        TicketsResponse: {
+            tickets: {
+                /** Format: uuid */
+                id: string;
+                ticket_ref: string;
+                category: string | null;
+                subject: string;
+                status: components["schemas"]["TicketStatus"];
+                priority: string;
+                booking_id: string | null;
+                sla_due_at: string | null;
+                first_response_at: string | null;
+                resolved_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                /** @description ISO 8601 date-time (UTC) */
+                updated_at: string;
+            }[];
+        };
+        TicketResponse: {
+            ticket: {
+                /** Format: uuid */
+                id: string;
+                ticket_ref: string;
+                category: string | null;
+                subject: string;
+                status: components["schemas"]["TicketStatus"];
+                priority: string;
+                booking_id: string | null;
+                sla_due_at: string | null;
+                first_response_at: string | null;
+                resolved_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                /** @description ISO 8601 date-time (UTC) */
+                updated_at: string;
+                messages: {
+                    /** Format: uuid */
+                    id: string;
+                    body: string;
+                    /** @enum {string} */
+                    from: "USER" | "SUPPORT";
+                    author_name: string | null;
+                    internal: boolean;
+                    /** @description ISO 8601 date-time (UTC) */
+                    created_at: string;
+                }[];
+            };
+        };
+        AdminTicketsResponse: {
+            tickets: {
+                /** Format: uuid */
+                id: string;
+                ticket_ref: string;
+                category: string | null;
+                subject: string;
+                status: components["schemas"]["TicketStatus"];
+                priority: string;
+                booking_id: string | null;
+                sla_due_at: string | null;
+                first_response_at: string | null;
+                resolved_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                /** @description ISO 8601 date-time (UTC) */
+                updated_at: string;
+                assigned_to_user_id: string | null;
+                assignee_name: string | null;
+                overdue: boolean | null;
+            }[];
+        };
+        AdminTicketResponse: {
+            ticket: {
+                /** Format: uuid */
+                id: string;
+                ticket_ref: string;
+                category: string | null;
+                subject: string;
+                status: components["schemas"]["TicketStatus"];
+                priority: string;
+                booking_id: string | null;
+                sla_due_at: string | null;
+                first_response_at: string | null;
+                resolved_at: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                /** @description ISO 8601 date-time (UTC) */
+                updated_at: string;
+                assigned_to_user_id: string | null;
+                user: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                } | null;
+                complaint: {
+                    /** Format: uuid */
+                    id: string;
+                    complaint_ref: string;
+                    complaint_type: string;
+                    status: string;
+                    safety_incident_id: string | null;
+                } | null;
+                dispute: {
+                    /** Format: uuid */
+                    id: string;
+                    status: string;
+                } | null;
+                messages: {
+                    /** Format: uuid */
+                    id: string;
+                    body: string;
+                    /** @enum {string} */
+                    from: "USER" | "SUPPORT";
+                    author_name: string | null;
+                    internal: boolean;
+                    /** @description ISO 8601 date-time (UTC) */
+                    created_at: string;
+                    author_user_id?: string | null;
+                    author_staff_name?: string | null;
+                }[];
+            };
+        };
+        AdminRefundsResponse: {
+            refunds: {
+                /** Format: uuid */
+                id: string;
+                booking_id: string | null;
+                booking_ref: string | null;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                status: string;
+                reason_code: string | null;
+                reason: string | null;
+                initiated_by: string;
+                re_raised_from_refund_id: string | null;
+                re_raised_as_refund_id: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+        };
+        RefundReRaisedResponse: {
+            refund: {
+                /** Format: uuid */
+                id: string;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                status: string;
+                /** Format: uuid */
+                re_raised_from_refund_id: string;
+            };
+        };
+        ReceiptResponse: {
+            receipt: {
+                /**
+                 * @description Never "Tax invoice" (GST invoices wait for the CA)
+                 * @constant
+                 */
+                label: "Receipt";
+                receipt_number: string;
+                /** Format: uuid */
+                booking_id: string;
+                booking_ref: string;
+                paid_at: string | null;
+                method: string | null;
+                activity: string | null;
+                companion: string | null;
+                venue: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                start_at: string;
+                duration_minutes: number;
+                lines: {
+                    label: string;
+                    /** @description Money in paise (₹1 = 100) */
+                    amount_paise: number;
+                }[];
+                /** @description Money in paise (₹1 = 100) */
+                total_paise: number;
+                refunds: {
+                    /** @description Money in paise (₹1 = 100) */
+                    amount_paise: number;
+                    processed_at: string | null;
+                }[];
+                /** @description Money in paise (₹1 = 100) */
+                net_paid_paise: number;
+                note: string;
+            };
+        };
         WebhookAck: {
             /** @constant */
             received: true;
@@ -4598,6 +6288,12 @@ export interface components {
             /** @enum {string} */
             reason_code: "NOT_AVAILABLE" | "VENUE_NOT_SUITABLE" | "ACTIVITY_NOT_SUITABLE" | "TOO_SHORT_NOTICE" | "OTHER";
             note?: string;
+        };
+        postCompanionPayoutAccountBody: {
+            account_number: string;
+            confirm_account_number: string;
+            ifsc: string;
+            account_holder_name: string;
         };
         postCompanionApplyBody: {
             dob?: string;
@@ -4894,6 +6590,38 @@ export interface components {
             issue_code: "NO_SHOW" | "LATE_ARRIVAL" | "ENDED_EARLY" | "BOUNDARY_CROSSED" | "SAFETY_CONCERN" | "OTHER";
             note?: string;
         };
+        postComplaintsBody: {
+            /** @enum {string} */
+            type: "NO_SHOW" | "LATE" | "SERVICE_QUALITY" | "BOUNDARY_VIOLATION" | "BILLING" | "PAYMENT_FAILED" | "SAFETY" | "HARASSMENT" | "THREAT" | "ASSAULT" | "UNSAFE_SITUATION" | "OTHER";
+            /** Format: uuid */
+            booking_id?: string;
+            description: string;
+        };
+        postDisputesByIdEvidenceUploadUrlBody: {
+            /** @enum {string} */
+            mime: "image/jpeg" | "image/png" | "image/webp";
+            bytes: number;
+            sha256: string;
+        };
+        postDisputesByIdStatementsBody: {
+            body: string;
+            /** @default [] */
+            media_asset_ids: string[];
+        };
+        postDisputesByIdAppealBody: {
+            statement: string;
+        };
+        postSupportTicketsBody: {
+            /** @enum {string} */
+            category: "BOOKING" | "PAYMENT" | "PAYOUT" | "ACCOUNT" | "SAFETY" | "OTHER";
+            subject: string;
+            body: string;
+            /** Format: uuid */
+            booking_id?: string;
+        };
+        postSupportTicketsByIdMessagesBody: {
+            body: string;
+        };
         postConversationsByIdMessagesBody: {
             body?: string;
             /** Format: uuid */
@@ -4974,6 +6702,52 @@ export interface components {
             value: unknown;
             reason: string;
         };
+        postAdminPayoutsBatchesBody: {
+            cycle_date?: string;
+        };
+        postAdminPayoutAccountsByIdDecideBody: {
+            /** @enum {string} */
+            decision: "APPROVE" | "REJECT";
+            note: string;
+        };
+        postAdminPayoutHoldsBody: {
+            /** Format: uuid */
+            companion_profile_id: string;
+            /** @enum {string} */
+            source: "FINANCE" | "TRUST_SAFETY";
+            reason: string;
+        };
+        postAdminPayoutHoldsByIdReleaseBody: {
+            note: string;
+        };
+        postAdminRefundsByIdReRaiseBody: {
+            reason: string;
+        };
+        postAdminDisputesByIdDecideBody: {
+            /** @enum {string} */
+            outcome: "RELEASE_TO_COMPANION" | "FULL_REFUND" | "PARTIAL_REFUND";
+            amount_paise?: number;
+            reason: string;
+            /** @enum {string} */
+            strike_party?: "CUSTOMER" | "COMPANION";
+        };
+        postAdminAppealsByIdDecideBody: {
+            /** @enum {string} */
+            decision: "UPHOLD" | "OVERTURN";
+            /** @enum {string} */
+            outcome?: "RELEASE_TO_COMPANION" | "FULL_REFUND" | "PARTIAL_REFUND";
+            amount_paise?: number;
+            reason: string;
+        };
+        postAdminSupportTicketsByIdMessagesBody: {
+            body: string;
+            /** @default false */
+            internal: boolean;
+        };
+        postAdminSupportTicketsByIdStatusBody: {
+            /** @enum {string} */
+            status: "IN_PROGRESS" | "RESOLVED" | "CLOSED";
+        };
         postPaymentsMockOrdersByOrderIdCompleteBody: {
             /** @enum {string} */
             scenario: "SUCCESS" | "FAILED" | "PENDING_THEN_SUCCESS" | "DUPLICATE_WEBHOOK" | "LATE_SUCCESS" | "REFUND_FAIL_ONCE";
@@ -5000,6 +6774,72 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getAdminAppeals: {
+        parameters: {
+            query?: {
+                status?: "SUBMITTED" | "IN_REVIEW" | "UPHELD" | "OVERTURNED" | "ALL";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppealsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminAppealsByIdDecide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminAppealsByIdDecideBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppealDecidedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getAdminApprovals: {
         parameters: {
             query?: {
@@ -5327,6 +7167,197 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ActionResult"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminDisputes: {
+        parameters: {
+            query?: {
+                status?: "OPEN_ALL" | "OPEN" | "AWAITING_RESPONSE" | "UNDER_REVIEW" | "RESOLVED" | "APPEALED" | "CLOSED";
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisputeQueueResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminDisputesById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminDisputeResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminDisputesByIdClaim: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisputeClaimResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminDisputesByIdDecide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminDisputesByIdDecideBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisputeDecidedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminDisputesByIdRelease: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisputeClaimResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminDisputesByIdTranscript: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisputeTranscriptResponse"];
                 };
             };
             /** @description Error */
@@ -5772,6 +7803,497 @@ export interface operations {
             };
         };
     };
+    getAdminPayoutAccounts: {
+        parameters: {
+            query?: {
+                status?: "PENDING_VERIFICATION" | "VERIFIED" | "NEEDS_REVIEW" | "REJECTED" | "COOLING" | "SUPERSEDED";
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminPayoutAccountsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminPayoutAccountsByIdDecide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminPayoutAccountsByIdDecideBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminPayoutAccountResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminPayoutHolds: {
+        parameters: {
+            query?: {
+                status?: "ACTIVE" | "RELEASE_PENDING" | "RELEASED" | "ALL";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutHoldsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminPayoutHolds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminPayoutHoldsBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutHoldResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminPayoutHoldsByIdRelease: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminPayoutHoldsByIdReleaseBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutHoldResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminPayouts: {
+        parameters: {
+            query?: {
+                status?: "PENDING" | "AWAITING_APPROVAL" | "PROCESSING" | "PAID" | "FAILED" | "ON_HOLD" | "CANCELLED" | "REVERSED";
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminPayoutsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminPayoutsById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminPayoutResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminPayoutsByIdRetry: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminPayoutResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminPayoutsBatches: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutBatchesResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminPayoutsBatches: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminPayoutsBatchesBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutBatchBuiltResponse"];
+                };
+            };
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutBatchBuiltResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminPayoutsBatchesById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutBatchResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminPayoutsBatchesByIdRequestApproval: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutBatchRefResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminPayoutsReconcile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutReconcileResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminRefunds: {
+        parameters: {
+            query?: {
+                status?: "PENDING_APPROVAL" | "APPROVED" | "PROCESSING" | "SUCCEEDED" | "FAILED" | "REJECTED";
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminRefundsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminRefundsByIdReRaise: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminRefundsByIdReRaiseBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RefundReRaisedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getAdminReports: {
         parameters: {
             query?: {
@@ -5888,6 +8410,170 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SettingProposedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminSupportTickets: {
+        parameters: {
+            query?: {
+                status?: "ACTIVE" | "OPEN" | "IN_PROGRESS" | "PENDING_USER" | "RESOLVED" | "CLOSED";
+                mine?: "true" | "false";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTicketsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminSupportTicketsById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTicketResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminSupportTicketsByIdClaim: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTicketResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminSupportTicketsByIdMessages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminSupportTicketsByIdMessagesBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTicketResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminSupportTicketsByIdStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminSupportTicketsByIdStatusBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminTicketResponse"];
                 };
             };
             /** @description Error */
@@ -7419,6 +10105,39 @@ export interface operations {
             };
         };
     };
+    getBookingsByIdReceipt: {
+        parameters: {
+            query?: {
+                format?: "json" | "html";
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReceiptResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     postBookingsByIdReportIssue: {
         parameters: {
             query?: never;
@@ -8050,6 +10769,68 @@ export interface operations {
             };
         };
     };
+    getCompanionEarnings: {
+        parameters: {
+            query?: {
+                status?: "PENDING" | "ON_HOLD" | "AVAILABLE" | "IN_BATCH" | "PAID" | "FAILED" | "REVERSED" | "CLAWBACK";
+                before?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EarningsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getCompanionEarningsSummary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EarningsSummaryResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     postCompanionGoLive: {
         parameters: {
             query?: never;
@@ -8158,6 +10939,165 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CompanionResponse"];
                 };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getCompanionPayoutAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutAccountResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postCompanionPayoutAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postCompanionPayoutAccountBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutAccountResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getCompanionPayouts: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getCompanionPayoutsById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getCompanionPayoutsByIdStatement: {
+        parameters: {
+            query?: {
+                format?: "html" | "csv";
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/octet-stream": string;
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Error */
             default: {
@@ -8730,6 +11670,39 @@ export interface operations {
             };
         };
     };
+    postComplaints: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postComplaintsBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComplaintCreatedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getConversations: {
         parameters: {
             query?: never;
@@ -9279,6 +12252,171 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WaitlistResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getDisputes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisputesResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getDisputesById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisputeResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postDisputesByIdAppeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postDisputesByIdAppealBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisputeResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postDisputesByIdEvidenceUploadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postDisputesByIdEvidenceUploadUrlBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvidenceUploadResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postDisputesByIdStatements: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postDisputesByIdStatementsBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisputeResponse"];
                 };
             };
             /** @description Error */
@@ -9898,6 +13036,134 @@ export interface operations {
             };
         };
     };
+    getSupportTickets: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postSupportTickets: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postSupportTicketsBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getSupportTicketsById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postSupportTicketsByIdMessages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postSupportTicketsByIdMessagesBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getVenues: {
         parameters: {
             query?: {
@@ -10043,6 +13309,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaymentWebhookAck"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postWebhooksPayoutsByProvider: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                provider: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayoutWebhookAck"];
                 };
             };
             /** @description Error */

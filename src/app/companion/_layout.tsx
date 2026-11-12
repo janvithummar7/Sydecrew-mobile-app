@@ -32,6 +32,9 @@ export default function CompanionLayout() {
         </Stack.Protected>
         <Stack.Protected guard={isApproved(status)} redirectTo={COMPANION_HOME}>
           <Stack.Screen name="go-live" />
+          <Stack.Screen name="payouts/index" />
+          <Stack.Screen name="payouts/[id]" />
+          <Stack.Screen name="payout-account" />
         </Stack.Protected>
       </Stack>
     </CompanionProvider>
