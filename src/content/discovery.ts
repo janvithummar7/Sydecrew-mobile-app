@@ -98,7 +98,7 @@ export const profile = {
   cancellation: 'Cancellation',
   companionCancels: 'If your companion cancels',
   reviews: 'Reviews',
-  noReviews: 'No reviews yet. Only customers with a completed booking can review.',
+  noReviews: 'No public reviews yet. Only customers with a completed booking can review.',
   meeting: 'Where you meet',
   save: 'Save',
   saved: 'Saved',

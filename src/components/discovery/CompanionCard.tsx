@@ -1,12 +1,14 @@
 import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import { Badge } from '@/components/ui/Badge';
 import { Avatar } from '@/components/ui/Misc';
 import { Text } from '@/components/ui/Text';
 import { discover as copy } from '@/content/discovery';
 import { categoryNames } from '@/content/common';
 import { CARD_HEIGHT, fromPrice, nextFree, sameRowProps } from '@/lib/discovery/list';
+import { ratingView } from '@/lib/reviews/helpers';
 import type { DiscoveryCard } from '@/lib/discovery/types';
 import { colors, radius, space } from '@/theme';
 
@@ -18,17 +20,19 @@ type Props = { card: DiscoveryCard; onOpen: (id: string) => void };
  * One Discover result, exactly CARD_HEIGHT tall (every text is one line), so the
  * list uses getItemLayout and never measures rows. Memoised on the fields it
  * shows (sameRowProps): a refetched but unchanged card does not re-render.
- * Ratings are never shown: there are no reviews yet, only "New on Sydecrew".
+ * A rating shows only when the API gives one (from the public threshold of
+ * reviews); otherwise "New on Sydecrew", never made-up stars.
  */
 function CompanionCardBase({ card, onOpen }: Props) {
   const price = fromPrice(card.from_paise);
   const free = nextFree(card.next_available_at);
+  const rating = ratingView(card.rating);
   const cats = card.categories.map((c) => categoryNames[c.code] ?? c.name).join(' · ');
   const meta = [card.zone?.name, card.languages.join(', ')].filter(Boolean).join(' · ');
   const label = [
     card.display_name,
     card.verified ? copy.card.verified : null,
-    card.new_on_sydecrew ? copy.card.newOn : null,
+    rating.kind === 'rated' ? rating.label : card.new_on_sydecrew ? copy.card.newOn : null,
     cats,
     meta,
     price ? `${copy.card.from} ${price} ${copy.card.perHour}` : null,
@@ -63,7 +67,15 @@ function CompanionCardBase({ card, onOpen }: Props) {
         <Text weight="600" color={colors.textStrong} numberOfLines={1}>{card.display_name}</Text>
         <View style={styles.badges}>
           {card.verified ? <Badge kind="verified" label={copy.card.verified} /> : null}
-          {card.new_on_sydecrew ? <Badge kind="info" label={copy.card.newOn} /> : null}
+          {rating.kind === 'rated' ? (
+            <View style={styles.rating} testID={`companion-rating-${card.id}`}>
+              <Ionicons name="star" size={12} color={colors.accent} />
+              <Text variant="caption" weight="600" color={colors.textStrong} numberOfLines={1}>{rating.averageText}</Text>
+              <Text variant="caption" color={colors.textMuted} numberOfLines={1}>{`(${rating.count})`}</Text>
+            </View>
+          ) : card.new_on_sydecrew ? (
+            <Badge kind="info" label={copy.card.newOn} />
+          ) : null}
         </View>
         <Text variant="caption" color={colors.textMuted} numberOfLines={1}>{cats}</Text>
         <Text variant="caption" color={colors.textMuted} numberOfLines={1}>{meta}</Text>
@@ -101,6 +113,7 @@ const styles = StyleSheet.create({
   photo: { width: PHOTO * 0.8, height: PHOTO, borderRadius: radius.md, backgroundColor: colors.bgCard },
   noPhoto: { alignItems: 'center', justifyContent: 'center' },
   body: { flex: 1, gap: 2, justifyContent: 'center' },
-  badges: { flexDirection: 'row', gap: space.xs, overflow: 'hidden' },
+  badges: { flexDirection: 'row', alignItems: 'center', gap: space.xs, overflow: 'hidden' },
+  rating: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   foot: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: space.sm, marginTop: 2 },
 });

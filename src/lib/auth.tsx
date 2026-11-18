@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { ApiError, authApi, clearSession, refreshSession, setSessionLostHandler, storeSession } from './api';
+import { ApiError, authApi, clearSession, refreshSession, setAccountOnHoldHandler, setSessionLostHandler, storeSession } from './api';
 import { unregisterPush } from './comms/push';
+import { markOnHold } from './enforcement/helpers';
 import type { Me, SessionResponse } from './types';
 
 type Status = 'loading' | 'authenticated' | 'anonymous';
@@ -12,9 +13,14 @@ type AuthContextValue = {
   offline: boolean;
   signIn: (session: SessionResponse) => Promise<void>;
   setUser: (user: Me) => void;
-  signOut: () => Promise<void>;
+  /** Reloads the user from GET /auth/me (e.g. to see whether a hold has ended). Never signs out on failure. */
+  refreshUser: () => Promise<Me | null>;
+  signOut: (opts?: SignOutOptions) => Promise<void>;
   retry: () => void;
 };
+
+/** `sessionEnded`: the server has already ended the session, so sign out locally without calling the API. */
+export type SignOutOptions = { sessionEnded?: boolean };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -30,6 +36,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSessionLostHandler(() => {
       setUserState(null);
       setStatus('anonymous');
+    });
+    // 403 ACCOUNT_ON_HOLD from any request: mark the user on hold at once (the route guards then
+    // show Account status), and confirm with GET /auth/me, which still works while on hold.
+    setAccountOnHoldHandler((details) => {
+      setUserState((u) => (u ? markOnHold(u, details) : u));
+      authApi
+        .me()
+        .then(({ user: fresh }) => setUserState((u) => (u ? fresh : u)))
+        .catch(() => undefined);
     });
     refreshSession()
       .then((session) => {
@@ -48,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       alive = false;
       setSessionLostHandler(null);
+      setAccountOnHoldHandler(null);
     };
   }, [attempt]);
 
@@ -57,11 +73,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setStatus('authenticated');
   }, []);
 
-  const signOut = useCallback(async () => {
-    await unregisterPush(); // while the session is still valid: this device stops getting pushes
-    await authApi.logout().catch(() => clearSession());
+  const signOut = useCallback(async (opts?: SignOutOptions) => {
+    if (opts?.sessionEnded) {
+      // The server already ended every session (e.g. account deletion): no API calls, just forget the tokens here.
+      await clearSession().catch(() => undefined);
+    } else {
+      await unregisterPush(); // while the session is still valid: this device stops getting pushes
+      await authApi.logout().catch(() => clearSession());
+    }
     setUserState(null);
     setStatus('anonymous');
+  }, []);
+
+  const refreshUser = useCallback(async () => {
+    try {
+      const { user: fresh } = await authApi.me();
+      setUserState((u) => (u ? fresh : u)); // ignore an answer that arrives after sign-out
+      return fresh;
+    } catch {
+      return null;
+    }
   }, []);
 
   const value = useMemo<AuthContextValue>(
@@ -71,13 +102,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       offline,
       signIn,
       setUser: setUserState,
+      refreshUser,
       signOut,
       retry: () => {
         setStatus('loading');
         setAttempt((n) => n + 1);
       },
     }),
-    [status, user, offline, signIn, signOut],
+    [status, user, offline, signIn, signOut, refreshUser],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

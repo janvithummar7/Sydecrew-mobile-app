@@ -12,6 +12,7 @@ import { ToastProvider } from '@/components/ui/Misc';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { RealtimeProvider } from '@/lib/comms/realtime-context';
 import { RoleProvider, useRole } from '@/lib/role';
+import { holdEnded, isOnHold } from '@/lib/enforcement/helpers';
 import { deepLinkPath, isCustomer, isPublicLink, routeFor, shellFor } from '@/lib/routing';
 import { pushPath, pushRoute } from '@/lib/nav/pushLinks';
 import { colors } from '@/theme';
@@ -24,10 +25,15 @@ SplashScreen.preventAutoHideAsync();
  *  - token links (verify email, reset password): always reachable
  *  - staff: the "sign in on the web" screen only
  *  - customer onboarding unfinished (and not a companion applicant): onboarding
- *  - customer shell (tabs), discovery screens (/companions/*) and making a booking (/book/*): onboarded customers, and anyone who is not a companion
+ *  - customer shell (tabs), discovery screens (/companions/*), making a booking (/book/*) and membership (/membership/*): onboarded customers, and anyone who is not a companion
  *  - one booking (/booking/[id]/*): any signed-in non-staff user (the API answers 404 unless they are its customer or companion)
  *  - companion area (its own tabs + application steps): any signed-in non-staff user
  *  - chat (/chat/[id]), safety (SOS, safety contacts), settings: any signed-in non-staff user
+ *  - delete account: not guarded (its confirmation must outlive the sign-out); signed out, it redirects to the start
+ *  - account status (/account-status): any signed-in non-staff user. A user on hold (`on_hold`, suspended or
+ *    banned) gets ONLY this screen: every other signed-in guard excludes them, so neither shell mounts, and
+ *    routeFor sends them here. A 403 ACCOUNT_ON_HOLD from any request marks them on hold (src/lib/auth.tsx).
+ *    When the hold ends (GET /auth/me on focus or pull-to-refresh), they go to their normal home.
  * When the session changes, the current screen's guard fails and Expo Router
  * redirects to routeFor(user). A deep link opened while signed out is kept and
  * opened after sign-in.
@@ -71,13 +77,24 @@ function RootNavigator() {
     void Notifications.clearLastNotificationResponseAsync?.().catch(() => undefined);
   }, [lastResponse, status, user, preferred, router]);
 
+  // The hold just ended (timed suspension over, lifted, or overturned on appeal): back to the normal home.
+  const heldNow = status === 'authenticated' && isOnHold(user);
+  const wasHeld = useRef(heldNow);
+  useEffect(() => {
+    if (holdEnded(wasHeld.current, heldNow) && user) router.replace(routeFor(user, preferred) as Href);
+    wasHeld.current = heldNow;
+  }, [heldNow, user, preferred, router]);
+
   if (status === 'loading' || !ready) return null; // the native splash stays up
 
   const signedIn = status === 'authenticated' && !!user;
   const staff = signedIn && user.is_staff;
+  // Suspended or banned: only Account status (and log out) until the hold ends.
+  const onHold = signedIn && isOnHold(user);
+  const member = signedIn && !staff && !onHold;
   const onboarded = signedIn && user.onboarding.complete;
   const home = routeFor(signedIn ? user : null, preferred) as Href;
-  const customerShell = signedIn && !staff && onboarded && (isCustomer(user) || !user.companion);
+  const customerShell = member && onboarded && (isCustomer(user) || !user.companion);
 
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'slide_from_right' }}>
@@ -89,19 +106,26 @@ function RootNavigator() {
       </Stack.Protected>
       <Stack.Screen name="verify-email" />
       <Stack.Screen name="reset-password" />
+      {/* Unguarded so its "scheduled for deletion" confirmation survives the sign-out; it sends signed-out visitors to the start itself. */}
+      <Stack.Screen name="delete-account" />
       <Stack.Protected guard={staff} redirectTo={home}>
         <Stack.Screen name="staff" />
       </Stack.Protected>
-      <Stack.Protected guard={signedIn && !staff && !onboarded && !user.companion} redirectTo={home}>
+      <Stack.Protected guard={member && !onboarded && !user.companion} redirectTo={home}>
         <Stack.Screen name="onboarding" />
       </Stack.Protected>
       <Stack.Protected guard={customerShell} redirectTo={home}>
         <Stack.Screen name="(customer)" />
         <Stack.Screen name="companions" />
         <Stack.Screen name="book" />
+        <Stack.Screen name="membership" />
       </Stack.Protected>
-      {/* Becoming a companion needs a signed-in account, not customer onboarding (the apply step collects what is missing). */}
+      {/* Warnings, holds and appeals: reachable on hold (the only screen then) and when not. */}
       <Stack.Protected guard={signedIn && !staff} redirectTo={home}>
+        <Stack.Screen name="account-status" />
+      </Stack.Protected>
+      {/* Becoming a companion needs a signed-in account (not on hold), not customer onboarding (the apply step collects what is missing). */}
+      <Stack.Protected guard={member} redirectTo={home}>
         <Stack.Screen name="companion" />
         <Stack.Screen name="booking" />
         <Stack.Screen name="chat" />

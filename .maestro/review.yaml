@@ -1,0 +1,38 @@
+# Reviews: rate a completed booking once (stars, a tag, a comment), then see it as "Waiting" for the other side.
+# Needs: an onboarded customer with a COMPLETED booking from the last 14 days that they have not reviewed yet.
+# Run: maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/review.yaml
+# Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+
+- tapOn: "Bookings"
+- tapOn: "Past"
+- tapOn:
+    text: ".*Completed.*"
+    index: 0
+- scrollUntilVisible:
+    element: "Send review"
+- tapOn:
+    id: "star-4"
+- tapOn: "Great conversation"
+- tapOn: "Anything to add? (optional)"
+- inputText: "Easy to talk to and right on time."
+- hideKeyboard
+- tapOn: "Send review"
+- extendedWaitUntil:
+    visible: "Your review"
+    timeout: 15000
+- assertVisible: "(Waiting|Shared|Being checked)"
+- assertNotVisible: "Send review"

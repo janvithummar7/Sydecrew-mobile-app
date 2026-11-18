@@ -9,7 +9,7 @@ import { colors } from '@/theme';
  *  - landing and apply: any signed-in user;
  *  - the shell (tabs: dashboard, profile, status, availability, rates, earnings),
  *    the application steps and the public-profile preview: once applied;
- *  - go-live: once approved.
+ *  - go-live, payouts and reviews: once approved.
  * The web "continue on phone" QR opens sydecrew://companion/identity.
  */
 export default function CompanionLayout() {
@@ -35,6 +35,7 @@ export default function CompanionLayout() {
           <Stack.Screen name="payouts/index" />
           <Stack.Screen name="payouts/[id]" />
           <Stack.Screen name="payout-account" />
+          <Stack.Screen name="reviews" />
         </Stack.Protected>
       </Stack>
     </CompanionProvider>

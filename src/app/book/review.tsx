@@ -14,7 +14,7 @@ import { Text, Title } from '@/components/ui/Text';
 import { review as copy } from '@/content/bookings';
 import { bookingsApi } from '@/lib/bookings/api';
 import { attempt, clearDraft, getDraft } from '@/lib/bookings/draft';
-import { REQUOTE_CODES, countdown, customerLines, durationLabel } from '@/lib/bookings/helpers';
+import { REQUOTE_CODES, countdown, customerLines, durationLabel, memberFeeNote } from '@/lib/bookings/helpers';
 import { errorView } from '@/lib/errors';
 import { formatINR } from '@/lib/money';
 import { formatDateTimeIST } from '@/lib/time';
@@ -102,6 +102,7 @@ export default function Review() {
       <View style={{ gap: space.sm }}>
         <Text variant="eyebrow" color={colors.textSubtle}>{copy.breakdown}</Text>
         <PriceLines lines={customerLines(q.breakdown, q.duration_minutes)} />
+        {memberFeeNote(q.breakdown) ? <Text variant="caption" color={colors.textMuted}>{memberFeeNote(q.breakdown)}</Text> : null}
         <Text variant="caption" color={left.expired ? colors.warningText : colors.textMuted}>{left.expired ? copy.expired : copy.expires(left.label.replace(' left', ''))}</Text>
       </View>
       {!instant ? <Alert tone="info">{copy.requestNote}</Alert> : null}

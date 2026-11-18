@@ -80,7 +80,11 @@ export default function Dashboard() {
         {paused ? <Button onPress={toggle} loading={busy}>{state.cta ?? 'Resume'}</Button> : null}
         {!paused && cta && state.cta ? <Button onPress={() => router.push(cta)}>{state.cta}</Button> : null}
       </Card>
-      {companion.bank_details_reminder ? <Alert tone="info">Add your bank account when payouts open. You do not need it to go live.</Alert> : null}
+      {companion.bank_details_reminder ? (
+        <Alert tone="info" action={<Button variant="secondary" onPress={() => router.push('/companion/payout-account')}>Add bank account</Button>}>
+          Add your bank account to receive payouts. You do not need it to go live.
+        </Alert>
+      ) : null}
       {isApproved(companion.status) ? (
         <Card>
           <Text variant="small" color={colors.text}>{`Identity re-verification due ${dateIn(companion.reverify_due_at)}. We remind you 14 days before.`}</Text>

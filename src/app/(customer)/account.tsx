@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, type Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinkRow } from '@/components/companion/Bits';
 import { RoleSwitch } from '@/components/nav/Shell';
@@ -14,8 +14,11 @@ import { authApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { COMPANION_HOME } from '@/lib/companion/steps';
 import type { OnboardingOptions } from '@/lib/types';
+import { deleteAccount } from '@/content/account';
+import { enforcement } from '@/content/enforcement';
 import { account as copy } from '@/content/customer';
 import { lists } from '@/content/discovery';
+import { membership } from '@/content/membership';
 import { nav } from '@/content/common';
 import { colors, space } from '@/theme';
 
@@ -25,7 +28,7 @@ const formatPhone = (p: string | null) => {
   return m ? `+91 ${m[1]} ${m[2]}` : (p ?? '—');
 };
 
-/** Customer Profile tab: account details, saved and recently viewed companions, "Become a companion", SOS and safety contacts, settings and legal, log out. */
+/** Customer Profile tab: account details, membership, saved and recently viewed companions, "Become a companion", SOS and safety contacts, settings and legal, log out, account status, delete account. */
 export default function Account() {
   const router = useRouter();
   const { user, signOut } = useAuth();
@@ -59,6 +62,7 @@ export default function Account() {
       </View>
 
       <View>
+        <LinkRow label={membership.rowLabel} detail={membership.rowDetail} onPress={() => router.push('/membership' as Href)} />
         <LinkRow label={lists.savedTitle} detail={lists.savedDetail} onPress={() => router.push('/companions/saved')} />
         <LinkRow label={lists.recentTitle} detail={lists.recentDetail} onPress={() => router.push('/companions/recent')} />
         <LinkRow label={user.companion ? nav.companion.dashboard : nav.becomeCompanion} detail={user.companion ? undefined : 'Platonic company at approved public venues, on your own hours.'} onPress={() => router.push(COMPANION_HOME)} />
@@ -80,6 +84,10 @@ export default function Account() {
       >
         {copy.logOut}
       </Button>
+      <View>
+        <LinkRow label={enforcement.rowLabel} detail={enforcement.rowDetail} onPress={() => router.push('/account-status' as Href)} />
+        <LinkRow label={deleteAccount.rowLabel} detail={deleteAccount.rowDetail} onPress={() => router.push('/delete-account' as Href)} />
+      </View>
     </Screen>
   );
 }

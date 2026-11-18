@@ -11,6 +11,7 @@ import { Screen } from '@/components/ui/Screen';
 import { Text, Title } from '@/components/ui/Text';
 import { ApiError, authApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { messageFor } from '@/lib/errors';
 import type { Challenge } from '@/lib/types';
 import { indianMobile, isEmail, passwordOk } from '@/lib/validation';
 import { colors } from '@/theme';
@@ -57,6 +58,9 @@ export default function SignUp() {
       if (err instanceof ApiError && err.status === 422) setErrors(err.fields as Errors);
       else if (err instanceof ApiError && err.code === 'ACCOUNT_EXISTS') {
         setFormError({ text: `An account with this ${err.details?.field === 'phone' ? 'mobile number' : 'email'} already exists.`, exists: true });
+      } else if (err instanceof ApiError && err.code === 'SIGNUP_NOT_AVAILABLE') {
+        // Blocked details (D22): show the API's own message; no "log in instead" link.
+        setFormError({ text: err.message || messageFor('SIGNUP_NOT_AVAILABLE') });
       } else setFormError({ text: err instanceof ApiError ? err.message : 'Something went wrong. Please try again.' });
     } finally {
       submitting.current = false;

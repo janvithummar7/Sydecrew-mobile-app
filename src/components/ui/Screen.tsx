@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import type { ReactElement, ReactNode } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, type RefreshControlProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, space } from '@/theme';
 
@@ -9,10 +9,12 @@ type Props = {
   footer?: ReactNode;
   /** Pinned above the scroll area. */
   header?: ReactNode;
+  /** Pull-to-refresh (a <RefreshControl />). */
+  refreshControl?: ReactElement<RefreshControlProps>;
 };
 
 /** Full-screen dark page that scrolls, respects notches and keeps inputs above the keyboard. */
-export function Screen({ children, footer, header }: Props) {
+export function Screen({ children, footer, header, refreshControl }: Props) {
   return (
     <SafeAreaView style={styles.root} edges={['top', 'bottom', 'left', 'right']}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -22,6 +24,7 @@ export function Screen({ children, footer, header }: Props) {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
           contentInsetAdjustmentBehavior="automatic"
+          refreshControl={refreshControl}
         >
           <View style={styles.inner}>{children}</View>
         </ScrollView>

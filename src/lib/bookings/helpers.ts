@@ -56,7 +56,7 @@ export type PriceLine = { key: string; label: string; paise: number; strong?: bo
 /** What the customer pays, line by line (zero fee / GST / discount lines are left out). Sums to the total. */
 export function customerLines(b: Breakdown, durationMinutes: number): PriceLine[] {
   const lines: PriceLine[] = [{ key: 'subtotal', label: prices.time(durationLabel(durationMinutes)), paise: b.subtotal_paise }];
-  if (b.discount_paise) lines.push({ key: 'discount', label: prices.discount, paise: -b.discount_paise });
+  if (b.discount_paise) lines.push({ key: 'discount', label: b.member_plan_name ? prices.memberDiscount(b.member_plan_name) : prices.discount, paise: -b.discount_paise });
   if (b.customer_fee_paise) lines.push({ key: 'fee', label: prices.fee, paise: b.customer_fee_paise });
   if (b.gst_on_fee_paise) lines.push({ key: 'gst_fee', label: prices.gstFee, paise: b.gst_on_fee_paise });
   lines.push({ key: 'total', label: prices.total, paise: b.total_paise, strong: true });
@@ -77,9 +77,17 @@ export function customerMoneyLines(m: Booking['money'], durationMinutes: number)
       gst_on_commission_paise: 0,
       companion_earnings_paise: 0,
       is_repeat: false,
+      member_plan_name: null,
+      member_fee_waived_paise: 0,
     },
     durationMinutes,
   );
+}
+
+/** "No service fee with your Elite membership." when member prices waived the fee on a quote; otherwise null. */
+/** Only when a fee was actually waived (the default service fee can be 0 for everyone). */
+export function memberFeeNote(b: Pick<Breakdown, 'member_plan_name' | 'member_fee_waived_paise'>): string | null {
+  return b.member_plan_name && (b.member_fee_waived_paise ?? 0) > 0 ? prices.feeWaived(b.member_plan_name) : null;
 }
 
 /** Lines that add up to the total (everything except the total row). */

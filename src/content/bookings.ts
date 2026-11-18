@@ -9,6 +9,9 @@ import type { BookingCancelReason, BookingIssue, BookingRejectReason, BookingSta
 export const prices = {
   time: (duration: string) => `Companion's time (${duration})`,
   discount: 'Discount',
+  /** Paid by Sydecrew, not the companion (D12). */
+  memberDiscount: (plan: string) => `Member discount (${plan})`,
+  feeWaived: (plan: string) => `No service fee with your ${plan} membership.`,
   fee: 'Service fee',
   gstFee: 'GST on the service fee',
   total: 'Total',

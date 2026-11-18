@@ -1,0 +1,43 @@
+# Account status (D22): a customer suspended by staff (web admin: Enforcement → Suspend) signs in as usual and sees
+# only the Account status screen: the hold banner with the end date, the decision with its reason, and an appeal.
+# They send an appeal and can log out. Customer and companion tabs never appear while the account is on hold.
+# Needs: a customer with an active timed suspension that has not been appealed yet (a throwaway account).
+# Run: maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/account-status.yaml
+# Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+
+- extendedWaitUntil:
+    visible: "Account status"
+    timeout: 15000
+- assertVisible: "Your account is on hold"
+- assertVisible: "Your account is on hold until .*"
+- assertNotVisible: "Profile"
+- scrollUntilVisible:
+    element: "Appeal this decision"
+- tapOn: "Appeal this decision"
+- assertVisible: "Tell us what happened and why you think this is wrong.*"
+- tapOn: "What happened"
+- inputText: "I was at the venue on time and waited for the whole booking."
+- hideKeyboard
+- scrollUntilVisible:
+    element: "Send appeal"
+- tapOn: "Send appeal"
+- extendedWaitUntil:
+    visible: "Your appeal has been sent. We will let you know the outcome."
+    timeout: 15000
+- assertVisible: "You appealed on .*"
+- tapOn: "Log out"
+- assertVisible: "Log in"

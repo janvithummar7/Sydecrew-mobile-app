@@ -22,6 +22,7 @@ const RENDERED: (keyof DiscoveryCard)[] = ['id', 'display_name', 'photo_url', 'f
 export function sameCard(a: DiscoveryCard, b: DiscoveryCard): boolean {
   if (a === b) return true;
   if (RENDERED.some((k) => a[k] !== b[k])) return false;
+  if ((a.rating?.average ?? null) !== (b.rating?.average ?? null) || (a.rating?.count ?? null) !== (b.rating?.count ?? null)) return false;
   if ((a.zone?.id ?? null) !== (b.zone?.id ?? null) || (a.zone?.name ?? null) !== (b.zone?.name ?? null)) return false;
   if (a.languages.join('|') !== b.languages.join('|')) return false;
   return a.categories.map((c) => c.id).join('|') === b.categories.map((c) => c.id).join('|');

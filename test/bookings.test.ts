@@ -34,7 +34,7 @@ const breakdown = (over: Partial<Breakdown> = {}): Breakdown => ({
   is_repeat: false,
   ...over,
 });
-const noActions = { can_pay: false, can_cancel: false, can_accept: false, can_reject: false, can_check_in: false, can_check_out: false, can_report_issue: false };
+const noActions = { can_call: false, can_review: false, can_pay: false, can_cancel: false, can_accept: false, can_reject: false, can_check_in: false, can_check_out: false, can_report_issue: false };
 const booking = (over: Partial<Booking>): Booking => ({ status: 'PAYMENT_PENDING', payment: null, ...over }) as Booking;
 
 test('idempotency keys match the API rule and stay the same for one attempt', () => {

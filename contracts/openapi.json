@@ -224,7 +224,8 @@
           "ACTIVE",
           "SUSPENDED",
           "BANNED",
-          "DEACTIVATED"
+          "DEACTIVATED",
+          "PENDING_DELETION"
         ]
       },
       "ErrorCode": {
@@ -275,6 +276,11 @@
           "MFA_TOKEN_INVALID",
           "MFA_ALREADY_ENABLED",
           "MFA_NOT_STARTED",
+          "MFA_NOT_ENABLED",
+          "MFA_RESET_SELF",
+          "STAFF_INVITE_REQUIRED",
+          "STAFF_NOT_ACTIVE",
+          "STAFF_NOT_FOUND",
           "SECOND_APPROVER_REQUIRED",
           "COMPANION_NOT_FOUND",
           "PROFILE_UNAVAILABLE",
@@ -350,6 +356,35 @@
           "VENUE_NOT_FOUND",
           "REPORT_NOT_FOUND",
           "REPORT_CLOSED",
+          "REVIEW_NOT_AVAILABLE",
+          "REVIEW_WINDOW_CLOSED",
+          "REVIEW_EXISTS",
+          "REVIEW_NOT_FOUND",
+          "PLAN_NOT_FOUND",
+          "SUBSCRIPTION_EXISTS",
+          "SUBSCRIPTION_NOT_FOUND",
+          "SUBSCRIPTION_PAST_DUE",
+          "SUBSCRIPTION_CANCELLING",
+          "SUBSCRIPTION_NOT_CANCELLING",
+          "SUBSCRIPTION_CHANGED",
+          "UPGRADE_PAYMENT_FAILED",
+          "PAYMENT_PROVIDER_UNAVAILABLE",
+          "MANDATE_NOT_FOUND",
+          "MANDATE_ALREADY_ATTEMPTED",
+          "ACCOUNT_ON_HOLD",
+          "SIGNUP_NOT_AVAILABLE",
+          "ALREADY_RESTRICTED",
+          "ACCOUNT_CLOSED",
+          "ENFORCEMENT_NOT_FOUND",
+          "ENFORCEMENT_NOT_ACTIVE",
+          "APPEAL_EXISTS",
+          "APPEAL_DECIDED",
+          "INDEPENDENT_REVIEWER_REQUIRED",
+          "NOT_BANNED",
+          "INVALID_PASSWORD",
+          "STAFF_ACCOUNT",
+          "ACCOUNT_NOT_DELETABLE",
+          "ACCOUNT_DELETION_BLOCKED",
           "BOOKING_NOT_FOUND",
           "OFFERING_UNAVAILABLE",
           "PLUS_ONE_NOT_OPEN",
@@ -710,6 +745,10 @@
             ],
             "additionalProperties": false
           },
+          "on_hold": {
+            "type": "boolean",
+            "description": "Suspended or banned: only /auth/me, logout and /account/standing work; show the account-on-hold screen"
+          },
           "companion": {
             "anyOf": [
               {
@@ -747,6 +786,7 @@
           "city_id",
           "zone_id",
           "onboarding",
+          "on_hold",
           "companion",
           "mfa"
         ],
@@ -4144,6 +4184,457 @@
           "soonest"
         ]
       },
+      "ReviewStatus": {
+        "type": "string",
+        "enum": [
+          "PUBLISHED",
+          "HIDDEN",
+          "FLAGGED"
+        ]
+      },
+      "ReviewTag": {
+        "type": "string",
+        "enum": [
+          "PUNCTUAL",
+          "GREAT_CONVERSATION",
+          "RESPECTFUL",
+          "KNOWLEDGEABLE",
+          "WARM_AND_FRIENDLY",
+          "GOOD_LISTENER",
+          "WELL_PLANNED",
+          "CLEAR_PLANS",
+          "FRIENDLY",
+          "GOOD_VENUE_CHOICE",
+          "KEPT_TO_BOUNDARIES"
+        ]
+      },
+      "ReviewReportReason": {
+        "type": "string",
+        "enum": [
+          "FAKE_OR_MISLEADING",
+          "OFFENSIVE",
+          "CONTACT_DETAILS",
+          "NOT_ABOUT_THE_MEETING",
+          "PRIVATE_INFORMATION",
+          "OTHER"
+        ]
+      },
+      "Rating": {
+        "type": "object",
+        "properties": {
+          "average": {
+            "type": "number",
+            "description": "1.0-5.0, one decimal"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "average",
+          "count"
+        ],
+        "additionalProperties": false,
+        "description": "Only from reviews.public_min_count visible reviews; otherwise null"
+      },
+      "CompanionReviewsResponse": {
+        "type": "object",
+        "properties": {
+          "rating": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Rating"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "rating": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "comment": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewTag"
+                  }
+                },
+                "reviewer": {
+                  "type": "string",
+                  "description": "First name only"
+                },
+                "activity": {
+                  "type": "string"
+                },
+                "month": {
+                  "type": "string",
+                  "description": "YYYY-MM of the meeting"
+                },
+                "released_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "id",
+                "rating",
+                "comment",
+                "tags",
+                "reviewer",
+                "activity",
+                "month",
+                "released_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "rating",
+          "items",
+          "next_cursor"
+        ],
+        "additionalProperties": false
+      },
+      "OwnReviewsResponse": {
+        "type": "object",
+        "properties": {
+          "rating": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Rating"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "From the first visible review"
+          },
+          "public": {
+            "type": "boolean",
+            "description": "Customers see the average and reviews"
+          },
+          "min_count": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "rating": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "comment": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewTag"
+                  }
+                },
+                "reviewer": {
+                  "type": "string",
+                  "description": "First name only"
+                },
+                "activity": {
+                  "type": "string"
+                },
+                "month": {
+                  "type": "string",
+                  "description": "YYYY-MM of the meeting"
+                },
+                "released_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "id",
+                "rating",
+                "comment",
+                "tags",
+                "reviewer",
+                "activity",
+                "month",
+                "released_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "rating",
+          "public",
+          "min_count",
+          "items",
+          "next_cursor"
+        ],
+        "additionalProperties": false
+      },
+      "AdminReviewsResponse": {
+        "type": "object",
+        "properties": {
+          "queue": {
+            "type": "string",
+            "enum": [
+              "HELD",
+              "REPORTED",
+              "HIDDEN"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "booking": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "ref": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "ref"
+                  ],
+                  "additionalProperties": false
+                },
+                "reviewer_role": {
+                  "type": "string",
+                  "enum": [
+                    "CUSTOMER",
+                    "COMPANION"
+                  ]
+                },
+                "reviewer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "reviewee": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "companion": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "display_name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "display_name"
+                  ],
+                  "additionalProperties": false
+                },
+                "rating": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "comment": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewTag"
+                  }
+                },
+                "status": {
+                  "$ref": "#/components/schemas/ReviewStatus"
+                },
+                "flag_codes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "hidden_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "released": {
+                  "type": "boolean"
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "reports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                      },
+                      "reason_code": {
+                        "type": "string"
+                      },
+                      "note": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "description": "ISO 8601 date-time (UTC)"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "reason_code",
+                      "note",
+                      "created_at"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "booking",
+                "reviewer_role",
+                "reviewer",
+                "reviewee",
+                "companion",
+                "rating",
+                "comment",
+                "tags",
+                "status",
+                "flag_codes",
+                "hidden_reason",
+                "released",
+                "created_at",
+                "reports"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "queue",
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "ReviewDecisionResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReviewStatus"
+          }
+        },
+        "required": [
+          "id",
+          "status"
+        ],
+        "additionalProperties": false
+      },
       "DiscoveryCard": {
         "type": "object",
         "properties": {
@@ -4240,8 +4731,19 @@
           "verified": {
             "type": "boolean"
           },
+          "rating": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Rating"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "new_on_sydecrew": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True while there is no public rating"
           }
         },
         "required": [
@@ -4254,6 +4756,7 @@
           "from_paise",
           "next_available_at",
           "verified",
+          "rating",
           "new_on_sydecrew"
         ],
         "additionalProperties": false
@@ -4563,8 +5066,19 @@
           "verified": {
             "type": "boolean"
           },
+          "rating": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Rating"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "new_on_sydecrew": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True while there is no public rating"
           },
           "meeting_rule": {
             "type": "string"
@@ -4596,6 +5110,7 @@
           "availability",
           "verified_since",
           "verified",
+          "rating",
           "new_on_sydecrew",
           "meeting_rule"
         ],
@@ -5695,6 +6210,19 @@
           },
           "is_repeat": {
             "type": "boolean"
+          },
+          "member_plan_name": {
+            "description": "Set when member prices applied (discount_paise, and a waived service fee)",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "member_fee_waived_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "The service fee a member did not pay (before GST); 0 when nothing was waived"
           }
         },
         "required": [
@@ -5707,7 +6235,9 @@
           "commission_paise",
           "gst_on_commission_paise",
           "companion_earnings_paise",
-          "is_repeat"
+          "is_repeat",
+          "member_plan_name",
+          "member_fee_waived_paise"
         ],
         "additionalProperties": false
       },
@@ -5987,10 +6517,22 @@
             "properties": {
               "first_name": {
                 "type": "string"
+              },
+              "rating": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/Rating"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Companions only: the customer's average from companions' private reviews"
               }
             },
             "required": [
-              "first_name"
+              "first_name",
+              "rating"
             ],
             "additionalProperties": false
           },
@@ -6347,6 +6889,126 @@
               }
             ]
           },
+          "review": {
+            "type": "object",
+            "properties": {
+              "window_ends_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Null until the meeting is completed"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ReviewTag"
+                },
+                "description": "Tags this viewer may pick"
+              },
+              "mine": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "rating": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "comment": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/ReviewTag"
+                        }
+                      },
+                      "status": {
+                        "$ref": "#/components/schemas/ReviewStatus"
+                      },
+                      "visible": {
+                        "type": "boolean"
+                      },
+                      "submitted_at": {
+                        "type": "string",
+                        "description": "ISO 8601 date-time (UTC)"
+                      }
+                    },
+                    "required": [
+                      "rating",
+                      "comment",
+                      "tags",
+                      "status",
+                      "visible",
+                      "submitted_at"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "theirs": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "rating": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "comment": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/ReviewTag"
+                        }
+                      },
+                      "submitted_at": {
+                        "type": "string",
+                        "description": "ISO 8601 date-time (UTC)"
+                      }
+                    },
+                    "required": [
+                      "rating",
+                      "comment",
+                      "tags",
+                      "submitted_at"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Companions only: the customer's review, once released"
+              }
+            },
+            "required": [
+              "window_ends_at",
+              "tags",
+              "mine",
+              "theirs"
+            ],
+            "additionalProperties": false
+          },
           "timeline": {
             "type": "array",
             "items": {
@@ -6455,6 +7117,9 @@
               },
               "can_report_issue": {
                 "type": "boolean"
+              },
+              "can_review": {
+                "type": "boolean"
               }
             },
             "required": [
@@ -6465,7 +7130,8 @@
               "can_reject",
               "can_check_in",
               "can_check_out",
-              "can_report_issue"
+              "can_report_issue",
+              "can_review"
             ],
             "additionalProperties": false
           }
@@ -6495,6 +7161,7 @@
           "cancellation",
           "dispute",
           "dispute_window_ends_at",
+          "review",
           "timeline",
           "conversation_id",
           "call_window",
@@ -7170,10 +7837,22 @@
             "properties": {
               "first_name": {
                 "type": "string"
+              },
+              "rating": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/Rating"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Companions only: the customer's average from companions' private reviews"
               }
             },
             "required": [
-              "first_name"
+              "first_name",
+              "rating"
             ],
             "additionalProperties": false
           },
@@ -7530,6 +8209,126 @@
               }
             ]
           },
+          "review": {
+            "type": "object",
+            "properties": {
+              "window_ends_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Null until the meeting is completed"
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ReviewTag"
+                },
+                "description": "Tags this viewer may pick"
+              },
+              "mine": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "rating": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "comment": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/ReviewTag"
+                        }
+                      },
+                      "status": {
+                        "$ref": "#/components/schemas/ReviewStatus"
+                      },
+                      "visible": {
+                        "type": "boolean"
+                      },
+                      "submitted_at": {
+                        "type": "string",
+                        "description": "ISO 8601 date-time (UTC)"
+                      }
+                    },
+                    "required": [
+                      "rating",
+                      "comment",
+                      "tags",
+                      "status",
+                      "visible",
+                      "submitted_at"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "theirs": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "rating": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "comment": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/ReviewTag"
+                        }
+                      },
+                      "submitted_at": {
+                        "type": "string",
+                        "description": "ISO 8601 date-time (UTC)"
+                      }
+                    },
+                    "required": [
+                      "rating",
+                      "comment",
+                      "tags",
+                      "submitted_at"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Companions only: the customer's review, once released"
+              }
+            },
+            "required": [
+              "window_ends_at",
+              "tags",
+              "mine",
+              "theirs"
+            ],
+            "additionalProperties": false
+          },
           "timeline": {
             "type": "array",
             "items": {
@@ -7638,6 +8437,9 @@
               },
               "can_report_issue": {
                 "type": "boolean"
+              },
+              "can_review": {
+                "type": "boolean"
               }
             },
             "required": [
@@ -7648,7 +8450,8 @@
               "can_reject",
               "can_check_in",
               "can_check_out",
-              "can_report_issue"
+              "can_report_issue",
+              "can_review"
             ],
             "additionalProperties": false
           },
@@ -8292,6 +9095,7 @@
           "cancellation",
           "dispute",
           "dispute_window_ends_at",
+          "review",
           "timeline",
           "conversation_id",
           "call_window",
@@ -15105,6 +15909,1981 @@
         ],
         "additionalProperties": false
       },
+      "StaffListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "full_name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "status": {
+                  "$ref": "#/components/schemas/UserStatus"
+                },
+                "roles": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleCode"
+                  }
+                },
+                "mfa_enrolled": {
+                  "type": "boolean"
+                },
+                "mfa_enrolled_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "last_login_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "invite_expires_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "An open set-up link (the link itself is shown only once, when created)"
+                },
+                "pending_reset": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "approval_request_id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "requested_at": {
+                          "type": "string",
+                          "description": "ISO 8601 date-time (UTC)"
+                        }
+                      },
+                      "required": [
+                        "approval_request_id",
+                        "requested_at"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "full_name",
+                "email",
+                "status",
+                "roles",
+                "mfa_enrolled",
+                "mfa_enrolled_at",
+                "last_login_at",
+                "invite_expires_at",
+                "pending_reset"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "StaffInviteResponse": {
+        "type": "object",
+        "properties": {
+          "link": {
+            "type": "string",
+            "description": "Shown once. Hand it to the person directly; it is never emailed"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "ISO 8601 date-time (UTC)"
+          }
+        },
+        "required": [
+          "link",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      },
+      "StaffMfaResetRequestedResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "PENDING_SECOND_APPROVAL"
+          },
+          "approval_request_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "status",
+          "approval_request_id"
+        ],
+        "additionalProperties": false
+      },
+      "SubscriptionStatus": {
+        "type": "string",
+        "enum": [
+          "INCOMPLETE",
+          "TRIALING",
+          "ACTIVE",
+          "PAST_DUE",
+          "CANCELLED",
+          "EXPIRED",
+          "SUSPENDED"
+        ]
+      },
+      "MockMandateScenario": {
+        "type": "string",
+        "enum": [
+          "AUTHORIZED",
+          "DECLINED",
+          "RENEWAL_FAILS_ONCE",
+          "CHARGES_FAIL"
+        ]
+      },
+      "MembershipPlan": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "price_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Per month, GST included"
+          },
+          "billing_interval": {
+            "type": "string"
+          },
+          "trial_days": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "booking_discount_percent": {
+            "type": "number"
+          },
+          "service_fee_waived": {
+            "type": "boolean"
+          },
+          "benefits": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "description",
+          "price_paise",
+          "billing_interval",
+          "trial_days",
+          "booking_discount_percent",
+          "service_fee_waived",
+          "benefits"
+        ],
+        "additionalProperties": false
+      },
+      "Membership": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SubscriptionStatus"
+          },
+          "plan": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "code": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "code",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "price_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "benefits": {
+            "type": "object",
+            "properties": {
+              "booking_discount_percent": {
+                "type": "number"
+              },
+              "service_fee_waived": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "booking_discount_percent",
+              "service_fee_waived"
+            ],
+            "additionalProperties": false
+          },
+          "current_period_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "current_period_end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "trial_ends_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cancel_at_period_end": {
+            "type": "boolean"
+          },
+          "pending_plan": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "code": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "price_paise": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991,
+                    "description": "Money in paise (₹1 = 100)"
+                  }
+                },
+                "required": [
+                  "id",
+                  "code",
+                  "name",
+                  "price_paise"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "A downgrade that applies at the next renewal"
+          },
+          "grace_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "PAST_DUE: benefits continue until then while the payment is retried"
+          },
+          "next_charge": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "at": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "description": "ISO 8601 date-time (UTC)"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "amount_paise": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991,
+                    "description": "Money in paise (₹1 = 100)"
+                  }
+                },
+                "required": [
+                  "at",
+                  "amount_paise"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "plan",
+          "price_paise",
+          "benefits",
+          "current_period_start",
+          "current_period_end",
+          "trial_ends_at",
+          "cancel_at_period_end",
+          "pending_plan",
+          "grace_until",
+          "next_charge"
+        ],
+        "additionalProperties": false
+      },
+      "MembershipOverviewResponse": {
+        "type": "object",
+        "properties": {
+          "plans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MembershipPlan"
+            }
+          },
+          "current": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Membership"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "trial_eligible": {
+            "type": "boolean"
+          },
+          "receipts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "payment_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "receipt_number": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "amount_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "paid_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "payment_id",
+                "receipt_number",
+                "amount_paise",
+                "paid_at",
+                "description"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "plans",
+          "current",
+          "trial_eligible",
+          "receipts"
+        ],
+        "additionalProperties": false
+      },
+      "MembershipStartResponse": {
+        "type": "object",
+        "properties": {
+          "subscription": {
+            "description": "INCOMPLETE until autopay is approved",
+            "$ref": "#/components/schemas/Membership"
+          },
+          "checkout": {
+            "type": "object",
+            "properties": {
+              "provider": {
+                "type": "string"
+              },
+              "mandate_id": {
+                "type": "string"
+              },
+              "max_amount_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              },
+              "test_mode": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "provider",
+              "mandate_id",
+              "max_amount_paise"
+            ],
+            "additionalProperties": {}
+          },
+          "trial": {
+            "type": "boolean",
+            "description": "Whether a free trial will start once autopay is approved"
+          }
+        },
+        "required": [
+          "subscription",
+          "checkout",
+          "trial"
+        ],
+        "additionalProperties": false
+      },
+      "MembershipChangeResponse": {
+        "type": "object",
+        "properties": {
+          "subscription": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Membership"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "charged_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          }
+        },
+        "required": [
+          "subscription"
+        ],
+        "additionalProperties": false
+      },
+      "MockMandateResponse": {
+        "type": "object",
+        "properties": {
+          "mandate_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CREATED",
+              "ACTIVE",
+              "FAILED",
+              "CANCELLED"
+            ]
+          },
+          "max_amount_paise": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Money in paise (₹1 = 100)"
+          },
+          "scenarios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MockMandateScenario"
+            }
+          },
+          "test_mode": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "mandate_id",
+          "status",
+          "max_amount_paise",
+          "scenarios",
+          "test_mode"
+        ],
+        "additionalProperties": false
+      },
+      "MockMandateAuthorizeResponse": {
+        "type": "object",
+        "properties": {
+          "scenario": {
+            "$ref": "#/components/schemas/MockMandateScenario"
+          },
+          "delivered": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "required": [
+          "scenario",
+          "delivered"
+        ],
+        "additionalProperties": false
+      },
+      "AdminMembershipPlansResponse": {
+        "type": "object",
+        "properties": {
+          "plans": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "price_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Per month, GST included"
+                },
+                "billing_interval": {
+                  "type": "string"
+                },
+                "trial_days": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "booking_discount_percent": {
+                  "type": "number"
+                },
+                "service_fee_waived": {
+                  "type": "boolean"
+                },
+                "benefits": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "is_active": {
+                  "type": "boolean"
+                },
+                "is_public": {
+                  "type": "boolean"
+                },
+                "subscribers": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "id",
+                "code",
+                "name",
+                "description",
+                "price_paise",
+                "billing_interval",
+                "trial_days",
+                "booking_discount_percent",
+                "service_fee_waived",
+                "benefits",
+                "is_active",
+                "is_public",
+                "subscribers"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "plans"
+        ],
+        "additionalProperties": false
+      },
+      "AdminMembershipPlanResponse": {
+        "type": "object",
+        "properties": {
+          "plan": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "code": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "price_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Per month, GST included"
+              },
+              "billing_interval": {
+                "type": "string"
+              },
+              "trial_days": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "booking_discount_percent": {
+                "type": "number"
+              },
+              "service_fee_waived": {
+                "type": "boolean"
+              },
+              "benefits": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "is_active": {
+                "type": "boolean"
+              },
+              "is_public": {
+                "type": "boolean"
+              },
+              "subscribers": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "id",
+              "code",
+              "name",
+              "description",
+              "price_paise",
+              "billing_interval",
+              "trial_days",
+              "booking_discount_percent",
+              "service_fee_waived",
+              "benefits",
+              "is_active",
+              "is_public",
+              "subscribers"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "plan"
+        ],
+        "additionalProperties": false
+      },
+      "AdminMembershipsResponse": {
+        "type": "object",
+        "properties": {
+          "totals": {
+            "type": "object",
+            "properties": {
+              "trialing": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "active": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "past_due": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "monthly_paise": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991,
+                "description": "Money in paise (₹1 = 100)"
+              }
+            },
+            "required": [
+              "trialing",
+              "active",
+              "past_due",
+              "monthly_paise"
+            ],
+            "additionalProperties": false
+          },
+          "subscriptions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "status": {
+                  "$ref": "#/components/schemas/SubscriptionStatus"
+                },
+                "plan": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                "price_paise": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991,
+                  "description": "Money in paise (₹1 = 100)"
+                },
+                "current_period_end": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "trial_ends_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "cancel_at_period_end": {
+                  "type": "boolean"
+                },
+                "grace_until": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "retry_count": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "customer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "email"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "id",
+                "status",
+                "plan",
+                "price_paise",
+                "current_period_end",
+                "trial_ends_at",
+                "cancel_at_period_end",
+                "grace_until",
+                "retry_count",
+                "created_at",
+                "customer"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "totals",
+          "subscriptions"
+        ],
+        "additionalProperties": false
+      },
+      "EnforcementAction": {
+        "type": "string",
+        "enum": [
+          "WARNING",
+          "TEMP_SUSPENSION",
+          "PERMANENT_BAN",
+          "REINSTATEMENT"
+        ]
+      },
+      "EnforcementStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING_APPROVAL",
+          "ACTIVE",
+          "EXPIRED",
+          "OVERTURNED",
+          "REJECTED"
+        ]
+      },
+      "EnforcementReason": {
+        "type": "string",
+        "enum": [
+          "HARASSMENT",
+          "ABUSE",
+          "SOLICITATION",
+          "CONTACT_DETAILS",
+          "OFF_PLATFORM_PAYMENT",
+          "BOUNDARY_VIOLATION",
+          "NO_SHOWS",
+          "FAKE_PROFILE",
+          "FRAUD",
+          "SAFETY",
+          "OTHER"
+        ]
+      },
+      "AppealStatus": {
+        "type": "string",
+        "enum": [
+          "SUBMITTED",
+          "IN_REVIEW",
+          "UPHELD",
+          "OVERTURNED"
+        ]
+      },
+      "AccountStandingResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/UserStatus"
+          },
+          "on_hold": {
+            "type": "boolean"
+          },
+          "suspended_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "action": {
+                  "$ref": "#/components/schemas/EnforcementAction"
+                },
+                "reason_code": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string",
+                  "description": "Plain words, shown to the person"
+                },
+                "rule": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "status": {
+                  "$ref": "#/components/schemas/EnforcementStatus"
+                },
+                "starts_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "ends_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "A timed suspension ends then; null for warnings, bans and open-ended holds"
+                },
+                "appeal_deadline_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "can_appeal": {
+                  "type": "boolean"
+                },
+                "appeal": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "status": {
+                          "$ref": "#/components/schemas/AppealStatus"
+                        },
+                        "submitted_at": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "description": "ISO 8601 date-time (UTC)"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "decided_at": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "description": "ISO 8601 date-time (UTC)"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "decision_reason": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status",
+                        "submitted_at",
+                        "decided_at",
+                        "decision_reason"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "action",
+                "reason_code",
+                "reason",
+                "rule",
+                "status",
+                "starts_at",
+                "ends_at",
+                "appeal_deadline_at",
+                "can_appeal",
+                "appeal"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "status",
+          "on_hold",
+          "suspended_until",
+          "actions"
+        ],
+        "additionalProperties": false
+      },
+      "AppealSubmittedResponse": {
+        "type": "object",
+        "properties": {
+          "appeal": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "status": {
+                "$ref": "#/components/schemas/AppealStatus"
+              },
+              "submitted_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "status",
+              "submitted_at"
+            ],
+            "additionalProperties": false
+          },
+          "standing": {
+            "$ref": "#/components/schemas/AccountStandingResponse"
+          }
+        },
+        "required": [
+          "appeal",
+          "standing"
+        ],
+        "additionalProperties": false
+      },
+      "AdminUserStanding": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "status": {
+                "$ref": "#/components/schemas/UserStatus"
+              },
+              "suspended_until": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "ISO 8601 date-time (UTC)"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "strike_count": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "on_hold": {
+                "type": "boolean"
+              },
+              "erased": {
+                "type": "boolean"
+              },
+              "joined_at": {
+                "type": "string",
+                "description": "ISO 8601 date-time (UTC)"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "email",
+              "status",
+              "suspended_until",
+              "strike_count",
+              "on_hold",
+              "erased",
+              "joined_at"
+            ],
+            "additionalProperties": false
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "action": {
+                  "$ref": "#/components/schemas/EnforcementAction"
+                },
+                "reason_code": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "rule": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "details": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "status": {
+                  "$ref": "#/components/schemas/EnforcementStatus"
+                },
+                "starts_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "ends_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "appeal_deadline_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "lifted_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "lifted_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "decided_by": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "appeal": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "status": {
+                          "$ref": "#/components/schemas/AppealStatus"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "status"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "action",
+                "reason_code",
+                "reason",
+                "rule",
+                "details",
+                "status",
+                "starts_at",
+                "ends_at",
+                "appeal_deadline_at",
+                "lifted_at",
+                "lifted_reason",
+                "decided_by",
+                "appeal"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "strikes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "category": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "severity": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "cleared": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "category",
+                "reason",
+                "severity",
+                "source",
+                "created_at",
+                "cleared"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "pending_approvals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "action_type": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "id",
+                "action_type",
+                "reason",
+                "created_at"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "user",
+          "actions",
+          "strikes",
+          "pending_approvals"
+        ],
+        "additionalProperties": false
+      },
+      "AdminUserSearchResponse": {
+        "type": "object",
+        "properties": {
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "phone_last4": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "status": {
+                  "$ref": "#/components/schemas/UserStatus"
+                },
+                "strike_count": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "companion": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "display_name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "display_name"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "joined_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "email",
+                "phone_last4",
+                "status",
+                "strike_count",
+                "companion",
+                "joined_at"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "users"
+        ],
+        "additionalProperties": false
+      },
+      "WarningIssuedResponse": {
+        "type": "object",
+        "properties": {
+          "enforcement_action_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "warnings_in_window": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "suspension_proposed": {
+            "type": "boolean"
+          },
+          "standing": {
+            "$ref": "#/components/schemas/AdminUserStanding"
+          }
+        },
+        "required": [
+          "enforcement_action_id",
+          "warnings_in_window",
+          "suspension_proposed",
+          "standing"
+        ],
+        "additionalProperties": false
+      },
+      "SuspensionAppliedResponse": {
+        "type": "object",
+        "properties": {
+          "enforcement_action_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "cancelled_bookings": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "standing": {
+            "$ref": "#/components/schemas/AdminUserStanding"
+          }
+        },
+        "required": [
+          "enforcement_action_id",
+          "cancelled_bookings",
+          "standing"
+        ],
+        "additionalProperties": false
+      },
+      "BanProposedResponse": {
+        "type": "object",
+        "properties": {
+          "approval_request_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "standing": {
+            "$ref": "#/components/schemas/AdminUserStanding"
+          }
+        },
+        "required": [
+          "approval_request_id",
+          "standing"
+        ],
+        "additionalProperties": false
+      },
+      "EnforcementLiftedResponse": {
+        "type": "object",
+        "properties": {
+          "standing": {
+            "$ref": "#/components/schemas/AdminUserStanding"
+          }
+        },
+        "required": [
+          "standing"
+        ],
+        "additionalProperties": false
+      },
+      "BannedErasedResponse": {
+        "type": "object",
+        "properties": {
+          "erased": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "erased"
+        ],
+        "additionalProperties": false
+      },
+      "EnforcementAppealsResponse": {
+        "type": "object",
+        "properties": {
+          "appeals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                },
+                "status": {
+                  "$ref": "#/components/schemas/AppealStatus"
+                },
+                "statement": {
+                  "type": "string"
+                },
+                "submitted_at": {
+                  "type": "string",
+                  "description": "ISO 8601 date-time (UTC)"
+                },
+                "decided_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "description": "ISO 8601 date-time (UTC)"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decision_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "original_decider": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "action": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "action": {
+                      "$ref": "#/components/schemas/EnforcementAction"
+                    },
+                    "reason_code": {
+                      "type": "string"
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "rule": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "details": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "status": {
+                      "$ref": "#/components/schemas/EnforcementStatus"
+                    },
+                    "starts_at": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "description": "ISO 8601 date-time (UTC)"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "ends_at": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "description": "ISO 8601 date-time (UTC)"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "action",
+                    "reason_code",
+                    "reason",
+                    "rule",
+                    "details",
+                    "status",
+                    "starts_at",
+                    "ends_at"
+                  ],
+                  "additionalProperties": false
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "$ref": "#/components/schemas/UserStatus"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "id",
+                "status",
+                "statement",
+                "submitted_at",
+                "decided_at",
+                "decision_reason",
+                "original_decider",
+                "action",
+                "user"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "appeals"
+        ],
+        "additionalProperties": false
+      },
+      "EnforcementAppealDecidedResponse": {
+        "type": "object",
+        "properties": {
+          "appeal": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "status": {
+                "$ref": "#/components/schemas/AppealStatus"
+              }
+            },
+            "required": [
+              "id",
+              "status"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "appeal"
+        ],
+        "additionalProperties": false
+      },
+      "DeletionBlocker": {
+        "type": "string",
+        "enum": [
+          "OPEN_BOOKINGS",
+          "OPEN_DISPUTES",
+          "PENDING_REFUNDS",
+          "UNPAID_EARNINGS"
+        ]
+      },
+      "DeletionPreviewResponse": {
+        "type": "object",
+        "properties": {
+          "can_delete": {
+            "type": "boolean"
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "$ref": "#/components/schemas/DeletionBlocker"
+                },
+                "count": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "code",
+                "count"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "grace_days": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "description": "Signing in within this many days cancels the deletion"
+          }
+        },
+        "required": [
+          "can_delete",
+          "blockers",
+          "grace_days"
+        ],
+        "additionalProperties": false
+      },
+      "DeletionScheduledResponse": {
+        "type": "object",
+        "properties": {
+          "scheduled_for": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          }
+        },
+        "required": [
+          "scheduled_for"
+        ],
+        "additionalProperties": false
+      },
       "WebhookAck": {
         "type": "object",
         "properties": {
@@ -15234,6 +18013,31 @@
         },
         "required": [
           "mfa_token"
+        ]
+      },
+      "postAuthMfaInviteLoginBody": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 200
+          },
+          "identifier": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 72
+          }
+        },
+        "required": [
+          "token",
+          "identifier",
+          "password"
         ]
       },
       "postAuthMfaTotpActivateBody": {
@@ -15398,6 +18202,71 @@
           "zone_id",
           "consents"
         ]
+      },
+      "postAccountStandingByIdAppealBody": {
+        "type": "object",
+        "properties": {
+          "statement": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "statement"
+        ]
+      },
+      "postAccountDeletionBody": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 72
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "password"
+        ]
+      },
+      "postSubscriptionsBody": {
+        "type": "object",
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "plan_id"
+        ]
+      },
+      "postSubscriptionsMeChangeBody": {
+        "type": "object",
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "plan_id"
+        ]
+      },
+      "postSubscriptionsMeCancelBody": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
       },
       "postCompanionBookingsByIdRejectBody": {
         "type": "object",
@@ -16417,6 +19286,19 @@
           "note"
         ]
       },
+      "postAdminStaffByIdMfaResetBody": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
       "postDiscoveryCompanionsByIdReportBody": {
         "type": "object",
         "properties": {
@@ -16709,6 +19591,44 @@
         },
         "required": [
           "issue_code"
+        ]
+      },
+      "postBookingsByIdReviewBody": {
+        "type": "object",
+        "properties": {
+          "rating": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "tags": {
+            "default": [],
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "PUNCTUAL",
+                "GREAT_CONVERSATION",
+                "RESPECTFUL",
+                "KNOWLEDGEABLE",
+                "WARM_AND_FRIENDLY",
+                "GOOD_LISTENER",
+                "WELL_PLANNED",
+                "CLEAR_PLANS",
+                "FRIENDLY",
+                "GOOD_VENUE_CHOICE",
+                "KEPT_TO_BOUNDARIES"
+              ]
+            }
+          }
+        },
+        "required": [
+          "rating"
         ]
       },
       "postComplaintsBody": {
@@ -17350,6 +20270,265 @@
           "status"
         ]
       },
+      "postReviewsByIdReportBody": {
+        "type": "object",
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "FAKE_OR_MISLEADING",
+              "OFFENSIVE",
+              "CONTACT_DETAILS",
+              "NOT_ABOUT_THE_MEETING",
+              "PRIVATE_INFORMATION",
+              "OTHER"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "reason_code"
+        ]
+      },
+      "postAdminReviewsByIdDecisionBody": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "PUBLISH",
+              "REMOVE_COMMENT",
+              "HIDE"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "decision",
+          "reason"
+        ]
+      },
+      "patchAdminSubscriptionPlansByIdBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "price_paise": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "trial_days": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 30
+          },
+          "booking_discount_percent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 30
+          },
+          "service_fee_waived": {
+            "type": "boolean"
+          },
+          "benefits": {
+            "maxItems": 8,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 120
+            }
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "postAdminEnforcementUsersByIdWarnBody": {
+        "type": "object",
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "HARASSMENT",
+              "ABUSE",
+              "SOLICITATION",
+              "CONTACT_DETAILS",
+              "OFF_PLATFORM_PAYMENT",
+              "BOUNDARY_VIOLATION",
+              "NO_SHOWS",
+              "FAKE_PROFILE",
+              "FRAUD",
+              "SAFETY",
+              "OTHER"
+            ]
+          },
+          "rule": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "details": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "reason_code",
+          "details"
+        ]
+      },
+      "postAdminEnforcementUsersByIdSuspendBody": {
+        "type": "object",
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "HARASSMENT",
+              "ABUSE",
+              "SOLICITATION",
+              "CONTACT_DETAILS",
+              "OFF_PLATFORM_PAYMENT",
+              "BOUNDARY_VIOLATION",
+              "NO_SHOWS",
+              "FAKE_PROFILE",
+              "FRAUD",
+              "SAFETY",
+              "OTHER"
+            ]
+          },
+          "rule": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "details": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 2000
+          },
+          "days": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "reason_code",
+          "details",
+          "days"
+        ]
+      },
+      "postAdminEnforcementUsersByIdBanBody": {
+        "type": "object",
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "HARASSMENT",
+              "ABUSE",
+              "SOLICITATION",
+              "CONTACT_DETAILS",
+              "OFF_PLATFORM_PAYMENT",
+              "BOUNDARY_VIOLATION",
+              "NO_SHOWS",
+              "FAKE_PROFILE",
+              "FRAUD",
+              "SAFETY",
+              "OTHER"
+            ]
+          },
+          "rule": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "details": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "reason_code",
+          "details"
+        ]
+      },
+      "postAdminEnforcementUsersByIdEraseBody": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "postAdminEnforcementByIdLiftBody": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "postAdminEnforcementAppealsByIdDecideBody": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "UPHOLD",
+              "OVERTURN"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "decision",
+          "reason"
+        ]
+      },
       "postPaymentsMockOrdersByOrderIdCompleteBody": {
         "type": "object",
         "properties": {
@@ -17362,6 +20541,23 @@
               "DUPLICATE_WEBHOOK",
               "LATE_SUCCESS",
               "REFUND_FAIL_ONCE"
+            ]
+          }
+        },
+        "required": [
+          "scenario"
+        ]
+      },
+      "postPaymentsMockMandatesByMandateIdAuthorizeBody": {
+        "type": "object",
+        "properties": {
+          "scenario": {
+            "type": "string",
+            "enum": [
+              "AUTHORIZED",
+              "DECLINED",
+              "RENEWAL_FAILS_ONCE",
+              "CHARGES_FAIL"
             ]
           }
         },
@@ -17410,6 +20606,158 @@
     }
   ],
   "paths": {
+    "/api/v1/account/deletion": {
+      "get": {
+        "operationId": "getAccountDeletion",
+        "summary": "Whether the account can be deleted now, what blocks it, and the grace period",
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletionPreviewResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postAccountDeletion",
+        "summary": "Delete the account after the grace period (signing in before then cancels it); ends every session",
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletionScheduledResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAccountDeletionBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/account/standing": {
+      "get": {
+        "operationId": "getAccountStanding",
+        "summary": "Your account status: warnings, suspensions, bans and appeals (works while on hold)",
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountStandingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/account/standing/{id}/appeal": {
+      "post": {
+        "operationId": "postAccountStandingByIdAppeal",
+        "summary": "Appeal a warning, suspension or ban (once, within the appeal window)",
+        "tags": [
+          "account"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppealSubmittedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAccountStandingByIdAppealBody"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/appeals": {
       "get": {
         "operationId": "getAdminAppeals",
@@ -18304,6 +21652,443 @@
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/enforcement/{id}/lift": {
+      "post": {
+        "operationId": "postAdminEnforcementByIdLift",
+        "summary": "Withdraw a warning, or end a suspension or ban early (a ban needs ts.ban.approve)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnforcementLiftedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminEnforcementByIdLiftBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/enforcement/appeals": {
+      "get": {
+        "operationId": "getAdminEnforcementAppeals",
+        "summary": "Appeals against warnings, suspensions and bans",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": "OPEN",
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "UPHELD",
+                "OVERTURNED"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnforcementAppealsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/enforcement/appeals/{id}/decide": {
+      "post": {
+        "operationId": "postAdminEnforcementAppealsByIdDecide",
+        "summary": "Uphold or overturn an appeal (never by the original decider or the ban approver)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnforcementAppealDecidedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminEnforcementAppealsByIdDecideBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/enforcement/users": {
+      "get": {
+        "operationId": "getAdminEnforcementUsers",
+        "summary": "Find a customer or companion by email, mobile, name or id",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 150
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserSearchResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/enforcement/users/{id}": {
+      "get": {
+        "operationId": "getAdminEnforcementUsersById",
+        "summary": "A person's warnings, suspensions, bans, strikes, appeals and pending proposals",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserStanding"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/enforcement/users/{id}/ban": {
+      "post": {
+        "operationId": "postAdminEnforcementUsersByIdBan",
+        "summary": "Propose a permanent ban (a different person with ts.ban.approve approves it)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BanProposedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminEnforcementUsersByIdBanBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/enforcement/users/{id}/erase": {
+      "post": {
+        "operationId": "postAdminEnforcementUsersByIdErase",
+        "summary": "Erase a banned person's personal data on request (the ban blocklist stays)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BannedErasedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminEnforcementUsersByIdEraseBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/enforcement/users/{id}/suspend": {
+      "post": {
+        "operationId": "postAdminEnforcementUsersByIdSuspend",
+        "summary": "Suspend now for a number of days; cancels upcoming bookings with full refunds",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuspensionAppliedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminEnforcementUsersByIdSuspendBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/enforcement/users/{id}/warn": {
+      "post": {
+        "operationId": "postAdminEnforcementUsersByIdWarn",
+        "summary": "Warn (a strike; repeated warnings open a suspension proposal)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WarningIssuedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminEnforcementUsersByIdWarnBody"
               }
             }
           }
@@ -19749,6 +23534,104 @@
         }
       }
     },
+    "/api/v1/admin/reviews": {
+      "get": {
+        "operationId": "getAdminReviews",
+        "summary": "Reviews held by the content filter, reported, or hidden (staff)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "queue",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": "HELD",
+              "type": "string",
+              "enum": [
+                "HELD",
+                "REPORTED",
+                "HIDDEN"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminReviewsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/reviews/{id}/decision": {
+      "post": {
+        "operationId": "postAdminReviewsByIdDecision",
+        "summary": "Publish a review, remove only its comment, or hide it; closes its open reports (audit-logged)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewDecisionResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminReviewsByIdDecisionBody"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/admin/settings/pricing": {
       "get": {
         "operationId": "getAdminSettingsPricing",
@@ -19813,6 +23696,271 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/postAdminSettingsPricingBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff": {
+      "get": {
+        "operationId": "getAdminStaff",
+        "summary": "Staff accounts with their two-step sign-in state",
+        "tags": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffListResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{id}/enrollment-invite": {
+      "post": {
+        "operationId": "postAdminStaffByIdEnrollmentInvite",
+        "summary": "Create a one-time set-up link for a staff member without an authenticator (shown once, never emailed)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffInviteResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{id}/mfa-reset": {
+      "post": {
+        "operationId": "postAdminStaffByIdMfaReset",
+        "summary": "Ask to reset a staff member's authenticator (a different super admin approves it)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffMfaResetRequestedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAdminStaffByIdMfaResetBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/subscription-plans": {
+      "get": {
+        "operationId": "getAdminSubscriptionPlans",
+        "summary": "Customer membership plans with live subscriber counts",
+        "tags": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminMembershipPlansResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/subscription-plans/{id}": {
+      "patch": {
+        "operationId": "patchAdminSubscriptionPlansById",
+        "summary": "Change a plan (new prices apply to new memberships and plan changes; audit-logged)",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminMembershipPlanResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/patchAdminSubscriptionPlansByIdBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/subscriptions": {
+      "get": {
+        "operationId": "getAdminSubscriptions",
+        "summary": "Customer memberships (live by default) and totals",
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "INCOMPLETE",
+                "TRIALING",
+                "ACTIVE",
+                "PAST_DUE",
+                "CANCELLED",
+                "EXPIRED"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminMembershipsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -21058,7 +25206,7 @@
     "/api/v1/auth/login": {
       "post": {
         "operationId": "postAuthLogin",
-        "summary": "Log in step 1: password; then an OTP challenge, or a TOTP step for enrolled staff",
+        "summary": "Log in step 1: password; then an OTP challenge, or a TOTP step for enrolled staff (staff without an authenticator: 403 STAFF_INVITE_REQUIRED)",
         "tags": [
           "auth"
         ],
@@ -21147,6 +25295,48 @@
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/mfa/invite/login": {
+      "post": {
+        "operationId": "postAuthMfaInviteLogin",
+        "summary": "Staff first sign-in (or after an MFA reset): password + one-time set-up link; the session can only enrol",
+        "tags": [
+          "staff-mfa"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postAuthMfaInviteLoginBody"
               }
             }
           }
@@ -22225,6 +26415,57 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/postBookingsByIdReportIssueBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/{id}/review": {
+      "post": {
+        "operationId": "postBookingsByIdReview",
+        "summary": "Review a completed meeting once (1-5 stars, comment, tags). Double-blind: the other side sees it after they review or the window ends",
+        "tags": [
+          "bookings"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postBookingsByIdReviewBody"
               }
             }
           }
@@ -23851,6 +28092,59 @@
         }
       }
     },
+    "/api/v1/companion/reviews": {
+      "get": {
+        "operationId": "getCompanionReviews",
+        "summary": "The companion's own visible reviews and average (public from reviews.public_min_count)",
+        "tags": [
+          "companion"
+        ],
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnReviewsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/companion/submit": {
       "post": {
         "operationId": "postCompanionSubmit",
@@ -24858,6 +29152,67 @@
         }
       }
     },
+    "/api/v1/discovery/companions/{id}/reviews": {
+      "get": {
+        "operationId": "getDiscoveryCompanionsByIdReviews",
+        "summary": "A companion's public reviews, newest first (empty until reviews.public_min_count)",
+        "tags": [
+          "discovery"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanionReviewsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/discovery/companions/{id}/save": {
       "post": {
         "operationId": "postDiscoveryCompanionsByIdSave",
@@ -25446,6 +29801,98 @@
         }
       }
     },
+    "/api/v1/payments/mock/mandates/{mandateId}": {
+      "get": {
+        "operationId": "getPaymentsMockMandatesByMandateId",
+        "summary": "TEST AUTOPAY (no real money): the mandate on the mock gateway",
+        "tags": [
+          "payments"
+        ],
+        "parameters": [
+          {
+            "name": "mandateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockMandateResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/payments/mock/mandates/{mandateId}/authorize": {
+      "post": {
+        "operationId": "postPaymentsMockMandatesByMandateIdAuthorize",
+        "summary": "TEST AUTOPAY (no real money): approve or decline the mandate with a scenario",
+        "tags": [
+          "payments"
+        ],
+        "parameters": [
+          {
+            "name": "mandateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockMandateAuthorizeResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postPaymentsMockMandatesByMandateIdAuthorizeBody"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/payments/mock/orders/{orderId}": {
       "get": {
         "operationId": "getPaymentsMockOrdersByOrderId",
@@ -25573,6 +30020,57 @@
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reviews/{id}/report": {
+      "post": {
+        "operationId": "postReviewsByIdReport",
+        "summary": "Report a review to Trust & Safety",
+        "tags": [
+          "reviews"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportedResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postReviewsByIdReportBody"
               }
             }
           }
@@ -26070,6 +30568,189 @@
         }
       }
     },
+    "/api/v1/subscriptions": {
+      "get": {
+        "operationId": "getSubscriptions",
+        "summary": "Membership plans, the current membership, trial eligibility and receipts",
+        "tags": [
+          "subscriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembershipOverviewResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "postSubscriptions",
+        "summary": "Start a membership: returns the autopay mandate to approve (trial or first charge follows approval)",
+        "tags": [
+          "subscriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembershipStartResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postSubscriptionsBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/subscriptions/me/cancel": {
+      "post": {
+        "operationId": "postSubscriptionsMeCancel",
+        "summary": "Cancel: autopay off, benefits until the period ends (at once if a payment is overdue)",
+        "tags": [
+          "subscriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembershipChangeResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postSubscriptionsMeCancelBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/subscriptions/me/change": {
+      "post": {
+        "operationId": "postSubscriptionsMeChange",
+        "summary": "Change plan: upgrade now (prorated charge), downgrade at the next renewal, same plan clears a booked downgrade",
+        "tags": [
+          "subscriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembershipChangeResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postSubscriptionsMeChangeBody"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/subscriptions/me/resume": {
+      "post": {
+        "operationId": "postSubscriptionsMeResume",
+        "summary": "Keep the membership: undo a cancellation before the period ends",
+        "tags": [
+          "subscriptions"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembershipChangeResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/support/tickets": {
       "get": {
         "operationId": "getSupportTickets",
@@ -26545,6 +31226,11 @@
     "MFA_TOKEN_INVALID": "Your sign-in took too long. Please start again.",
     "MFA_ALREADY_ENABLED": "Two-step sign-in is already set up.",
     "MFA_NOT_STARTED": "Start the set-up again.",
+    "MFA_NOT_ENABLED": "This person has no authenticator to reset. Create a set-up link instead.",
+    "MFA_RESET_SELF": "You cannot reset your own authenticator. Use a recovery code, or ask another super admin.",
+    "STAFF_INVITE_REQUIRED": "To sign in for the first time, or after your authenticator was reset, open the set-up link a super admin gives you.",
+    "STAFF_NOT_ACTIVE": "This staff account is not active.",
+    "STAFF_NOT_FOUND": "Staff member not found.",
     "SECOND_APPROVER_REQUIRED": "A different person must approve this.",
     "COMPANION_NOT_FOUND": "Apply to become a companion first.",
     "PROFILE_UNAVAILABLE": "This profile is not available.",
@@ -26620,6 +31306,35 @@
     "VENUE_NOT_FOUND": "Venue not found.",
     "REPORT_NOT_FOUND": "Report not found.",
     "REPORT_CLOSED": "This report was already decided.",
+    "REVIEW_NOT_AVAILABLE": "You can review a booking after the meeting.",
+    "REVIEW_WINDOW_CLOSED": "The time to review this booking has ended.",
+    "REVIEW_EXISTS": "You have already reviewed this booking.",
+    "REVIEW_NOT_FOUND": "Review not found.",
+    "PLAN_NOT_FOUND": "This plan is not available.",
+    "SUBSCRIPTION_EXISTS": "You already have a membership. Change your plan instead.",
+    "SUBSCRIPTION_NOT_FOUND": "You do not have a membership.",
+    "SUBSCRIPTION_PAST_DUE": "Your last membership payment did not go through. Plan changes are possible once it does.",
+    "SUBSCRIPTION_CANCELLING": "Your membership is set to end. Keep it first, then change the plan.",
+    "SUBSCRIPTION_NOT_CANCELLING": "There is no cancellation to undo.",
+    "SUBSCRIPTION_CHANGED": "Your membership changed meanwhile. Check it and try again.",
+    "UPGRADE_PAYMENT_FAILED": "The payment for the plan change did not go through. Your plan has not changed.",
+    "PAYMENT_PROVIDER_UNAVAILABLE": "Payments are temporarily unavailable. Please try again later.",
+    "MANDATE_NOT_FOUND": "Unknown test mandate.",
+    "MANDATE_ALREADY_ATTEMPTED": "This mandate was already approved or declined.",
+    "ACCOUNT_ON_HOLD": "Your account is on hold. Open Account status to see why and to appeal.",
+    "SIGNUP_NOT_AVAILABLE": "We cannot create an account with these details. If you think this is a mistake, contact support.",
+    "ALREADY_RESTRICTED": "This account is already suspended or banned.",
+    "ACCOUNT_CLOSED": "This account is closed.",
+    "ENFORCEMENT_NOT_FOUND": "Action not found.",
+    "ENFORCEMENT_NOT_ACTIVE": "This is no longer in place.",
+    "APPEAL_EXISTS": "You have already appealed this.",
+    "APPEAL_DECIDED": "This appeal was already decided.",
+    "INDEPENDENT_REVIEWER_REQUIRED": "Someone who was not involved in the decision must review this appeal.",
+    "NOT_BANNED": "Only banned accounts are erased here.",
+    "INVALID_PASSWORD": "That password is not right.",
+    "STAFF_ACCOUNT": "Staff accounts are closed by a super admin in Admin → Staff.",
+    "ACCOUNT_NOT_DELETABLE": "This account cannot be deleted from the app. Contact support.",
+    "ACCOUNT_DELETION_BLOCKED": "Finish or cancel what is still open first.",
     "BOOKING_NOT_FOUND": "Booking not found.",
     "OFFERING_UNAVAILABLE": "This activity is not available at a current rate. Choose another one.",
     "PLUS_ONE_NOT_OPEN": "Plus-One bookings open once ID verification for customers is live.",

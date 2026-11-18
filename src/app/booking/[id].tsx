@@ -5,6 +5,7 @@ import { BackBar } from '@/components/account/BackBar';
 import { PolicyCard, PriceLines, Timeline } from '@/components/bookings/Parts';
 import { CancelSheet, RejectSheet } from '@/components/bookings/Sheets';
 import { CallAndChat } from '@/components/comms/BookingComms';
+import { BookingReviewSection } from '@/components/reviews/BookingReview';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -21,6 +22,7 @@ import { errorView } from '@/lib/errors';
 import { hasReceipt } from '@/lib/support/helpers';
 import { receipt as receiptCopy } from '@/content/support';
 import { formatINR } from '@/lib/money';
+import { customerRatingText } from '@/lib/reviews/helpers';
 import { formatDateTimeIST } from '@/lib/time';
 import { colors, space } from '@/theme';
 
@@ -29,7 +31,9 @@ import { colors, space } from '@/theme';
  * companion: status, when and where, money, the timeline and the actions the
  * API allows (`actions`): pay, accept / decline, check-in, cancel with the
  * refund preview, report an issue. Feature 5: Message (the booking chat) and,
- * inside the call window, a masked Call.
+ * inside the call window, a masked Call. Reviews: once completed, each side
+ * reviews once (BookingReviewSection); a companion sees the customer's average
+ * from companions (only from the public threshold, never made up).
  */
 export default function BookingDetail() {
   const router = useRouter();
@@ -75,6 +79,7 @@ export default function BookingDetail() {
   const answer = b.status === 'AWAITING_COMPANION' ? countdown(b.due.companion_response_due_at, now) : null;
   const payDue = b.status === 'PAYMENT_PENDING' ? countdown(b.due.payment_due_at, now) : null;
   const actions = actionList(b.actions);
+  const customerRating = b.viewer === 'COMPANION' ? customerRatingText(b.customer.rating) : null;
 
   const run = async (key: ActionKey) => {
     if (acting.current) return;
@@ -130,6 +135,7 @@ export default function BookingDetail() {
           <View style={{ flex: 1 }}>
             <Text variant="caption" color={colors.textMuted}>{copy.with}</Text>
             <Text weight="600" color={colors.textStrong}>{other}</Text>
+            {customerRating ? <Text variant="caption" color={colors.textMuted} testID="customer-rating">{customerRating}</Text> : null}
           </View>
         </View>
         <Text variant="caption" color={colors.textMuted}>{copy.when}</Text>
@@ -150,6 +156,8 @@ export default function BookingDetail() {
       </Card>
 
       <CallAndChat booking={b} now={now} />
+
+      <BookingReviewSection booking={b} onDone={setB} onStale={load} />
 
       {isBookingDay(b) ? <Button variant="secondary" onPress={() => router.push({ pathname: '/booking/[id]/day', params: { id: b.id } })}>{copy.day}</Button> : null}
 

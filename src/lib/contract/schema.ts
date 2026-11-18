@@ -1,5 +1,57 @@
 /* GENERATED from contracts/*.json by scripts/contract.mjs. Do not edit; run `npm run contract:gen`. */
 export interface paths {
+    "/api/v1/account/deletion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Whether the account can be deleted now, what blocks it, and the grace period */
+        get: operations["getAccountDeletion"];
+        put?: never;
+        /** Delete the account after the grace period (signing in before then cancels it); ends every session */
+        post: operations["postAccountDeletion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/account/standing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your account status: warnings, suspensions, bans and appeals (works while on hold) */
+        get: operations["getAccountStanding"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/account/standing/{id}/appeal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Appeal a warning, suspension or ban (once, within the appeal window) */
+        post: operations["postAccountStandingByIdAppeal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/appeals": {
         parameters: {
             query?: never;
@@ -300,6 +352,159 @@ export interface paths {
         get: operations["getAdminDisputesByIdTranscript"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/enforcement/{id}/lift": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw a warning, or end a suspension or ban early (a ban needs ts.ban.approve) */
+        post: operations["postAdminEnforcementByIdLift"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/enforcement/appeals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Appeals against warnings, suspensions and bans */
+        get: operations["getAdminEnforcementAppeals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/enforcement/appeals/{id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Uphold or overturn an appeal (never by the original decider or the ban approver) */
+        post: operations["postAdminEnforcementAppealsByIdDecide"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/enforcement/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find a customer or companion by email, mobile, name or id */
+        get: operations["getAdminEnforcementUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/enforcement/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A person's warnings, suspensions, bans, strikes, appeals and pending proposals */
+        get: operations["getAdminEnforcementUsersById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/enforcement/users/{id}/ban": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Propose a permanent ban (a different person with ts.ban.approve approves it) */
+        post: operations["postAdminEnforcementUsersByIdBan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/enforcement/users/{id}/erase": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Erase a banned person's personal data on request (the ban blocklist stays) */
+        post: operations["postAdminEnforcementUsersByIdErase"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/enforcement/users/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suspend now for a number of days; cancels upcoming bookings with full refunds */
+        post: operations["postAdminEnforcementUsersByIdSuspend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/enforcement/users/{id}/warn": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Warn (a strike; repeated warnings open a suspension proposal) */
+        post: operations["postAdminEnforcementUsersByIdWarn"];
         delete?: never;
         options?: never;
         head?: never;
@@ -784,6 +989,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reviews held by the content filter, reported, or hidden (staff) */
+        get: operations["getAdminReviews"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/reviews/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish a review, remove only its comment, or hide it; closes its open reports (audit-logged) */
+        post: operations["postAdminReviewsByIdDecision"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/settings/pricing": {
         parameters: {
             query?: never;
@@ -796,6 +1035,108 @@ export interface paths {
         put?: never;
         /** Propose a settings change (a second approver with settings.pricing.edit applies it) */
         post: operations["postAdminSettingsPricing"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/staff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Staff accounts with their two-step sign-in state */
+        get: operations["getAdminStaff"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/staff/{id}/enrollment-invite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a one-time set-up link for a staff member without an authenticator (shown once, never emailed) */
+        post: operations["postAdminStaffByIdEnrollmentInvite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/staff/{id}/mfa-reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ask to reset a staff member's authenticator (a different super admin approves it) */
+        post: operations["postAdminStaffByIdMfaReset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/subscription-plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Customer membership plans with live subscriber counts */
+        get: operations["getAdminSubscriptionPlans"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/subscription-plans/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change a plan (new prices apply to new memberships and plan changes; audit-logged) */
+        patch: operations["patchAdminSubscriptionPlansById"];
+        trace?: never;
+    };
+    "/api/v1/admin/subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Customer memberships (live by default) and totals */
+        get: operations["getAdminSubscriptions"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1204,7 +1545,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Log in step 1: password; then an OTP challenge, or a TOTP step for enrolled staff */
+        /** Log in step 1: password; then an OTP challenge, or a TOTP step for enrolled staff (staff without an authenticator: 403 STAFF_INVITE_REQUIRED) */
         post: operations["postAuthLogin"];
         delete?: never;
         options?: never;
@@ -1240,6 +1581,23 @@ export interface paths {
         get: operations["getAuthMe"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/mfa/invite/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Staff first sign-in (or after an MFA reset): password + one-time set-up link; the session can only enrol */
+        post: operations["postAuthMfaInviteLogin"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1633,6 +1991,23 @@ export interface paths {
         put?: never;
         /** Report an issue or a no-show: the companion earnings are held for review */
         post: operations["postBookingsByIdReportIssue"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Review a completed meeting once (1-5 stars, comment, tags). Double-blind: the other side sees it after they review or the window ends */
+        post: operations["postBookingsByIdReview"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2222,6 +2597,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/companion/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The companion's own visible reviews and average (public from reviews.public_min_count) */
+        get: operations["getCompanionReviews"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/companion/submit": {
         parameters: {
             query?: never;
@@ -2530,6 +2922,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/discovery/companions/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A companion's public reviews, newest first (empty until reviews.public_min_count) */
+        get: operations["getDiscoveryCompanionsByIdReviews"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/discovery/companions/{id}/save": {
         parameters: {
             query?: never;
@@ -2769,6 +3178,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/payments/mock/mandates/{mandateId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** TEST AUTOPAY (no real money): the mandate on the mock gateway */
+        get: operations["getPaymentsMockMandatesByMandateId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/mock/mandates/{mandateId}/authorize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** TEST AUTOPAY (no real money): approve or decline the mandate with a scenario */
+        post: operations["postPaymentsMockMandatesByMandateIdAuthorize"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/payments/mock/orders/{orderId}": {
         parameters: {
             query?: never;
@@ -2814,6 +3257,23 @@ export interface paths {
         put?: never;
         /** TEST PAYMENT (no real money): deliver webhooks the mock gateway held back (LATE_SUCCESS) */
         post: operations["postPaymentsMockOrdersByOrderIdFlush"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reviews/{id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Report a review to Trust & Safety */
+        post: operations["postReviewsByIdReport"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3002,6 +3462,75 @@ export interface paths {
         get: operations["getStorageLocalViewByToken"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Membership plans, the current membership, trial eligibility and receipts */
+        get: operations["getSubscriptions"];
+        put?: never;
+        /** Start a membership: returns the autopay mandate to approve (trial or first charge follows approval) */
+        post: operations["postSubscriptions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/me/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel: autopay off, benefits until the period ends (at once if a payment is overdue) */
+        post: operations["postSubscriptionsMeCancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/me/change": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change plan: upgrade now (prorated charge), downgrade at the next renewal, same plan clears a booked downgrade */
+        post: operations["postSubscriptionsMeChange"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/me/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Keep the membership: undo a cancellation before the period ends */
+        post: operations["postSubscriptionsMeResume"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3201,9 +3730,9 @@ export interface components {
         /** @enum {string} */
         RoleCode: "CUSTOMER" | "COMPANION" | "SUPER_ADMIN" | "OPS_MANAGER" | "SENIOR_OPS" | "VERIFICATION_EXECUTIVE" | "FINANCE_EXECUTIVE" | "TS_AGENT" | "TS_MANAGER" | "SUPPORT_EXECUTIVE" | "SAFETY_DESK";
         /** @enum {string} */
-        UserStatus: "PENDING" | "ACTIVE" | "SUSPENDED" | "BANNED" | "DEACTIVATED";
+        UserStatus: "PENDING" | "ACTIVE" | "SUSPENDED" | "BANNED" | "DEACTIVATED" | "PENDING_DELETION";
         /** @enum {string} */
-        ErrorCode: "VALIDATION_FAILED" | "BAD_JSON" | "INVALID_INPUT" | "INVALID_REFERENCE" | "CONFLICT" | "NOT_FOUND" | "INTERNAL_ERROR" | "RATE_LIMITED" | "INVALID_STATUS_TRANSITION" | "CONTRACT_MISMATCH" | "AUTH_REQUIRED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "SESSION_ENDED" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ACCOUNT_SUSPENDED" | "ACCOUNT_EXISTS" | "ACCOUNT_NOT_FOUND" | "PHONE_NOT_VERIFIED" | "EMAIL_NOT_VERIFIED" | "INELIGIBLE_AGE" | "LINK_INVALID" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_USED" | "OTP_LOCKED" | "OTP_COOLDOWN" | "OTP_NOT_FOUND" | "OTP_RESEND_LIMIT" | "OTP_RESEND_TOO_SOON" | "OTP_SEND_LIMIT" | "OTP_SEND_FAILED" | "STAFF_ONLY" | "IP_NOT_ALLOWED" | "PERMISSION_DENIED" | "ROLE_REQUIRED" | "MFA_ENROLLMENT_REQUIRED" | "MFA_REQUIRED" | "MFA_STEP_UP_REQUIRED" | "MFA_CODE_INVALID" | "MFA_TOKEN_INVALID" | "MFA_ALREADY_ENABLED" | "MFA_NOT_STARTED" | "SECOND_APPROVER_REQUIRED" | "COMPANION_NOT_FOUND" | "PROFILE_UNAVAILABLE" | "APPLICATION_LOCKED" | "APPLICATION_INCOMPLETE" | "PROFILE_LOCKED" | "REAPPLY_BLOCKED" | "REAPPLY_COOLDOWN" | "CONTENT_NOT_ALLOWED" | "BELOW_CATEGORY_MIN_AGE" | "ACTIVITY_CATEGORY_MISMATCH" | "PHOTO_LIMIT" | "PHOTO_MINIMUM" | "PHOTO_NOT_FOUND" | "UPLOAD_NOT_FOUND" | "UPLOAD_ALREADY_RECEIVED" | "UPLOAD_MISMATCH" | "UPLOAD_NOT_PENDING" | "UPLOAD_MISSING" | "UPLOAD_CORRUPTED" | "UPLOAD_URL_EXPIRED" | "UPLOAD_TYPE_MISMATCH" | "UPLOAD_TOO_LARGE" | "UPLOAD_EMPTY" | "FILE_TOO_LARGE" | "IMAGE_UNREADABLE" | "UNSUPPORTED_IMAGE_TYPE" | "IMAGE_TOO_SMALL" | "VIEW_URL_EXPIRED" | "DOCUMENT_TYPE_REQUIRED" | "DOCUMENT_TYPE_UNAVAILABLE" | "AADHAAR_IMAGE_NOT_ALLOWED" | "VERIFICATION_NOT_OPEN" | "AUTO_CHECK_COOLDOWN" | "MANUAL_REVIEW_REQUIRED" | "LIVENESS_BY_UPLOAD" | "LIVENESS_SESSION_MISMATCH" | "DIGILOCKER_UNAVAILABLE" | "DIGILOCKER_NOT_STARTED" | "DIGILOCKER_FAILED" | "KYC_PROVIDER_NOT_CONFIGURED" | "INVALID_SIGNATURE" | "VERIFICATION_NOT_FOUND" | "NOT_IN_REVIEW" | "CLAIMED_BY_OTHER" | "CLAIM_REQUIRED" | "NOT_CLAIMED_BY_YOU" | "BLOCKED_BY_FLAG" | "FACE_MATCH_REQUIRED" | "APPROVAL_ALREADY_PENDING" | "APPROVAL_NOT_FOUND" | "APPROVAL_NOT_PENDING" | "APPROVAL_EXPIRED" | "NOT_AUTO_REJECTED" | "NEWER_ATTEMPT_EXISTS" | "DOCUMENT_NOT_FOUND" | "DOCUMENT_UNAVAILABLE" | "FLAG_NOT_FOUND" | "FLAG_NOT_OPEN" | "NOT_SUSPENDED" | "NOT_PENDING" | "CATEGORY_NOT_FOUND" | "NOT_APPROVED" | "NOT_READY" | "SETUP_INCOMPLETE" | "REVERIFICATION_DUE" | "NOT_LIVE" | "NOT_PAUSED" | "RATE_OUT_OF_BAND" | "AVAILABILITY_OVERLAP" | "EXCEPTION_NOT_FOUND" | "ONBOARDING_REQUIRED" | "VENUE_NOT_FOUND" | "REPORT_NOT_FOUND" | "REPORT_CLOSED" | "BOOKING_NOT_FOUND" | "OFFERING_UNAVAILABLE" | "PLUS_ONE_NOT_OPEN" | "VENUE_NOT_ALLOWED" | "VENUE_UNAVAILABLE" | "INSTANT_NOT_AVAILABLE" | "DURATION_OUT_OF_RANGE" | "TOO_SOON" | "TOO_FAR_AHEAD" | "DATE_BLOCKED" | "OUTSIDE_AVAILABILITY" | "DAILY_LIMIT_REACHED" | "SLOT_UNAVAILABLE" | "CUSTOMER_TIME_CONFLICT" | "QUOTE_NOT_FOUND" | "QUOTE_EXPIRED" | "QUOTE_ALREADY_USED" | "IDEMPOTENCY_KEY_REQUIRED" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_MISMATCH" | "ACCOUNT_RESTRICTED" | "CUSTOMER_ONLY" | "COMPANION_ONLY" | "COMPANION_NOT_LIVE" | "REQUEST_EXPIRED" | "REQUEST_WITHDRAWN" | "NOT_PAYABLE" | "PAYMENT_WINDOW_CLOSED" | "PAYMENT_IN_PROGRESS" | "PAYMENT_ALREADY_ATTEMPTED" | "PAYMENT_NOT_FOUND" | "PAYMENT_PROVIDER_NOT_CONFIGURED" | "NOT_CANCELLABLE" | "USE_REJECT" | "MEETING_STARTED" | "NOTHING_TO_REFUND" | "REFUND_TOO_LARGE" | "REFUND_NOT_PENDING" | "CHECK_IN_NOT_AVAILABLE" | "CHECK_IN_NOT_OPEN" | "CHECK_IN_CLOSED" | "CHECK_OUT_NOT_AVAILABLE" | "ISSUE_WINDOW_CLOSED" | "NOT_DISPUTED" | "DISPUTE_ALREADY_RESOLVED" | "WEBHOOK_SIGNATURE_INVALID" | "WEBHOOK_INVALID" | "WEBHOOK_PROCESSING_FAILED" | "CONVERSATION_NOT_FOUND" | "CONVERSATION_BLOCKED" | "CHAT_CLOSED" | "MESSAGE_RATE_LIMITED" | "MESSAGE_NOT_FOUND" | "CANNOT_REPORT_OWN" | "MESSAGE_NOT_HELD" | "DEVICE_ID_REQUIRED" | "CALL_NOT_AVAILABLE" | "CALL_WINDOW_CLOSED" | "CALL_BLOCKED" | "CALL_LIMIT_REACHED" | "CALL_PROVIDER_NOT_CONFIGURED" | "CALL_SESSION_NOT_FOUND" | "DESK_PHONE_NOT_SET" | "NO_PHONE" | "TRUSTED_CONTACT_LIMIT" | "TRUSTED_CONTACT_EXISTS" | "TRUSTED_CONTACT_NOT_FOUND" | "INVITE_NOT_FOUND" | "LOCATION_WINDOW_CLOSED" | "LOCATION_SHARING_OFF" | "LOCATION_TOO_FREQUENT" | "SHARE_NOT_FOUND" | "SHARE_ENDED" | "INCIDENT_NOT_FOUND" | "INCIDENT_ALREADY_ACKNOWLEDGED" | "INCIDENT_NOT_ACKNOWLEDGED" | "INCIDENT_CLOSED" | "NO_OTHER_PARTY" | "ALREADY_FROZEN" | "USER_NOT_FOUND" | "APPEAL_ALREADY_DECIDED" | "APPEAL_ALREADY_SUBMITTED" | "APPEAL_NOT_FOUND" | "APPEAL_OUTCOME_NOT_SUPPORTED" | "APPEAL_REVIEWER_CONFLICT" | "APPEAL_WINDOW_CLOSED" | "COMPANION_PROFILE_NOT_FOUND" | "COMPANION_STILL_SUSPENDED" | "DISPUTE_AWAITING_RESPONSE" | "DISPUTE_CLAIMED_BY_OTHER" | "DISPUTE_CLOSED_FOR_STATEMENTS" | "DISPUTE_NOT_APPEALABLE" | "DISPUTE_NOT_CLAIMED" | "DISPUTE_NOT_DECIDABLE" | "DISPUTE_NOT_FOUND" | "DISPUTE_RESPONSE_CLOSED" | "EARNING_TRANSITION_INVALID" | "NO_RECEIPT_YET" | "PAYOUT_ACCOUNT_CHANGE_IN_PROGRESS" | "PAYOUT_ACCOUNT_MISSING" | "PAYOUT_ACCOUNT_NOT_FOUND" | "PAYOUT_ACCOUNT_NOT_IN_REVIEW" | "PAYOUT_ACCOUNT_UNCHANGED" | "PAYOUT_BATCH_NOT_AWAITING_APPROVAL" | "PAYOUT_BATCH_NOT_FOUND" | "PAYOUT_HOLD_NOT_ACTIVE" | "PAYOUT_HOLD_NOT_FOUND" | "PAYOUT_NOT_FOUND" | "PAYOUT_NOT_RETRYABLE" | "PAYOUT_PROVIDER_NOT_CONFIGURED" | "REFUND_ALREADY_RE_RAISED" | "REFUND_DISPUTE_DECIDE_AGAIN" | "REFUND_NOT_FOUND" | "REFUND_NOT_REJECTED" | "STAFF_CANNOT_CHANGE_PAYOUT_ACCOUNT" | "STATEMENT_ALREADY_SUBMITTED" | "TICKET_ASSIGNED_TO_OTHER" | "TICKET_CLOSED" | "TICKET_NOT_FOUND";
+        ErrorCode: "VALIDATION_FAILED" | "BAD_JSON" | "INVALID_INPUT" | "INVALID_REFERENCE" | "CONFLICT" | "NOT_FOUND" | "INTERNAL_ERROR" | "RATE_LIMITED" | "INVALID_STATUS_TRANSITION" | "CONTRACT_MISMATCH" | "AUTH_REQUIRED" | "TOKEN_EXPIRED" | "TOKEN_INVALID" | "SESSION_ENDED" | "INVALID_CREDENTIALS" | "ACCOUNT_LOCKED" | "ACCOUNT_DISABLED" | "ACCOUNT_SUSPENDED" | "ACCOUNT_EXISTS" | "ACCOUNT_NOT_FOUND" | "PHONE_NOT_VERIFIED" | "EMAIL_NOT_VERIFIED" | "INELIGIBLE_AGE" | "LINK_INVALID" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_USED" | "OTP_LOCKED" | "OTP_COOLDOWN" | "OTP_NOT_FOUND" | "OTP_RESEND_LIMIT" | "OTP_RESEND_TOO_SOON" | "OTP_SEND_LIMIT" | "OTP_SEND_FAILED" | "STAFF_ONLY" | "IP_NOT_ALLOWED" | "PERMISSION_DENIED" | "ROLE_REQUIRED" | "MFA_ENROLLMENT_REQUIRED" | "MFA_REQUIRED" | "MFA_STEP_UP_REQUIRED" | "MFA_CODE_INVALID" | "MFA_TOKEN_INVALID" | "MFA_ALREADY_ENABLED" | "MFA_NOT_STARTED" | "MFA_NOT_ENABLED" | "MFA_RESET_SELF" | "STAFF_INVITE_REQUIRED" | "STAFF_NOT_ACTIVE" | "STAFF_NOT_FOUND" | "SECOND_APPROVER_REQUIRED" | "COMPANION_NOT_FOUND" | "PROFILE_UNAVAILABLE" | "APPLICATION_LOCKED" | "APPLICATION_INCOMPLETE" | "PROFILE_LOCKED" | "REAPPLY_BLOCKED" | "REAPPLY_COOLDOWN" | "CONTENT_NOT_ALLOWED" | "BELOW_CATEGORY_MIN_AGE" | "ACTIVITY_CATEGORY_MISMATCH" | "PHOTO_LIMIT" | "PHOTO_MINIMUM" | "PHOTO_NOT_FOUND" | "UPLOAD_NOT_FOUND" | "UPLOAD_ALREADY_RECEIVED" | "UPLOAD_MISMATCH" | "UPLOAD_NOT_PENDING" | "UPLOAD_MISSING" | "UPLOAD_CORRUPTED" | "UPLOAD_URL_EXPIRED" | "UPLOAD_TYPE_MISMATCH" | "UPLOAD_TOO_LARGE" | "UPLOAD_EMPTY" | "FILE_TOO_LARGE" | "IMAGE_UNREADABLE" | "UNSUPPORTED_IMAGE_TYPE" | "IMAGE_TOO_SMALL" | "VIEW_URL_EXPIRED" | "DOCUMENT_TYPE_REQUIRED" | "DOCUMENT_TYPE_UNAVAILABLE" | "AADHAAR_IMAGE_NOT_ALLOWED" | "VERIFICATION_NOT_OPEN" | "AUTO_CHECK_COOLDOWN" | "MANUAL_REVIEW_REQUIRED" | "LIVENESS_BY_UPLOAD" | "LIVENESS_SESSION_MISMATCH" | "DIGILOCKER_UNAVAILABLE" | "DIGILOCKER_NOT_STARTED" | "DIGILOCKER_FAILED" | "KYC_PROVIDER_NOT_CONFIGURED" | "INVALID_SIGNATURE" | "VERIFICATION_NOT_FOUND" | "NOT_IN_REVIEW" | "CLAIMED_BY_OTHER" | "CLAIM_REQUIRED" | "NOT_CLAIMED_BY_YOU" | "BLOCKED_BY_FLAG" | "FACE_MATCH_REQUIRED" | "APPROVAL_ALREADY_PENDING" | "APPROVAL_NOT_FOUND" | "APPROVAL_NOT_PENDING" | "APPROVAL_EXPIRED" | "NOT_AUTO_REJECTED" | "NEWER_ATTEMPT_EXISTS" | "DOCUMENT_NOT_FOUND" | "DOCUMENT_UNAVAILABLE" | "FLAG_NOT_FOUND" | "FLAG_NOT_OPEN" | "NOT_SUSPENDED" | "NOT_PENDING" | "CATEGORY_NOT_FOUND" | "NOT_APPROVED" | "NOT_READY" | "SETUP_INCOMPLETE" | "REVERIFICATION_DUE" | "NOT_LIVE" | "NOT_PAUSED" | "RATE_OUT_OF_BAND" | "AVAILABILITY_OVERLAP" | "EXCEPTION_NOT_FOUND" | "ONBOARDING_REQUIRED" | "VENUE_NOT_FOUND" | "REPORT_NOT_FOUND" | "REPORT_CLOSED" | "REVIEW_NOT_AVAILABLE" | "REVIEW_WINDOW_CLOSED" | "REVIEW_EXISTS" | "REVIEW_NOT_FOUND" | "PLAN_NOT_FOUND" | "SUBSCRIPTION_EXISTS" | "SUBSCRIPTION_NOT_FOUND" | "SUBSCRIPTION_PAST_DUE" | "SUBSCRIPTION_CANCELLING" | "SUBSCRIPTION_NOT_CANCELLING" | "SUBSCRIPTION_CHANGED" | "UPGRADE_PAYMENT_FAILED" | "PAYMENT_PROVIDER_UNAVAILABLE" | "MANDATE_NOT_FOUND" | "MANDATE_ALREADY_ATTEMPTED" | "ACCOUNT_ON_HOLD" | "SIGNUP_NOT_AVAILABLE" | "ALREADY_RESTRICTED" | "ACCOUNT_CLOSED" | "ENFORCEMENT_NOT_FOUND" | "ENFORCEMENT_NOT_ACTIVE" | "APPEAL_EXISTS" | "APPEAL_DECIDED" | "INDEPENDENT_REVIEWER_REQUIRED" | "NOT_BANNED" | "INVALID_PASSWORD" | "STAFF_ACCOUNT" | "ACCOUNT_NOT_DELETABLE" | "ACCOUNT_DELETION_BLOCKED" | "BOOKING_NOT_FOUND" | "OFFERING_UNAVAILABLE" | "PLUS_ONE_NOT_OPEN" | "VENUE_NOT_ALLOWED" | "VENUE_UNAVAILABLE" | "INSTANT_NOT_AVAILABLE" | "DURATION_OUT_OF_RANGE" | "TOO_SOON" | "TOO_FAR_AHEAD" | "DATE_BLOCKED" | "OUTSIDE_AVAILABILITY" | "DAILY_LIMIT_REACHED" | "SLOT_UNAVAILABLE" | "CUSTOMER_TIME_CONFLICT" | "QUOTE_NOT_FOUND" | "QUOTE_EXPIRED" | "QUOTE_ALREADY_USED" | "IDEMPOTENCY_KEY_REQUIRED" | "IDEMPOTENCY_KEY_REUSED" | "IDEMPOTENCY_MISMATCH" | "ACCOUNT_RESTRICTED" | "CUSTOMER_ONLY" | "COMPANION_ONLY" | "COMPANION_NOT_LIVE" | "REQUEST_EXPIRED" | "REQUEST_WITHDRAWN" | "NOT_PAYABLE" | "PAYMENT_WINDOW_CLOSED" | "PAYMENT_IN_PROGRESS" | "PAYMENT_ALREADY_ATTEMPTED" | "PAYMENT_NOT_FOUND" | "PAYMENT_PROVIDER_NOT_CONFIGURED" | "NOT_CANCELLABLE" | "USE_REJECT" | "MEETING_STARTED" | "NOTHING_TO_REFUND" | "REFUND_TOO_LARGE" | "REFUND_NOT_PENDING" | "CHECK_IN_NOT_AVAILABLE" | "CHECK_IN_NOT_OPEN" | "CHECK_IN_CLOSED" | "CHECK_OUT_NOT_AVAILABLE" | "ISSUE_WINDOW_CLOSED" | "NOT_DISPUTED" | "DISPUTE_ALREADY_RESOLVED" | "WEBHOOK_SIGNATURE_INVALID" | "WEBHOOK_INVALID" | "WEBHOOK_PROCESSING_FAILED" | "CONVERSATION_NOT_FOUND" | "CONVERSATION_BLOCKED" | "CHAT_CLOSED" | "MESSAGE_RATE_LIMITED" | "MESSAGE_NOT_FOUND" | "CANNOT_REPORT_OWN" | "MESSAGE_NOT_HELD" | "DEVICE_ID_REQUIRED" | "CALL_NOT_AVAILABLE" | "CALL_WINDOW_CLOSED" | "CALL_BLOCKED" | "CALL_LIMIT_REACHED" | "CALL_PROVIDER_NOT_CONFIGURED" | "CALL_SESSION_NOT_FOUND" | "DESK_PHONE_NOT_SET" | "NO_PHONE" | "TRUSTED_CONTACT_LIMIT" | "TRUSTED_CONTACT_EXISTS" | "TRUSTED_CONTACT_NOT_FOUND" | "INVITE_NOT_FOUND" | "LOCATION_WINDOW_CLOSED" | "LOCATION_SHARING_OFF" | "LOCATION_TOO_FREQUENT" | "SHARE_NOT_FOUND" | "SHARE_ENDED" | "INCIDENT_NOT_FOUND" | "INCIDENT_ALREADY_ACKNOWLEDGED" | "INCIDENT_NOT_ACKNOWLEDGED" | "INCIDENT_CLOSED" | "NO_OTHER_PARTY" | "ALREADY_FROZEN" | "USER_NOT_FOUND" | "APPEAL_ALREADY_DECIDED" | "APPEAL_ALREADY_SUBMITTED" | "APPEAL_NOT_FOUND" | "APPEAL_OUTCOME_NOT_SUPPORTED" | "APPEAL_REVIEWER_CONFLICT" | "APPEAL_WINDOW_CLOSED" | "COMPANION_PROFILE_NOT_FOUND" | "COMPANION_STILL_SUSPENDED" | "DISPUTE_AWAITING_RESPONSE" | "DISPUTE_CLAIMED_BY_OTHER" | "DISPUTE_CLOSED_FOR_STATEMENTS" | "DISPUTE_NOT_APPEALABLE" | "DISPUTE_NOT_CLAIMED" | "DISPUTE_NOT_DECIDABLE" | "DISPUTE_NOT_FOUND" | "DISPUTE_RESPONSE_CLOSED" | "EARNING_TRANSITION_INVALID" | "NO_RECEIPT_YET" | "PAYOUT_ACCOUNT_CHANGE_IN_PROGRESS" | "PAYOUT_ACCOUNT_MISSING" | "PAYOUT_ACCOUNT_NOT_FOUND" | "PAYOUT_ACCOUNT_NOT_IN_REVIEW" | "PAYOUT_ACCOUNT_UNCHANGED" | "PAYOUT_BATCH_NOT_AWAITING_APPROVAL" | "PAYOUT_BATCH_NOT_FOUND" | "PAYOUT_HOLD_NOT_ACTIVE" | "PAYOUT_HOLD_NOT_FOUND" | "PAYOUT_NOT_FOUND" | "PAYOUT_NOT_RETRYABLE" | "PAYOUT_PROVIDER_NOT_CONFIGURED" | "REFUND_ALREADY_RE_RAISED" | "REFUND_DISPUTE_DECIDE_AGAIN" | "REFUND_NOT_FOUND" | "REFUND_NOT_REJECTED" | "STAFF_CANNOT_CHANGE_PAYOUT_ACCOUNT" | "STATEMENT_ALREADY_SUBMITTED" | "TICKET_ASSIGNED_TO_OTHER" | "TICKET_CLOSED" | "TICKET_NOT_FOUND";
         ErrorResponse: {
             error: {
                 /** @description Stable machine code; see ErrorCode and contracts/errors.json */
@@ -3262,6 +3791,8 @@ export interface components {
                 complete: boolean;
                 next_step: components["schemas"]["OnboardingNextStep"] | null;
             };
+            /** @description Suspended or banned: only /auth/me, logout and /account/standing work; show the account-on-hold screen */
+            on_hold: boolean;
             companion: components["schemas"]["CompanionSummary"] | null;
             mfa: components["schemas"]["StaffMfaState"] | null;
         };
@@ -3965,6 +4496,110 @@ export interface components {
         TimeWindow: "morning" | "afternoon" | "evening";
         /** @enum {string} */
         DiscoverySort: "relevance" | "price_asc" | "price_desc" | "soonest";
+        /** @enum {string} */
+        ReviewStatus: "PUBLISHED" | "HIDDEN" | "FLAGGED";
+        /** @enum {string} */
+        ReviewTag: "PUNCTUAL" | "GREAT_CONVERSATION" | "RESPECTFUL" | "KNOWLEDGEABLE" | "WARM_AND_FRIENDLY" | "GOOD_LISTENER" | "WELL_PLANNED" | "CLEAR_PLANS" | "FRIENDLY" | "GOOD_VENUE_CHOICE" | "KEPT_TO_BOUNDARIES";
+        /** @enum {string} */
+        ReviewReportReason: "FAKE_OR_MISLEADING" | "OFFENSIVE" | "CONTACT_DETAILS" | "NOT_ABOUT_THE_MEETING" | "PRIVATE_INFORMATION" | "OTHER";
+        /** @description Only from reviews.public_min_count visible reviews; otherwise null */
+        Rating: {
+            /** @description 1.0-5.0, one decimal */
+            average: number;
+            count: number;
+        };
+        CompanionReviewsResponse: {
+            rating: components["schemas"]["Rating"] | null;
+            items: {
+                /** Format: uuid */
+                id: string;
+                rating: number;
+                comment: string | null;
+                tags: components["schemas"]["ReviewTag"][];
+                /** @description First name only */
+                reviewer: string;
+                activity: string;
+                /** @description YYYY-MM of the meeting */
+                month: string;
+                /** @description ISO 8601 date-time (UTC) */
+                released_at: string;
+            }[];
+            next_cursor: string | null;
+        };
+        OwnReviewsResponse: {
+            /** @description From the first visible review */
+            rating: components["schemas"]["Rating"] | null;
+            /** @description Customers see the average and reviews */
+            public: boolean;
+            min_count: number;
+            items: {
+                /** Format: uuid */
+                id: string;
+                rating: number;
+                comment: string | null;
+                tags: components["schemas"]["ReviewTag"][];
+                /** @description First name only */
+                reviewer: string;
+                activity: string;
+                /** @description YYYY-MM of the meeting */
+                month: string;
+                /** @description ISO 8601 date-time (UTC) */
+                released_at: string;
+            }[];
+            next_cursor: string | null;
+        };
+        AdminReviewsResponse: {
+            /** @enum {string} */
+            queue: "HELD" | "REPORTED" | "HIDDEN";
+            items: {
+                /** Format: uuid */
+                id: string;
+                booking: {
+                    /** Format: uuid */
+                    id: string;
+                    ref: string;
+                };
+                /** @enum {string} */
+                reviewer_role: "CUSTOMER" | "COMPANION";
+                reviewer: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                };
+                reviewee: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                };
+                companion: {
+                    /** Format: uuid */
+                    id: string;
+                    display_name: string;
+                };
+                rating: number;
+                comment: string | null;
+                tags: components["schemas"]["ReviewTag"][];
+                status: components["schemas"]["ReviewStatus"];
+                flag_codes: string[];
+                hidden_reason: string | null;
+                released: boolean;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                reports: {
+                    /** Format: uuid */
+                    id: string;
+                    reason_code: string;
+                    note: string | null;
+                    /** @description ISO 8601 date-time (UTC) */
+                    created_at: string;
+                }[];
+            }[];
+        };
+        ReviewDecisionResponse: {
+            /** Format: uuid */
+            id: string;
+            status: components["schemas"]["ReviewStatus"];
+        };
         DiscoveryCard: {
             /** Format: uuid */
             id: string;
@@ -3986,6 +4621,8 @@ export interface components {
             from_paise: number;
             next_available_at: string | null;
             verified: boolean;
+            rating: components["schemas"]["Rating"] | null;
+            /** @description True while there is no public rating */
             new_on_sydecrew: boolean;
         };
         DiscoveryListResponse: {
@@ -4052,6 +4689,8 @@ export interface components {
             /** @description YYYY-MM */
             verified_since: string | null;
             verified: boolean;
+            rating: components["schemas"]["Rating"] | null;
+            /** @description True while there is no public rating */
             new_on_sydecrew: boolean;
             meeting_rule: string;
             saved?: boolean;
@@ -4294,6 +4933,10 @@ export interface components {
             /** @description Money in paise (₹1 = 100) */
             companion_earnings_paise: number;
             is_repeat: boolean;
+            /** @description Set when member prices applied (discount_paise, and a waived service fee) */
+            member_plan_name: string | null;
+            /** @description The service fee a member did not pay (before GST); 0 when nothing was waived */
+            member_fee_waived_paise: number;
         };
         BookingQuoteResponse: {
             quote_id: string;
@@ -4366,6 +5009,8 @@ export interface components {
             };
             customer: {
                 first_name: string;
+                /** @description Companions only: the customer's average from companions' private reviews */
+                rating: components["schemas"]["Rating"] | null;
             };
             venue: {
                 /** Format: uuid */
@@ -4438,6 +5083,29 @@ export interface components {
                 outcome: string | null;
             } | null;
             dispute_window_ends_at: string | null;
+            review: {
+                /** @description Null until the meeting is completed */
+                window_ends_at: string | null;
+                /** @description Tags this viewer may pick */
+                tags: components["schemas"]["ReviewTag"][];
+                mine: {
+                    rating: number;
+                    comment: string | null;
+                    tags: components["schemas"]["ReviewTag"][];
+                    status: components["schemas"]["ReviewStatus"];
+                    visible: boolean;
+                    /** @description ISO 8601 date-time (UTC) */
+                    submitted_at: string;
+                } | null;
+                /** @description Companions only: the customer's review, once released */
+                theirs: {
+                    rating: number;
+                    comment: string | null;
+                    tags: components["schemas"]["ReviewTag"][];
+                    /** @description ISO 8601 date-time (UTC) */
+                    submitted_at: string;
+                } | null;
+            };
             timeline: {
                 from: components["schemas"]["BookingStatus"] | null;
                 to: components["schemas"]["BookingStatus"];
@@ -4464,6 +5132,7 @@ export interface components {
                 can_check_in: boolean;
                 can_check_out: boolean;
                 can_report_issue: boolean;
+                can_review: boolean;
             };
         };
         BookingResponse: {
@@ -4623,6 +5292,8 @@ export interface components {
             };
             customer: {
                 first_name: string;
+                /** @description Companions only: the customer's average from companions' private reviews */
+                rating: components["schemas"]["Rating"] | null;
             };
             venue: {
                 /** Format: uuid */
@@ -4695,6 +5366,29 @@ export interface components {
                 outcome: string | null;
             } | null;
             dispute_window_ends_at: string | null;
+            review: {
+                /** @description Null until the meeting is completed */
+                window_ends_at: string | null;
+                /** @description Tags this viewer may pick */
+                tags: components["schemas"]["ReviewTag"][];
+                mine: {
+                    rating: number;
+                    comment: string | null;
+                    tags: components["schemas"]["ReviewTag"][];
+                    status: components["schemas"]["ReviewStatus"];
+                    visible: boolean;
+                    /** @description ISO 8601 date-time (UTC) */
+                    submitted_at: string;
+                } | null;
+                /** @description Companions only: the customer's review, once released */
+                theirs: {
+                    rating: number;
+                    comment: string | null;
+                    tags: components["schemas"]["ReviewTag"][];
+                    /** @description ISO 8601 date-time (UTC) */
+                    submitted_at: string;
+                } | null;
+            };
             timeline: {
                 from: components["schemas"]["BookingStatus"] | null;
                 to: components["schemas"]["BookingStatus"];
@@ -4721,6 +5415,7 @@ export interface components {
                 can_check_in: boolean;
                 can_check_out: boolean;
                 can_report_issue: boolean;
+                can_review: boolean;
             };
             money_staff: {
                 /** @description Money in paise (₹1 = 100) */
@@ -6203,6 +6898,417 @@ export interface components {
                 note: string;
             };
         };
+        StaffListResponse: {
+            items: {
+                /** Format: uuid */
+                id: string;
+                full_name: string;
+                email: string;
+                status: components["schemas"]["UserStatus"];
+                roles: components["schemas"]["RoleCode"][];
+                mfa_enrolled: boolean;
+                mfa_enrolled_at: string | null;
+                last_login_at: string | null;
+                /** @description An open set-up link (the link itself is shown only once, when created) */
+                invite_expires_at: string | null;
+                pending_reset: {
+                    /** Format: uuid */
+                    approval_request_id: string;
+                    /** @description ISO 8601 date-time (UTC) */
+                    requested_at: string;
+                } | null;
+            }[];
+        };
+        StaffInviteResponse: {
+            /** @description Shown once. Hand it to the person directly; it is never emailed */
+            link: string;
+            /** @description ISO 8601 date-time (UTC) */
+            expires_at: string;
+        };
+        StaffMfaResetRequestedResponse: {
+            /** @constant */
+            status: "PENDING_SECOND_APPROVAL";
+            /** Format: uuid */
+            approval_request_id: string;
+        };
+        /** @enum {string} */
+        SubscriptionStatus: "INCOMPLETE" | "TRIALING" | "ACTIVE" | "PAST_DUE" | "CANCELLED" | "EXPIRED" | "SUSPENDED";
+        /** @enum {string} */
+        MockMandateScenario: "AUTHORIZED" | "DECLINED" | "RENEWAL_FAILS_ONCE" | "CHARGES_FAIL";
+        MembershipPlan: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            name: string;
+            description: string | null;
+            /** @description Per month, GST included */
+            price_paise: number;
+            billing_interval: string;
+            trial_days: number;
+            booking_discount_percent: number;
+            service_fee_waived: boolean;
+            benefits: string[];
+        };
+        Membership: {
+            /** Format: uuid */
+            id: string;
+            status: components["schemas"]["SubscriptionStatus"];
+            plan: {
+                /** Format: uuid */
+                id: string;
+                code: string;
+                name: string;
+            };
+            /** @description Money in paise (₹1 = 100) */
+            price_paise: number;
+            benefits: {
+                booking_discount_percent: number;
+                service_fee_waived: boolean;
+            };
+            current_period_start: string | null;
+            current_period_end: string | null;
+            trial_ends_at: string | null;
+            cancel_at_period_end: boolean;
+            /** @description A downgrade that applies at the next renewal */
+            pending_plan: {
+                /** Format: uuid */
+                id: string;
+                code: string;
+                name: string;
+                /** @description Money in paise (₹1 = 100) */
+                price_paise: number;
+            } | null;
+            /** @description PAST_DUE: benefits continue until then while the payment is retried */
+            grace_until: string | null;
+            next_charge: {
+                at: string | null;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+            } | null;
+        };
+        MembershipOverviewResponse: {
+            plans: components["schemas"]["MembershipPlan"][];
+            current: components["schemas"]["Membership"] | null;
+            trial_eligible: boolean;
+            receipts: {
+                /** Format: uuid */
+                payment_id: string;
+                receipt_number: string | null;
+                /** @description Money in paise (₹1 = 100) */
+                amount_paise: number;
+                paid_at: string | null;
+                description: string;
+            }[];
+        };
+        MembershipStartResponse: {
+            /** @description INCOMPLETE until autopay is approved */
+            subscription: components["schemas"]["Membership"];
+            checkout: {
+                provider: string;
+                mandate_id: string;
+                /** @description Money in paise (₹1 = 100) */
+                max_amount_paise: number;
+                test_mode?: boolean;
+            } & {
+                [key: string]: unknown;
+            };
+            /** @description Whether a free trial will start once autopay is approved */
+            trial: boolean;
+        };
+        MembershipChangeResponse: {
+            subscription: components["schemas"]["Membership"] | null;
+            /** @description Money in paise (₹1 = 100) */
+            charged_paise?: number;
+        };
+        MockMandateResponse: {
+            mandate_id: string;
+            /** @enum {string} */
+            status: "CREATED" | "ACTIVE" | "FAILED" | "CANCELLED";
+            /** @description Money in paise (₹1 = 100) */
+            max_amount_paise: number;
+            scenarios: components["schemas"]["MockMandateScenario"][];
+            /** @constant */
+            test_mode: true;
+        };
+        MockMandateAuthorizeResponse: {
+            scenario: components["schemas"]["MockMandateScenario"];
+            delivered: number[];
+        };
+        AdminMembershipPlansResponse: {
+            plans: {
+                /** Format: uuid */
+                id: string;
+                code: string;
+                name: string;
+                description: string | null;
+                /** @description Per month, GST included */
+                price_paise: number;
+                billing_interval: string;
+                trial_days: number;
+                booking_discount_percent: number;
+                service_fee_waived: boolean;
+                benefits: string[];
+                is_active: boolean;
+                is_public: boolean;
+                subscribers: number;
+            }[];
+        };
+        AdminMembershipPlanResponse: {
+            plan: {
+                /** Format: uuid */
+                id: string;
+                code: string;
+                name: string;
+                description: string | null;
+                /** @description Per month, GST included */
+                price_paise: number;
+                billing_interval: string;
+                trial_days: number;
+                booking_discount_percent: number;
+                service_fee_waived: boolean;
+                benefits: string[];
+                is_active: boolean;
+                is_public: boolean;
+                subscribers: number;
+            };
+        };
+        AdminMembershipsResponse: {
+            totals: {
+                trialing: number;
+                active: number;
+                past_due: number;
+                /** @description Money in paise (₹1 = 100) */
+                monthly_paise: number;
+            };
+            subscriptions: {
+                /** Format: uuid */
+                id: string;
+                status: components["schemas"]["SubscriptionStatus"];
+                plan: {
+                    code: string;
+                    name: string;
+                };
+                /** @description Money in paise (₹1 = 100) */
+                price_paise: number;
+                current_period_end: string | null;
+                trial_ends_at: string | null;
+                cancel_at_period_end: boolean;
+                grace_until: string | null;
+                retry_count: number;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                customer: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                    email: string;
+                };
+            }[];
+        };
+        /** @enum {string} */
+        EnforcementAction: "WARNING" | "TEMP_SUSPENSION" | "PERMANENT_BAN" | "REINSTATEMENT";
+        /** @enum {string} */
+        EnforcementStatus: "PENDING_APPROVAL" | "ACTIVE" | "EXPIRED" | "OVERTURNED" | "REJECTED";
+        /** @enum {string} */
+        EnforcementReason: "HARASSMENT" | "ABUSE" | "SOLICITATION" | "CONTACT_DETAILS" | "OFF_PLATFORM_PAYMENT" | "BOUNDARY_VIOLATION" | "NO_SHOWS" | "FAKE_PROFILE" | "FRAUD" | "SAFETY" | "OTHER";
+        /** @enum {string} */
+        AppealStatus: "SUBMITTED" | "IN_REVIEW" | "UPHELD" | "OVERTURNED";
+        AccountStandingResponse: {
+            status: components["schemas"]["UserStatus"];
+            on_hold: boolean;
+            suspended_until: string | null;
+            actions: {
+                /** Format: uuid */
+                id: string;
+                action: components["schemas"]["EnforcementAction"];
+                reason_code: string;
+                /** @description Plain words, shown to the person */
+                reason: string;
+                rule: string | null;
+                status: components["schemas"]["EnforcementStatus"];
+                starts_at: string | null;
+                /** @description A timed suspension ends then; null for warnings, bans and open-ended holds */
+                ends_at: string | null;
+                appeal_deadline_at: string | null;
+                can_appeal: boolean;
+                appeal: {
+                    /** Format: uuid */
+                    id: string;
+                    status: components["schemas"]["AppealStatus"];
+                    submitted_at: string | null;
+                    decided_at: string | null;
+                    decision_reason: string | null;
+                } | null;
+            }[];
+        };
+        AppealSubmittedResponse: {
+            appeal: {
+                /** Format: uuid */
+                id: string;
+                status: components["schemas"]["AppealStatus"];
+                submitted_at: string | null;
+            };
+            standing: components["schemas"]["AccountStandingResponse"];
+        };
+        AdminUserStanding: {
+            user: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                email: string | null;
+                status: components["schemas"]["UserStatus"];
+                suspended_until: string | null;
+                strike_count: number;
+                on_hold: boolean;
+                erased: boolean;
+                /** @description ISO 8601 date-time (UTC) */
+                joined_at: string;
+            };
+            actions: {
+                /** Format: uuid */
+                id: string;
+                action: components["schemas"]["EnforcementAction"];
+                reason_code: string;
+                reason: string;
+                rule: string | null;
+                details: string | null;
+                status: components["schemas"]["EnforcementStatus"];
+                starts_at: string | null;
+                ends_at: string | null;
+                appeal_deadline_at: string | null;
+                lifted_at: string | null;
+                lifted_reason: string | null;
+                decided_by: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                } | null;
+                appeal: {
+                    /** Format: uuid */
+                    id: string;
+                    status: components["schemas"]["AppealStatus"];
+                } | null;
+            }[];
+            strikes: {
+                /** Format: uuid */
+                id: string;
+                category: string | null;
+                reason: string;
+                severity: string;
+                source: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+                cleared: boolean;
+            }[];
+            pending_approvals: {
+                /** Format: uuid */
+                id: string;
+                action_type: string;
+                reason: string | null;
+                /** @description ISO 8601 date-time (UTC) */
+                created_at: string;
+            }[];
+        };
+        AdminUserSearchResponse: {
+            users: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                email: string;
+                phone_last4: string | null;
+                status: components["schemas"]["UserStatus"];
+                strike_count: number;
+                companion: {
+                    /** Format: uuid */
+                    id: string;
+                    display_name: string;
+                } | null;
+                /** @description ISO 8601 date-time (UTC) */
+                joined_at: string;
+            }[];
+        };
+        WarningIssuedResponse: {
+            /** Format: uuid */
+            enforcement_action_id: string;
+            warnings_in_window: number;
+            suspension_proposed: boolean;
+            standing: components["schemas"]["AdminUserStanding"];
+        };
+        SuspensionAppliedResponse: {
+            /** Format: uuid */
+            enforcement_action_id: string;
+            cancelled_bookings: number;
+            standing: components["schemas"]["AdminUserStanding"];
+        };
+        BanProposedResponse: {
+            /** Format: uuid */
+            approval_request_id: string;
+            standing: components["schemas"]["AdminUserStanding"];
+        };
+        EnforcementLiftedResponse: {
+            standing: components["schemas"]["AdminUserStanding"];
+        };
+        BannedErasedResponse: {
+            erased: boolean;
+        };
+        EnforcementAppealsResponse: {
+            appeals: {
+                /** Format: uuid */
+                id: string;
+                status: components["schemas"]["AppealStatus"];
+                statement: string;
+                /** @description ISO 8601 date-time (UTC) */
+                submitted_at: string;
+                decided_at: string | null;
+                decision_reason: string | null;
+                original_decider: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                } | null;
+                action: {
+                    /** Format: uuid */
+                    id: string;
+                    action: components["schemas"]["EnforcementAction"];
+                    reason_code: string;
+                    reason: string;
+                    rule: string | null;
+                    details: string | null;
+                    status: components["schemas"]["EnforcementStatus"];
+                    starts_at: string | null;
+                    ends_at: string | null;
+                };
+                user: {
+                    /** Format: uuid */
+                    id: string;
+                    name: string;
+                    email: string;
+                    status: components["schemas"]["UserStatus"];
+                };
+            }[];
+        };
+        EnforcementAppealDecidedResponse: {
+            appeal: {
+                /** Format: uuid */
+                id: string;
+                status: components["schemas"]["AppealStatus"];
+            };
+        };
+        /** @enum {string} */
+        DeletionBlocker: "OPEN_BOOKINGS" | "OPEN_DISPUTES" | "PENDING_REFUNDS" | "UNPAID_EARNINGS";
+        DeletionPreviewResponse: {
+            can_delete: boolean;
+            blockers: {
+                code: components["schemas"]["DeletionBlocker"];
+                count: number;
+            }[];
+            /** @description Signing in within this many days cancels the deletion */
+            grace_days: number;
+        };
+        DeletionScheduledResponse: {
+            /** Format: date-time */
+            scheduled_for: string;
+        };
         WebhookAck: {
             /** @constant */
             received: true;
@@ -6233,6 +7339,11 @@ export interface components {
             code?: string;
             recovery_code?: string;
             mfa_token: string;
+        };
+        postAuthMfaInviteLoginBody: {
+            token: string;
+            identifier: string;
+            password: string;
         };
         postAuthMfaTotpActivateBody: {
             code: string;
@@ -6283,6 +7394,24 @@ export interface components {
                 /** @default false */
                 marketing: boolean;
             };
+        };
+        postAccountStandingByIdAppealBody: {
+            statement: string;
+        };
+        postAccountDeletionBody: {
+            password: string;
+            reason?: string;
+        };
+        postSubscriptionsBody: {
+            /** Format: uuid */
+            plan_id: string;
+        };
+        postSubscriptionsMeChangeBody: {
+            /** Format: uuid */
+            plan_id: string;
+        };
+        postSubscriptionsMeCancelBody: {
+            reason?: string;
         };
         postCompanionBookingsByIdRejectBody: {
             /** @enum {string} */
@@ -6520,6 +7649,9 @@ export interface components {
             decision: "DISMISS" | "WARN" | "REQUIRE_REVERIFICATION" | "SUSPEND";
             note: string;
         };
+        postAdminStaffByIdMfaResetBody: {
+            reason: string;
+        };
         postDiscoveryCompanionsByIdReportBody: {
             /** @enum {string} */
             reason_code: "FAKE_PROFILE" | "INAPPROPRIATE_CONTENT" | "OFF_PLATFORM_CONTACT" | "NOT_PLATONIC" | "SAFETY_CONCERN" | "OTHER";
@@ -6589,6 +7721,12 @@ export interface components {
             /** @enum {string} */
             issue_code: "NO_SHOW" | "LATE_ARRIVAL" | "ENDED_EARLY" | "BOUNDARY_CROSSED" | "SAFETY_CONCERN" | "OTHER";
             note?: string;
+        };
+        postBookingsByIdReviewBody: {
+            rating: number;
+            comment?: string;
+            /** @default [] */
+            tags: ("PUNCTUAL" | "GREAT_CONVERSATION" | "RESPECTFUL" | "KNOWLEDGEABLE" | "WARM_AND_FRIENDLY" | "GOOD_LISTENER" | "WELL_PLANNED" | "CLEAR_PLANS" | "FRIENDLY" | "GOOD_VENUE_CHOICE" | "KEPT_TO_BOUNDARIES")[];
         };
         postComplaintsBody: {
             /** @enum {string} */
@@ -6748,9 +7886,64 @@ export interface components {
             /** @enum {string} */
             status: "IN_PROGRESS" | "RESOLVED" | "CLOSED";
         };
+        postReviewsByIdReportBody: {
+            /** @enum {string} */
+            reason_code: "FAKE_OR_MISLEADING" | "OFFENSIVE" | "CONTACT_DETAILS" | "NOT_ABOUT_THE_MEETING" | "PRIVATE_INFORMATION" | "OTHER";
+            note?: string;
+        };
+        postAdminReviewsByIdDecisionBody: {
+            /** @enum {string} */
+            decision: "PUBLISH" | "REMOVE_COMMENT" | "HIDE";
+            reason: string;
+        };
+        patchAdminSubscriptionPlansByIdBody: {
+            name?: string;
+            description?: string | null;
+            price_paise?: number;
+            trial_days?: number;
+            booking_discount_percent?: number;
+            service_fee_waived?: boolean;
+            benefits?: string[];
+            is_active?: boolean;
+            reason: string;
+        };
+        postAdminEnforcementUsersByIdWarnBody: {
+            /** @enum {string} */
+            reason_code: "HARASSMENT" | "ABUSE" | "SOLICITATION" | "CONTACT_DETAILS" | "OFF_PLATFORM_PAYMENT" | "BOUNDARY_VIOLATION" | "NO_SHOWS" | "FAKE_PROFILE" | "FRAUD" | "SAFETY" | "OTHER";
+            rule?: string;
+            details: string;
+        };
+        postAdminEnforcementUsersByIdSuspendBody: {
+            /** @enum {string} */
+            reason_code: "HARASSMENT" | "ABUSE" | "SOLICITATION" | "CONTACT_DETAILS" | "OFF_PLATFORM_PAYMENT" | "BOUNDARY_VIOLATION" | "NO_SHOWS" | "FAKE_PROFILE" | "FRAUD" | "SAFETY" | "OTHER";
+            rule?: string;
+            details: string;
+            days: number;
+        };
+        postAdminEnforcementUsersByIdBanBody: {
+            /** @enum {string} */
+            reason_code: "HARASSMENT" | "ABUSE" | "SOLICITATION" | "CONTACT_DETAILS" | "OFF_PLATFORM_PAYMENT" | "BOUNDARY_VIOLATION" | "NO_SHOWS" | "FAKE_PROFILE" | "FRAUD" | "SAFETY" | "OTHER";
+            rule?: string;
+            details: string;
+        };
+        postAdminEnforcementUsersByIdEraseBody: {
+            reason: string;
+        };
+        postAdminEnforcementByIdLiftBody: {
+            reason: string;
+        };
+        postAdminEnforcementAppealsByIdDecideBody: {
+            /** @enum {string} */
+            decision: "UPHOLD" | "OVERTURN";
+            reason: string;
+        };
         postPaymentsMockOrdersByOrderIdCompleteBody: {
             /** @enum {string} */
             scenario: "SUCCESS" | "FAILED" | "PENDING_THEN_SUCCESS" | "DUPLICATE_WEBHOOK" | "LATE_SUCCESS" | "REFUND_FAIL_ONCE";
+        };
+        postPaymentsMockMandatesByMandateIdAuthorizeBody: {
+            /** @enum {string} */
+            scenario: "AUTHORIZED" | "DECLINED" | "RENEWAL_FAILS_ONCE" | "CHARGES_FAIL";
         };
         postCallsMockSimulateBody: {
             /** Format: uuid */
@@ -6774,6 +7967,132 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getAccountDeletion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletionPreviewResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAccountDeletion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAccountDeletionBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletionScheduledResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAccountStanding: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountStandingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAccountStandingByIdAppeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAccountStandingByIdAppealBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppealSubmittedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getAdminAppeals: {
         parameters: {
             query?: {
@@ -7358,6 +8677,309 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DisputeTranscriptResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminEnforcementByIdLift: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminEnforcementByIdLiftBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnforcementLiftedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminEnforcementAppeals: {
+        parameters: {
+            query?: {
+                status?: "OPEN" | "UPHELD" | "OVERTURNED";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnforcementAppealsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminEnforcementAppealsByIdDecide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminEnforcementAppealsByIdDecideBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnforcementAppealDecidedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminEnforcementUsers: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserSearchResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminEnforcementUsersById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserStanding"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminEnforcementUsersByIdBan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminEnforcementUsersByIdBanBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BanProposedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminEnforcementUsersByIdErase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminEnforcementUsersByIdEraseBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BannedErasedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminEnforcementUsersByIdSuspend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminEnforcementUsersByIdSuspendBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuspensionAppliedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminEnforcementUsersByIdWarn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminEnforcementUsersByIdWarnBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WarningIssuedResponse"];
                 };
             };
             /** @description Error */
@@ -8361,6 +9983,72 @@ export interface operations {
             };
         };
     };
+    getAdminReviews: {
+        parameters: {
+            query?: {
+                queue?: "HELD" | "REPORTED" | "HIDDEN";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminReviewsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminReviewsByIdDecision: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminReviewsByIdDecisionBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewDecisionResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getAdminSettingsPricing: {
         parameters: {
             query?: never;
@@ -8410,6 +10098,197 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SettingProposedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminStaff: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffListResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminStaffByIdEnrollmentInvite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffInviteResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postAdminStaffByIdMfaReset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAdminStaffByIdMfaResetBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffMfaResetRequestedResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminSubscriptionPlans: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminMembershipPlansResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    patchAdminSubscriptionPlansById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["patchAdminSubscriptionPlansByIdBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminMembershipPlanResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getAdminSubscriptions: {
+        parameters: {
+            query?: {
+                status?: "INCOMPLETE" | "TRIALING" | "ACTIVE" | "PAST_DUE" | "CANCELLED" | "EXPIRED";
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminMembershipsResponse"];
                 };
             };
             /** @description Error */
@@ -9356,6 +11235,39 @@ export interface operations {
             };
         };
     };
+    postAuthMfaInviteLogin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postAuthMfaInviteLoginBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     postAuthMfaLogin: {
         parameters: {
             query?: never;
@@ -10150,6 +12062,41 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["postBookingsByIdReportIssueBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postBookingsByIdReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postBookingsByIdReviewBody"];
             };
         };
         responses: {
@@ -11420,6 +13367,38 @@ export interface operations {
             };
         };
     };
+    getCompanionReviews: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnReviewsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     postCompanionSubmit: {
         parameters: {
             query?: never;
@@ -12083,6 +14062,40 @@ export interface operations {
             };
         };
     };
+    getDiscoveryCompanionsByIdReviews: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompanionReviewsResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     postDiscoveryCompanionsByIdSave: {
         parameters: {
             query?: never;
@@ -12554,6 +14567,72 @@ export interface operations {
             };
         };
     };
+    getPaymentsMockMandatesByMandateId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mandateId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MockMandateResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postPaymentsMockMandatesByMandateIdAuthorize: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mandateId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postPaymentsMockMandatesByMandateIdAuthorizeBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MockMandateAuthorizeResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getPaymentsMockOrdersByOrderId: {
         parameters: {
             query?: never;
@@ -12638,6 +14717,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MockFlushResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postReviewsByIdReport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postReviewsByIdReportBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportedResponse"];
                 };
             };
             /** @description Error */
@@ -13024,6 +15138,163 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getSubscriptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipOverviewResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postSubscriptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postSubscriptionsBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipStartResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postSubscriptionsMeCancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postSubscriptionsMeCancelBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipChangeResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postSubscriptionsMeChange: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["postSubscriptionsMeChangeBody"];
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipChangeResponse"];
+                };
+            };
+            /** @description Error */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    postSubscriptionsMeResume: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipChangeResponse"];
+                };
             };
             /** @description Error */
             default: {

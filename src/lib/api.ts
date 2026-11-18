@@ -61,6 +61,15 @@ export const setSessionLostHandler = (fn: (() => void) | null) => {
   onSessionLost = fn;
 };
 
+let onAccountOnHold: ((details: ApiErrorBody['details']) => void) | null = null;
+/**
+ * Called on any 403 ACCOUNT_ON_HOLD (suspended or banned, D22). The session
+ * stays: the app shows the Account status screen instead of signing out.
+ */
+export const setAccountOnHoldHandler = (fn: ((details: ApiErrorBody['details']) => void) | null) => {
+  onAccountOnHold = fn;
+};
+
 /** The current access token (the realtime socket authenticates with it). */
 export const getAccessToken = () => accessToken;
 const tokenListeners = new Set<(token: string | null) => void>();
@@ -167,7 +176,14 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
   try {
     return await raw<T>(path, options);
   } catch (err) {
+    // On hold: only the Account status screen works. Never a sign-out.
+    if (err instanceof ApiError && err.status === 403 && err.code === 'ACCOUNT_ON_HOLD') {
+      onAccountOnHold?.(err.details);
+      throw err;
+    }
     if (!(err instanceof ApiError) || err.status !== 401 || options.noRetry) throw err;
+    // A wrong password when re-confirming (e.g. deleting the account) is a 401 too, but the session is fine.
+    if (err.code === 'INVALID_PASSWORD') throw err;
     const hadSession = accessToken !== null || err.code === 'TOKEN_EXPIRED';
     if (err.code === 'TOKEN_EXPIRED') {
       // Temporary refresh failures (offline, 429, 5xx) are rethrown and keep the session.

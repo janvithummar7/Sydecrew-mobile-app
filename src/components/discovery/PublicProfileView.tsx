@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { FlatList, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
+import { RatingLine } from '@/components/reviews/Stars';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { Avatar, PriceTag } from '@/components/ui/Misc';
@@ -17,11 +18,12 @@ const MAX_WIDTH = 480;
  * The public companion profile (artboard "Companion profile"), the same for a
  * customer (GET /discovery/companions/:id) and for the companion's own preview
  * (GET /companion/public-preview): gallery, name, verified badge and "New on
- * Sydecrew" (never a made-up rating), offers with prices, interests,
- * boundaries, coarse 14-day availability, cancellation terms, meeting rule.
- * `actions` render under the header (Save / Report).
+ * Sydecrew" until the API gives a rating (never a made-up one), offers with
+ * prices, interests, boundaries, coarse 14-day availability, cancellation
+ * terms, meeting rule. `actions` render under the header (Save / Report);
+ * `reviews` is the Reviews section's list (customers; the preview has none).
  */
-export function PublicProfileView({ data, actions }: { data: PublicProfile; actions?: ReactNode }) {
+export function PublicProfileView({ data, actions, reviews }: { data: PublicProfile; actions?: ReactNode; reviews?: ReactNode }) {
   const since = verifiedSince(data.verified_since);
   const meta = [data.zone?.name && data.city ? `${data.zone.name}, ${data.city}` : data.zone?.name ?? data.city, data.languages.join(', ')].filter(Boolean).join(' · ');
   const catName = (id: string) => {
@@ -41,8 +43,9 @@ export function PublicProfileView({ data, actions }: { data: PublicProfile; acti
         </Text>
         <View style={styles.badges}>
           {data.verified ? <Badge kind="verified" label={copy.verified} /> : null}
-          {data.new_on_sydecrew ? <Badge kind="info" label={copy.newOn} /> : null}
+          {!data.rating && data.new_on_sydecrew ? <Badge kind="info" label={copy.newOn} /> : null}
         </View>
+        <RatingLine rating={data.rating} />
         {since ? <Text variant="caption" color={colors.textMuted}>{copy.verifiedSince(since)}</Text> : null}
         {meta ? <Text variant="small" color={colors.textMuted}>{meta}</Text> : null}
         {data.categories.length ? <Text serif variant="heading" color={colors.brand}>{data.categories.map((c) => categoryNames[c.code] ?? c.name).join(' · ')}</Text> : null}
@@ -113,7 +116,8 @@ export function PublicProfileView({ data, actions }: { data: PublicProfile; acti
       </Section>
 
       <Section title={copy.reviews}>
-        <Text variant="small" color={colors.textMuted}>{copy.noReviews}</Text>
+        {data.rating ? <RatingLine rating={data.rating} size={16} /> : null}
+        {reviews ?? (data.rating ? null : <Text variant="small" color={colors.textMuted}>{copy.noReviews}</Text>)}
       </Section>
     </View>
   );

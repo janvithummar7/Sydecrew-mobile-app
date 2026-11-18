@@ -21,6 +21,10 @@ const TABLE: [RegExp, To, To][] = [
   [new RegExp(`^/support/(${ID})$`), (id) => `/support/${id}`, (id) => `/support/${id}`],
   [/^\/safety$/, () => '/safety/sos', () => '/safety/sos'],
   [/^\/safety\/contacts$/, () => '/safety/contacts', () => '/safety/contacts'],
+  // Membership (entity type user_subscriptions): e.g. a failed renewal payment. Customers only.
+  [/^\/membership$/, () => '/membership', null],
+  // Warnings, suspensions, bans and appeal decisions (entity type enforcement_actions).
+  [/^\/account-status$/, () => '/account-status', () => '/account-status'],
 ];
 
 export function pushRoute(path: unknown, role: Role): string | null {

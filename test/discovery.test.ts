@@ -168,6 +168,7 @@ const card = (id: string, extra: Partial<DiscoveryCard> = {}): DiscoveryCard => 
   from_paise: 120000,
   next_available_at: null,
   verified: true,
+  rating: null,
   new_on_sydecrew: true,
   ...extra,
 });

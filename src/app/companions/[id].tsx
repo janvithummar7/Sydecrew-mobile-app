@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BackBar } from '@/components/account/BackBar';
 import { PublicProfileView } from '@/components/discovery/PublicProfileView';
 import { ReportSheet } from '@/components/discovery/ReportSheet';
+import { ProfileReviews } from '@/components/reviews/ProfileReviews';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Misc';
 import { Screen } from '@/components/ui/Screen';
@@ -18,7 +19,8 @@ import { colors, space } from '@/theme';
 /**
  * A companion's public profile (Feature 3 §5, artboard "Companion profile"):
  * GET /discovery/companions/:id (also records "recently viewed"). Save /
- * unsave, report, and "Request to book" (Feature 4: booking details). A
+ * unsave, report, "Request to book" (Feature 4: booking details) and, once
+ * the companion has a public rating, their reviews (with Report). A
  * hidden, blocked, paused or removed companion answers 404 PROFILE_UNAVAILABLE:
  * the screen says "not available" (other errors get the shared message and retry).
  */
@@ -110,6 +112,7 @@ export default function CompanionProfileScreen() {
       {state.offline ? <OfflineBanner onRetry={retry} /> : null}
       <PublicProfileView
         data={data}
+        reviews={data.rating && id ? <ProfileReviews companionId={id} /> : undefined}
         actions={
           <View style={styles.actions}>
             <Button

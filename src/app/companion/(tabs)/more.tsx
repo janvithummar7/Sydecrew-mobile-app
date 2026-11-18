@@ -6,6 +6,8 @@ import { Screen } from '@/components/ui/Screen';
 import { Text, Title } from '@/components/ui/Text';
 import { useAuth } from '@/lib/auth';
 import { isApproved } from '@/lib/companion/steps';
+import { deleteAccount } from '@/content/account';
+import { enforcement } from '@/content/enforcement';
 import { nav } from '@/content/common';
 import { colors, space } from '@/theme';
 
@@ -26,6 +28,7 @@ export default function More() {
         <LinkRow label={nav.companion.profile} detail="Your intro, photos and categories" onPress={go('/companion/profile')} />
         {approved ? <LinkRow label={nav.companion.availability} detail="When you can meet" onPress={go('/companion/availability')} /> : null}
         {approved ? <LinkRow label={nav.companion.rates} detail="What you charge per hour" onPress={go('/companion/rates')} /> : null}
+        {approved ? <LinkRow label={nav.companion.reviews} detail={nav.companion.reviewsDetail} onPress={go('/companion/reviews')} /> : null}
         <LinkRow label={nav.companion.status} detail="Your application and verification" onPress={go('/companion/status')} />
         {approved ? <LinkRow label={nav.payoutAccount} detail={nav.payoutAccountDetail} onPress={go('/companion/payout-account')} /> : null}
       </View>
@@ -38,6 +41,10 @@ export default function More() {
         <LinkRow label={nav.settings} onPress={go('/settings')} />
       </View>
       <RoleSwitch to="customer" />
+      <View>
+        <LinkRow label={enforcement.rowLabel} detail={enforcement.rowDetail} onPress={go('/account-status')} />
+        <LinkRow label={deleteAccount.rowLabel} detail={deleteAccount.rowDetail} onPress={go('/delete-account')} />
+      </View>
     </Screen>
   );
 }

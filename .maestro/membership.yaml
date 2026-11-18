@@ -1,0 +1,57 @@
+# Membership (D12): Profile -> Membership -> start Premium -> test autopay (approve) -> free trial started -> back,
+# then cancel (benefits last until the trial end) and "Keep my membership".
+# Needs: a development build (the "Test autopay — no real money" step exists only in __DEV__ builds), the API with
+# PAYMENT_PROVIDER=mock, and an onboarded customer with no membership.
+# Run: maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/membership.yaml
+# Written for device / emulator runs; not run in CI.
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+
+- tapOn: "Profile"
+- scrollUntilVisible:
+    element: "Membership"
+- tapOn: "Membership"
+- assertVisible: "Plans"
+- scrollUntilVisible:
+    element: "(Start free trial|Choose Premium)"
+- tapOn:
+    text: "(Start free trial|Choose Premium)"
+    index: 0
+- assertVisible: "Start .*\?"
+- tapOn: "Continue"
+- extendedWaitUntil:
+    visible: "Test autopay — no real money"
+    timeout: 15000
+- tapOn: "Approve autopay"
+- tapOn: "Continue with test autopay"
+- extendedWaitUntil:
+    visible: "(Your free trial has started|Welcome to .*)"
+    timeout: 30000
+- tapOn: "Back to Membership"
+- assertVisible: "(Free trial|Active)"
+
+- tapOn: "Cancel membership"
+- assertVisible: "Why are you leaving\? \(optional\)"
+- tapOn:
+    text: "Cancel membership"
+    index: 1
+- extendedWaitUntil:
+    visible: "Keep my membership"
+    timeout: 15000
+- assertVisible: "Ending"
+- tapOn: "Keep my membership"
+- extendedWaitUntil:
+    notVisible: "Keep my membership"
+    timeout: 15000

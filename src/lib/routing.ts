@@ -4,6 +4,7 @@
  * Pure, so it is unit-tested against every next_step value (test/routing.test.ts).
  */
 import type { CompanionNextStep } from './contract/enums';
+import { ACCOUNT_STATUS_PATH, isOnHold } from './enforcement/helpers';
 import type { Me } from './types';
 
 export type Role = 'customer' | 'companion';
@@ -26,7 +27,8 @@ export const COMPANION_STEP_PATH: Record<CompanionNextStep, string> = {
   PAUSED: '/companion/dashboard',
 };
 
-export type RouteUser = Pick<Me, 'is_staff' | 'roles' | 'onboarding' | 'companion'>;
+/** `on_hold` is optional so older fixtures without it still route as before. */
+export type RouteUser = Pick<Me, 'is_staff' | 'roles' | 'onboarding' | 'companion'> & { on_hold?: boolean };
 
 export const isCustomer = (u: Pick<Me, 'roles'>) => u.roles.includes('CUSTOMER');
 export const isCompanion = (u: Pick<Me, 'companion'>) => !!u.companion;
@@ -46,6 +48,8 @@ export function shellFor(u: RouteUser, preferred: Role | null = null): Role {
 export function routeFor(u: RouteUser | null, preferred: Role | null = null): string {
   if (!u) return '/';
   if (u.is_staff) return '/staff';
+  // Suspended or banned (D22): only the Account status screen until the hold ends.
+  if (isOnHold(u)) return ACCOUNT_STATUS_PATH;
   // A companion-only applicant skips customer onboarding: the apply step collects what is missing.
   if (!u.onboarding.complete && !u.companion) return '/onboarding';
   if (shellFor(u, preferred) === 'companion' && u.companion) return COMPANION_STEP_PATH[u.companion.next_step] ?? '/companion/status';
@@ -53,7 +57,7 @@ export function routeFor(u: RouteUser | null, preferred: Role | null = null): st
 }
 
 /** Paths a deep link may open after sign-in. */
-const DEEP_LINK_PATHS = [/^\/companion(\/[a-z-]+)?$/, /^\/verify-email$/, /^\/reset-password$/, /^\/settings$/];
+const DEEP_LINK_PATHS = [/^\/companion(\/[a-z-]+)?$/, /^\/verify-email$/, /^\/reset-password$/, /^\/settings$/, /^\/account-status$/];
 
 /**
  * sydecrew://companion/identity -> "/companion/identity";
