@@ -3,7 +3,7 @@
  * wording. Money is never "held by Sydecrew": the payment is held by the
  * payment gateway until the meeting is complete.
  */
-import type { BookingCancelReason, BookingIssue, BookingRejectReason, BookingStatus, MockPaymentScenario } from '@/lib/contract/enums';
+import type { BookingCancelReason, BookingRejectReason, BookingStatus, MockPaymentScenario } from '@/lib/contract/enums';
 
 /** Price lines (amounts are formatted with formatINR from paise). */
 export const prices = {
@@ -203,23 +203,6 @@ export const cancel = {
     VENUE_ISSUE: 'Problem with the venue',
     OTHER: 'Something else',
   } satisfies Record<BookingCancelReason, string>,
-} as const;
-
-export const issue = {
-  title: 'Report an issue',
-  body: 'Sydecrew reviews every report. The companion’s earnings are held until then. In an emergency, call 112.',
-  reason: 'What happened?',
-  note: 'Tell us more (optional)',
-  submit: 'Send report',
-  done: 'Thanks. We will look into it.',
-  reasons: {
-    NO_SHOW: 'The other person did not turn up',
-    LATE_ARRIVAL: 'They arrived very late',
-    ENDED_EARLY: 'It ended early',
-    BOUNDARY_CROSSED: 'A boundary was crossed',
-    SAFETY_CONCERN: 'I felt unsafe',
-    OTHER: 'Something else',
-  } satisfies Record<BookingIssue, string>,
 } as const;
 
 export const reject = {

@@ -1,0 +1,57 @@
+# Privacy and your data (Feature 7): ask for a data export, then delete account -> blockers, or
+# password -> code -> scheduled -> cancel. Either role. Leaves the account as it was (deletion cancelled).
+#   maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 -e DELETE_OTP=123456 .maestro/privacy.yaml
+# DELETE_OTP: the account-deletion code (the API's dev_code in development, shown under the code boxes).
+# The export request is refused with "once a week" if the account asked in the last 7 days; the flow
+# accepts either answer. Written for device / emulator runs; not run in CI (no device here).
+appId: com.sydecrew.app
+---
+- launchApp
+- runFlow:
+    when:
+      visible: "Log in"
+    commands:
+      - tapOn: "Log in"
+      - tapOn: "Email or mobile number"
+      - inputText: ${EMAIL}
+      - tapOn: "Password"
+      - inputText: ${PASSWORD}
+      - tapOn: "Continue"
+      - inputText: ${OTP}
+# Customer: Profile -> Privacy and your data. Companion: More -> Privacy and your data.
+- tapOn: "Profile|More"
+- scrollUntilVisible:
+    element: "Privacy and your data"
+- tapOn: "Privacy and your data"
+- assertVisible: "Download your data"
+# Data export
+- runFlow:
+    when:
+      visible: "Ask for a copy"
+    commands:
+      - tapOn: "Ask for a copy"
+      - assertVisible: "We are preparing your data.*|.*once a week.*|Being prepared.*"
+- assertVisible: "Consents"
+- assertVisible: "Grievance officer"
+# Delete account: blockers, or start -> code -> scheduled -> cancel
+- scrollUntilVisible:
+    element: "Delete your account"
+- runFlow:
+    when:
+      visible: "Finish these first"
+    commands:
+      - assertNotVisible: "Delete my account"
+- runFlow:
+    when:
+      visible: "Delete my account"
+    commands:
+      - tapOn: "Delete my account"
+      - tapOn: "Your password"
+      - inputText: ${PASSWORD}
+      - hideKeyboard
+      - tapOn: "Continue"
+      - assertVisible: "Enter the code"
+      - inputText: ${DELETE_OTP}
+      - assertVisible: "Your account will be deleted on .*"
+      - tapOn: "Cancel the deletion"
+      - assertVisible: "Your account will not be deleted."

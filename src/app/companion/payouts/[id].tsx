@@ -1,30 +1,62 @@
-import { View } from 'react-native';
+import { useRef, useState } from 'react';
+import { Share, View } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
 import { useLocalSearchParams } from 'expo-router';
 import { StepHeader } from '@/components/companion/Bits';
 import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Feedback';
 import { Screen } from '@/components/ui/Screen';
 import { DataState } from '@/components/ui/States';
 import { Text } from '@/components/ui/Text';
 import { payout as copy } from '@/content/payouts';
+import { errorView } from '@/lib/errors';
 import { formatINR } from '@/lib/money';
 import { payoutsApi } from '@/lib/payouts/api';
-import { maskAccount, payoutStatus } from '@/lib/payouts/helpers';
+import { isOpenableLink, maskAccount, payoutStatus, statementAction, type StatementFormat } from '@/lib/payouts/helpers';
 import { formatDateIST, formatDateTimeIST } from '@/lib/time';
 import { useLoad } from '@/lib/useLoad';
 import { colors, space } from '@/theme';
 
 /**
  * One payout (GET /companion/payouts/:id): amounts, bank reference (UTR), the
- * account (last 4 digits) and every line it covers. The statement is shown
- * in-app: the app has no authenticated file-download pattern yet, so the
- * HTML/CSV statement endpoint is not opened from here.
+ * account (last 4 digits) and every line it covers.
+ *
+ * Statement (Feature 7): POST /companion/payouts/:id/statement-link returns a
+ * 5-minute signed URL that needs no bearer token. HTML opens in the in-app
+ * browser (expo-web-browser). CSV goes to the share sheet with React Native's
+ * own `Share`, passing the link: it needs no new native module (expo-sharing
+ * is not a dependency, and sharing a downloaded file would need it on Android),
+ * and the receiving app (Drive, Files, a spreadsheet app, email) downloads the
+ * file itself within the five minutes. No token or bank detail is in the link.
  */
 export default function PayoutDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const q = useLoad(() => payoutsApi.payout(id ?? ''), id ?? '');
   const p = q.data;
+  const [busy, setBusy] = useState<StatementFormat | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const opening = useRef(false);
+
+  const statement = async (format: StatementFormat) => {
+    if (!p || opening.current) return;
+    opening.current = true;
+    setBusy(format);
+    setError(null);
+    try {
+      const { url } = await payoutsApi.statementLink(p.id, format);
+      if (!isOpenableLink(url, __DEV__)) throw new Error('bad link');
+      if (statementAction(format) === 'browser') await WebBrowser.openBrowserAsync(url);
+      else await Share.share({ url, message: url, title: copy.statementCsvTitle(p.payout_ref) }, { subject: copy.statementCsvTitle(p.payout_ref), dialogTitle: copy.statementCsv });
+    } catch (err) {
+      setError(errorView(err).message);
+    } finally {
+      opening.current = false;
+      setBusy(null);
+    }
+  };
+
   return (
     <Screen>
       <StepHeader title={copy.title} />
@@ -54,6 +86,13 @@ export default function PayoutDetail() {
                   <Line key={l.id} label={[l.description ?? l.booking_ref ?? l.type, l.start_at ? formatDateIST(l.start_at) : null].filter(Boolean).join(' · ')} value={formatINR(l.amount_paise)} />
                 ))}
               </Card>
+            </View>
+            <View style={{ gap: space.sm }}>
+              <Text variant="eyebrow" color={colors.textSubtle}>{copy.statement}</Text>
+              {error ? <Alert>{error}</Alert> : null}
+              <Button variant="secondary" onPress={() => void statement('html')} loading={busy === 'html'} disabled={busy !== null} accessibilityHint={copy.statementHtmlHint}>{copy.statementHtml}</Button>
+              <Button variant="ghost" onPress={() => void statement('csv')} loading={busy === 'csv'} disabled={busy !== null} accessibilityHint={copy.statementCsvHint}>{copy.statementCsv}</Button>
+              <Text variant="caption" color={colors.textMuted}>{copy.statementNote}</Text>
             </View>
           </>
         ) : null}

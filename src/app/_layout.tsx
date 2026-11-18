@@ -15,6 +15,8 @@ import { RoleProvider, useRole } from '@/lib/role';
 import { holdEnded, isOnHold } from '@/lib/enforcement/helpers';
 import { deepLinkPath, isCustomer, isPublicLink, routeFor, shellFor } from '@/lib/routing';
 import { pushPath, pushRoute } from '@/lib/nav/pushLinks';
+import { takePendingLink } from '@/lib/nav/pendingLink';
+import { withSentry } from '@/lib/sentry';
 import { colors } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -55,12 +57,17 @@ function RootNavigator() {
     if (path && !isPublicLink(path) && status !== 'authenticated') pending.current = path;
   }, [url, status]);
   useEffect(() => {
-    if (status === 'authenticated' && user && !user.is_staff && pending.current) {
+    if (status !== 'authenticated' || !user || user.is_staff) return;
+    if (pending.current) {
       const to = pending.current;
       pending.current = null;
       router.push(to as Href);
+      return;
     }
-  }, [status, user, router]);
+    // A universal link (https://sydecrew.com/...) opened while signed out (src/app/link.tsx).
+    const uni = takePendingLink();
+    if (uni) router.push((pushRoute(uni, shellFor(user, preferred)) ?? routeFor(user, preferred)) as Href);
+  }, [status, user, preferred, router]);
 
   // Push taps (carry-over gap §5.3), cold start and background: data.path -> the screen for this user's shell.
   // Unknown or unsafe paths open the home screen. Each notification is handled once; taps while signed out wait for sign-in.
@@ -105,9 +112,10 @@ function RootNavigator() {
         <Stack.Screen name="forgot-password" />
       </Stack.Protected>
       <Stack.Screen name="verify-email" />
+      {/* Universal links land here and replace themselves with the right screen (or wait for sign-in). */}
+      <Stack.Screen name="link" />
       <Stack.Screen name="reset-password" />
       {/* Unguarded so its "scheduled for deletion" confirmation survives the sign-out; it sends signed-out visitors to the start itself. */}
-      <Stack.Screen name="delete-account" />
       <Stack.Protected guard={staff} redirectTo={home}>
         <Stack.Screen name="staff" />
       </Stack.Protected>
@@ -138,7 +146,7 @@ function RootNavigator() {
   );
 }
 
-export default function RootLayout() {
+function RootLayout() {
   // Brand fonts (tokens.json font.*.mobile); the splash stays until they are ready.
   const [fontsLoaded, fontError] = useFonts({ Geist_400Regular, Geist_500Medium, Geist_600SemiBold, InstrumentSerif_400Regular, InstrumentSerif_400Regular_Italic });
   if (!fontsLoaded && !fontError) return null;
@@ -157,3 +165,6 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
+// Crash reporting wraps the root only when EXPO_PUBLIC_SENTRY_DSN is set (src/lib/sentry.ts).
+export default withSentry(RootLayout);

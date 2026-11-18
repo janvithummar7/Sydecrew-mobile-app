@@ -1,7 +1,19 @@
-# Files the drift checks compare byte for byte (tokens, contract): always LF.
-contracts/*.json text eol=lf
-design/*.json text eol=lf
-src/styles/tokens.* text eol=lf
-src/theme/tokens.ts text eol=lf
-src/lib/api/generated/* text eol=lf
-src/lib/contract/* text eol=lf
+# Line endings: LF in the repository and the working tree (Feature 7).
+* text=auto eol=lf
+
+# Binaries stay binary.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.mp4 binary
+*.keystore binary
+*.jks binary

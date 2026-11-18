@@ -14,7 +14,6 @@ import { authApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { COMPANION_HOME } from '@/lib/companion/steps';
 import type { OnboardingOptions } from '@/lib/types';
-import { deleteAccount } from '@/content/account';
 import { enforcement } from '@/content/enforcement';
 import { account as copy } from '@/content/customer';
 import { lists } from '@/content/discovery';
@@ -70,6 +69,7 @@ export default function Account() {
         <LinkRow label={nav.safetyContacts} detail={nav.safetyContactsDetail} onPress={() => router.push('/safety/contacts')} />
         <LinkRow label={nav.support} detail={nav.supportDetail} onPress={() => router.push('/support')} />
         <LinkRow label={nav.disputes} detail={nav.disputesDetail} onPress={() => router.push('/disputes')} />
+        <LinkRow label={nav.privacy} detail={nav.privacyDetail} onPress={() => router.push('/settings/privacy')} />
         <LinkRow label={nav.settings} onPress={() => router.push('/settings')} />
       </View>
       <RoleSwitch to="companion" />
@@ -86,7 +86,6 @@ export default function Account() {
       </Button>
       <View>
         <LinkRow label={enforcement.rowLabel} detail={enforcement.rowDetail} onPress={() => router.push('/account-status' as Href)} />
-        <LinkRow label={deleteAccount.rowLabel} detail={deleteAccount.rowDetail} onPress={() => router.push('/delete-account' as Href)} />
       </View>
     </Screen>
   );

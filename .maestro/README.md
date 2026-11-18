@@ -91,14 +91,6 @@ customer with a COMPLETED booking from the last 14 days that is not reviewed yet
 maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/review.yaml
 ```
 
-Delete account: open Profile → Delete account, enter the password, tick the confirmation and confirm in the alert,
-then see the signed-out confirmation with the deletion date. Use a throwaway customer with nothing open (no upcoming
-bookings, disputes, refunds or unpaid earnings); signing in again within 30 days cancels the deletion:
-
-```bash
-maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/delete-account.yaml
-```
-
 Membership (D12). Development build (the "Test autopay — no real money" step exists only in `__DEV__` builds), the
 API with `PAYMENT_PROVIDER=mock`, and an onboarded customer with no membership: start Premium, approve the test
 autopay, then cancel and "Keep my membership":
@@ -112,4 +104,12 @@ sees only Account status: the hold banner, the decision and its reason. Send an 
 
 ```bash
 maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 .maestro/account-status.yaml
+```
+
+Privacy and your data (Feature 7): data export request, consents, grievance officer, and delete account
+(blockers, or password -> code -> scheduled -> cancel, so the account is left as it was). Either role.
+Not run here (no device or emulator in this environment):
+
+```bash
+maestro test -e EMAIL=you@example.com -e PASSWORD=Secret123 -e OTP=123456 -e DELETE_OTP=123456 .maestro/privacy.yaml
 ```

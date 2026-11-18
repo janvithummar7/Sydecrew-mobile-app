@@ -20,10 +20,20 @@ function useSecondsUntil(iso: string) {
   return Math.max(0, Math.ceil((new Date(iso).getTime() - now) / 1000));
 }
 
-type Props = { challenge: Challenge; onVerified: (s: SessionResponse) => Promise<void> | void; onBack: () => void };
+type Props = {
+  challenge: Challenge;
+  onBack: () => void;
+  /** Sign-up and login: the code is checked with POST /auth/otp/verify and the session handed over. */
+  onVerified?: (s: SessionResponse) => Promise<void> | void;
+  /** Other flows (e.g. deleting the account): the caller sends the code to its own endpoint and throws ApiError on failure. */
+  onSubmit?: (code: string) => Promise<void>;
+  /** Replaces the sentence under the title, and the button label. */
+  intro?: string;
+  submitLabel?: string;
+};
 
-/** Second step of sign-up and login (D2, D5). Submits as soon as six digits are in. */
-export function OtpStep({ challenge: initial, onVerified, onBack }: Props) {
+/** Second step of sign-up and login (D2, D5), and of other confirmed actions. Submits as soon as six digits are in. */
+export function OtpStep({ challenge: initial, onVerified, onSubmit, onBack, intro, submitLabel }: Props) {
   const [challenge, setChallenge] = useState(initial);
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
@@ -60,7 +70,8 @@ export function OtpStep({ challenge: initial, onVerified, onBack }: Props) {
     setError(null);
     setNotice(null);
     try {
-      await onVerified(await authApi.verifyCode({ otp_id: challenge.otp_id, code: value }));
+      if (onSubmit) await onSubmit(value);
+      else await onVerified?.(await authApi.verifyCode({ otp_id: challenge.otp_id, code: value }));
     } catch (err) {
       setCode('');
       if (!(err instanceof ApiError)) setError('Something went wrong. Please try again.');
@@ -103,9 +114,9 @@ export function OtpStep({ challenge: initial, onVerified, onBack }: Props) {
         <Text color={colors.fog300}>
           We sent a 6-digit code {challenge.channel === 'EMAIL' ? 'by email to' : 'by SMS to'}{' '}
           <Text weight="600" color={colors.fog50}>{challenge.destination}</Text>.{' '}
-          {challenge.purpose === 'REGISTER'
+          {intro ?? (challenge.purpose === 'REGISTER'
             ? 'Verify your mobile number to finish creating your account.'
-            : 'For your security, we check a one-time code every time you log in.'}
+            : 'For your security, we check a one-time code every time you log in.')}
         </Text>
       </View>
 
@@ -136,7 +147,7 @@ export function OtpStep({ challenge: initial, onVerified, onBack }: Props) {
       {challenge.dev_code ? <DevHint>code {challenge.dev_code}</DevHint> : null}
 
       <Button onPress={() => void verify(code)} loading={busy} disabled={blocked}>
-        Verify and continue
+        {submitLabel ?? 'Verify and continue'}
       </Button>
 
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>

@@ -23,7 +23,6 @@ export type PaymentStart = S['BookingPaymentResponse'];
 export type CancellationPreview = S['CancellationPreviewResponse'];
 export type BookingCancelled = S['BookingCancelledResponse'];
 export type CancelInput = S['postBookingsByIdCancelBody'];
-export type IssueInput = S['postBookingsByIdReportIssueBody'];
 export type RejectInput = S['postCompanionBookingsByIdRejectBody'];
 export type MockOrder = S['MockPaymentOrderResponse'];
 export type MockCheckout = S['MockCheckoutResponse'];

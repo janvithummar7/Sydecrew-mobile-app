@@ -6,7 +6,6 @@ import { Screen } from '@/components/ui/Screen';
 import { Text, Title } from '@/components/ui/Text';
 import { useAuth } from '@/lib/auth';
 import { isApproved } from '@/lib/companion/steps';
-import { deleteAccount } from '@/content/account';
 import { enforcement } from '@/content/enforcement';
 import { nav } from '@/content/common';
 import { colors, space } from '@/theme';
@@ -38,12 +37,12 @@ export default function More() {
         <LinkRow label={nav.disputes} detail={nav.disputesDetail} onPress={go('/disputes')} />
         <LinkRow label={nav.sos} detail={nav.sosDetail} onPress={go('/safety/sos')} />
         <LinkRow label={nav.safetyContacts} detail={nav.safetyContactsDetail} onPress={go('/safety/contacts')} />
+        <LinkRow label={nav.privacy} detail={nav.privacyDetail} onPress={go('/settings/privacy')} />
         <LinkRow label={nav.settings} onPress={go('/settings')} />
       </View>
       <RoleSwitch to="customer" />
       <View>
         <LinkRow label={enforcement.rowLabel} detail={enforcement.rowDetail} onPress={go('/account-status')} />
-        <LinkRow label={deleteAccount.rowLabel} detail={deleteAccount.rowDetail} onPress={go('/delete-account')} />
       </View>
     </Screen>
   );

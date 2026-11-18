@@ -182,8 +182,6 @@ export async function api<T>(path: string, options: Options = {}): Promise<T> {
       throw err;
     }
     if (!(err instanceof ApiError) || err.status !== 401 || options.noRetry) throw err;
-    // A wrong password when re-confirming (e.g. deleting the account) is a 401 too, but the session is fine.
-    if (err.code === 'INVALID_PASSWORD') throw err;
     const hadSession = accessToken !== null || err.code === 'TOKEN_EXPIRED';
     if (err.code === 'TOKEN_EXPIRED') {
       // Temporary refresh failures (offline, 429, 5xx) are rethrown and keep the session.
