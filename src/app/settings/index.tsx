@@ -1,4 +1,5 @@
-import { Linking, View } from 'react-native';
+import { openLink } from '@/lib/openLink';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { BackBar } from '@/components/account/BackBar';
 import { LinkRow } from '@/components/companion/Bits';
@@ -21,7 +22,7 @@ export default function Settings() {
       <Badge kind="needs-changes" label={legal.draftBadge} />
       <View>
         {legal.pages.map((p) => (
-          <LinkRow key={p.key} label={p.title} detail={`${SITE_URL}${p.path}`} onPress={() => Linking.openURL(`${SITE_URL}${p.path}`)} />
+          <LinkRow key={p.key} label={p.title} detail={`${SITE_URL}${p.path}`} onPress={() => openLink(`${SITE_URL}${p.path}`, { title: 'Could not open the page', message: `Open ${SITE_URL}${p.path} in your browser.` })} />
         ))}
       </View>
       <View style={{ height: space.lg }} />

@@ -40,7 +40,8 @@ export default function BookingDetails() {
   const [venue, setVenue] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
   // Free start times, keyed by the request they answer (occasion | date | length).
-  const [times, setTimes] = useState<{ key: string | null; list: string[] }>({ key: null, list: [] });
+  const [times, setTimes] = useState<{ key: string | null; list: string[]; failed?: boolean }>({ key: null, list: [] });
+  const [timesTry, setTimesTry] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const sending = useRef(false);
@@ -72,12 +73,13 @@ export default function BookingDetails() {
     let live = true;
     bookingsApi.slots({ companion_id: companionId, offering_id: offering.offering_id, date, duration_minutes: minutes }).then(
       (s) => live && setTimes({ key: slotKey, list: s.start_times }),
-      () => live && setTimes({ key: slotKey, list: [] }),
+      // A failed lookup is not "no free times": it is shown with a retry.
+      () => live && setTimes({ key: slotKey, list: [], failed: true }),
     );
     return () => {
       live = false;
     };
-  }, [companionId, offering, date, minutes, slotKey]);
+  }, [companionId, offering, date, minutes, slotKey, timesTry]);
   const loadingTimes = slotKey !== null && times.key !== slotKey;
   const freeTimes = times.key === slotKey ? times.list : [];
   // A start time picked for another day or length no longer counts.
@@ -178,6 +180,11 @@ export default function BookingDetails() {
                 <Chip key={t} radio label={timeLabel(t)} selected={chosen === t} onPress={() => setStart(t)} />
               ))}
             </ChipRow>
+          ) : times.key === slotKey && times.failed ? (
+            <View style={{ gap: space.sm }}>
+              <Text variant="small" color={colors.textMuted}>{copy.timesFailed}</Text>
+              <Button variant="secondary" onPress={() => { setTimes({ key: null, list: [] }); setTimesTry((n) => n + 1); }}>{copy.timesRetry}</Button>
+            </View>
           ) : (
             <Text variant="small" color={colors.textMuted}>{copy.noTimes}</Text>
           )}

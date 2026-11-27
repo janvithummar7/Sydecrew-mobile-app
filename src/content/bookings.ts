@@ -47,6 +47,8 @@ export const details = {
   duration: 'How long',
   startTime: 'Start time (IST)',
   noTimes: 'No free start times on this day for this length. Try another day or a shorter time.',
+  timesFailed: 'We could not load the start times. Check your connection.',
+  timesRetry: 'Try again',
   loadingTimes: 'Finding free times…',
   venue: 'Venue',
   venueHint: 'Approved public venues in the companion’s area only.',
@@ -129,6 +131,9 @@ export const list = {
   discover: 'Discover companions',
   answerBy: (label: string) => `Answer within ${label}`,
   payBy: (label: string) => `Pay within ${label}`,
+  /** The other side's view of the same deadlines. */
+  otherAnswersBy: (name: string, label: string) => `${name} answers within ${label}`,
+  otherPaysBy: (name: string, label: string) => `${name} pays within ${label}`,
   venuePending: 'Venue waiting for approval',
 } as const;
 
@@ -194,6 +199,7 @@ export const cancel = {
   note: 'Anything to add? (optional)',
   confirm: 'Cancel booking',
   keep: 'Keep booking',
+  retry: 'Try again',
   done: 'Booking cancelled',
   reasons: {
     CHANGE_OF_PLANS: 'Change of plans',

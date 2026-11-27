@@ -32,23 +32,28 @@ export default function Earnings() {
   const summary = useLoad(() => payoutsApi.summary());
   const [filter, setFilter] = useState<EarningStatus | null>(null);
   const list = useLoad(() => payoutsApi.earnings({ status: filter }), filter ?? 'all');
-  const [more, setMore] = useState<{ items: Earning[]; next: string | null; busy: boolean; error: string | null }>({ items: [], next: null, busy: false, error: null });
+  // Extra pages continue one particular first page. When that page reloads (returning to the tab,
+  // pull-to-refresh, another filter) they no longer line up, so they are dropped instead of duplicated.
+  type More = { base: unknown; items: Earning[]; next: string | null; busy: boolean; error: string | null };
+  const [moreState, setMore] = useState<More>({ base: null, items: [], next: null, busy: false, error: null });
+  const more = moreState.base === list.data ? moreState : { base: list.data, items: [], next: null, busy: false, error: null };
 
   const firstNext = list.data?.next_before ?? null;
   const next = more.items.length ? more.next : firstNext;
   const items = [...(list.data?.earnings ?? []), ...more.items];
   const loadMore = async () => {
     if (!next || more.busy) return;
-    setMore((m) => ({ ...m, busy: true, error: null }));
+    const base = list.data;
+    setMore({ ...more, base, busy: true, error: null });
     try {
       const page = await payoutsApi.earnings({ status: filter, before: next });
-      setMore((m) => ({ items: [...m.items, ...page.earnings], next: page.next_before, busy: false, error: null }));
+      setMore((m) => (m.base === base ? { base, items: [...m.items, ...page.earnings], next: page.next_before, busy: false, error: null } : m));
     } catch (err) {
-      setMore((m) => ({ ...m, busy: false, error: errorView(err).message }));
+      setMore((m) => (m.base === base ? { ...m, busy: false, error: errorView(err).message } : m));
     }
   };
   const choose = (f: EarningStatus | null) => {
-    setMore({ items: [], next: null, busy: false, error: null });
+    setMore({ base: null, items: [], next: null, busy: false, error: null });
     setFilter(f);
   };
 
@@ -56,7 +61,7 @@ export default function Earnings() {
   return (
     <Screen>
       <Title>{copy.title}</Title>
-      <DataState loading={summary.loading} error={summary.error} offline={summary.offline} onRetry={summary.reload}>
+      <DataState loading={summary.loading} hasData={summary.data != null} error={summary.error} offline={summary.offline} onRetry={summary.reload}>
         {s ? (
           <>
             {s.on_hold ? <Alert tone="info">{copy.heldNotice}</Alert> : null}
@@ -108,7 +113,7 @@ export default function Earnings() {
             <Chip key={f ?? 'all'} radio label={f ? earningStatus[f].label : copy.filterAll} selected={filter === f} onPress={() => choose(f)} />
           ))}
         </ChipRow>
-        <DataState loading={list.loading} error={list.error} offline={list.offline} onRetry={list.reload}>
+        <DataState loading={list.loading} hasData={list.data != null} error={list.error} offline={list.offline} onRetry={list.reload}>
           {items.length === 0 ? (
             <EmptyState icon="wallet-outline" title={copy.empty} body={copy.emptyBody} />
           ) : (

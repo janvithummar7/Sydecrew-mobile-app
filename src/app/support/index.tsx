@@ -25,7 +25,7 @@ export default function SupportInbox() {
       <StepHeader title={copy.title} subtitle={copy.intro} />
       <Button onPress={() => router.push('/support/new')}>{copy.newTicket}</Button>
       <LinkRow label={copy.report} detail={copy.reportDetail} onPress={() => router.push('/support/report')} />
-      <DataState loading={q.loading} error={q.error} offline={q.offline} onRetry={q.reload} empty={!!q.data && items.length === 0} emptyTitle={copy.empty} emptyBody={copy.emptyBody}>
+      <DataState loading={q.loading} hasData={q.data != null} error={q.error} offline={q.offline} onRetry={q.reload} empty={!!q.data && items.length === 0} emptyTitle={copy.empty} emptyBody={copy.emptyBody}>
         <View style={{ gap: space.sm }}>
           {items.map((t) => (
             <Card key={t.id} onPress={() => router.push({ pathname: '/support/[id]', params: { id: t.id } })} accessibilityLabel={`${t.subject}, ${ticketStatus[t.status].label}`}>

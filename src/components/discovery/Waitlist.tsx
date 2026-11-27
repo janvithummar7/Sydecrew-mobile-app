@@ -13,7 +13,9 @@ import { space } from '@/theme';
  * (`in_pilot: false`). Joining is idempotent (POST /discovery/waitlist).
  */
 export function Waitlist({ city, cityId, zoneId, categoryId, joined: joinedAtLoad }: { city: string | null; cityId: string | null; zoneId: string | null; categoryId: string | null; joined: boolean }) {
-  const [joined, setJoined] = useState(joinedAtLoad);
+  // Joined here, or already on the list according to the latest results (which can arrive after this mounts).
+  const [joinedHere, setJoined] = useState(false);
+  const joined = joinedHere || joinedAtLoad;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const sending = useRef(false);

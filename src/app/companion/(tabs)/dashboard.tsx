@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { LinkRow, LoadState, StepHeader, dateIn } from '@/components/companion/Bits';
 import { RoleSwitch } from '@/components/nav/Shell';
 import { Badge } from '@/components/ui/Badge';
@@ -28,6 +28,12 @@ export default function Dashboard() {
   const router = useRouter();
   const toast = useToast();
   const { companion, loading, error, refresh, setCompanion } = useCompanion();
+  // Approval, an automatic pause or a suspension happens on the server: read it again whenever this tab opens.
+  useFocusEffect(
+    useCallback(() => {
+      void refresh();
+    }, [refresh]),
+  );
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);

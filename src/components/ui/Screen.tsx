@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, type RefreshControlProps } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, StyleSheet, View, type RefreshControlProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, space } from '@/theme';
 
@@ -13,11 +13,14 @@ type Props = {
   refreshControl?: ReactElement<RefreshControlProps>;
 };
 
-/** Full-screen dark page that scrolls, respects notches and keeps inputs above the keyboard. */
+/**
+ * Full-screen dark page that scrolls, respects notches and keeps inputs above the keyboard.
+ * "padding" on Android too: the app is edge-to-edge (RN 0.81+), so adjustResize no longer resizes the window.
+ */
 export function Screen({ children, footer, header, refreshControl }: Props) {
   return (
     <SafeAreaView style={styles.root} edges={['top', 'bottom', 'left', 'right']}>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={styles.flex} behavior="padding">
         {header}
         <ScrollView
           style={styles.flex}

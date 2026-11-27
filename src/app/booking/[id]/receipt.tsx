@@ -21,7 +21,7 @@ export default function ReceiptScreen() {
   return (
     <Screen>
       <StepHeader title={copy.title} />
-      <DataState loading={q.loading} error={q.error} offline={q.offline} onRetry={q.reload}>
+      <DataState loading={q.loading} hasData={q.data != null} error={q.error} offline={q.offline} onRetry={q.reload}>
         {r ? (
           <>
             <Card>

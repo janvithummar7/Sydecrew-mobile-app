@@ -41,7 +41,8 @@ export default function PaymentResult() {
     run();
   };
 
-  const view = () => id && router.replace({ pathname: '/booking/[id]', params: { id } });
+  // Back to the booking already under the payment screens (not a second copy of it); opens it if it is not there.
+  const view = () => id && router.dismissTo({ pathname: '/booking/[id]', params: { id } });
   return (
     <Screen>
       <Title>{copy.title}</Title>

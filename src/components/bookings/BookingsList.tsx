@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Button } from '@/components/ui/Button';
@@ -30,27 +30,37 @@ export function BookingsList({ viewer, title, subtitle }: { viewer: 'CUSTOMER' |
   const [state, setState] = useState<{ loading: boolean; refreshing: boolean; error: string | null; offline: boolean }>({ loading: true, refreshing: false, error: null, offline: false });
   const [now, setNow] = useState(() => Date.now());
 
+  // The latest data per tab, read without making `load` change (so the focus effect stays stable),
+  // and the tab whose response may update the screen (an older tab's late answer is ignored).
+  const dataRef = useRef(data);
+  const tabRef = useRef(tab);
+  useEffect(() => {
+    dataRef.current = data;
+    tabRef.current = tab;
+  }, [data, tab]);
+
   const load = useCallback(
     async (t: string, mode: 'load' | 'refresh') => {
-      setState((s) => ({ ...s, loading: mode === 'load' && !data[t], refreshing: mode === 'refresh', error: null }));
+      // A tab already loaded stays on screen while it refreshes: no skeleton, no jump to the top.
+      setState((s) => ({ ...s, loading: mode === 'load' && !dataRef.current[t], refreshing: mode === 'refresh', error: null }));
       try {
         const res: BookingList = viewer === 'CUSTOMER' ? await bookingsApi.list(t as CustomerTab) : await bookingsApi.companionList(t as CompanionTab);
         setData((d) => ({ ...d, [t]: res.items }));
-        setState({ loading: false, refreshing: false, error: null, offline: false });
+        if (tabRef.current === t) setState({ loading: false, refreshing: false, error: null, offline: false });
       } catch (err) {
+        if (tabRef.current !== t) return;
         const v = errorView(err);
         setState({ loading: false, refreshing: false, error: v.offline ? null : v.message, offline: v.offline });
       }
     },
-    [viewer, data],
+    [viewer],
   );
 
   // Reload when the tab opens again (after paying, cancelling, answering).
   useFocusEffect(
     useCallback(() => {
       void load(tab, 'load');
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tab]),
+    }, [load, tab]),
   );
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 30_000);

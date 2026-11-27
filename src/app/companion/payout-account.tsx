@@ -68,7 +68,7 @@ export default function PayoutAccountScreen() {
   return (
     <Screen>
       <StepHeader title={copy.title} subtitle={copy.intro} />
-      <DataState loading={q.loading} error={q.error} offline={q.offline} onRetry={q.reload}>
+      <DataState loading={q.loading} hasData={q.data != null} error={q.error} offline={q.offline} onRetry={q.reload}>
         {s ? (
           <>
             <View style={{ gap: space.xs }}>

@@ -22,7 +22,7 @@ export default function Payouts() {
   return (
     <Screen>
       <StepHeader title={copy.payouts} />
-      <DataState loading={q.loading} error={q.error} offline={q.offline} onRetry={q.reload} empty={!!q.data && items.length === 0} emptyTitle={copy.noPayouts} emptyBody={copy.noPayoutsBody}>
+      <DataState loading={q.loading} hasData={q.data != null} error={q.error} offline={q.offline} onRetry={q.reload} empty={!!q.data && items.length === 0} emptyTitle={copy.noPayouts} emptyBody={copy.noPayoutsBody}>
         <View style={{ gap: space.sm }}>
           {items.map((p) => {
             const st = payoutStatus[p.status];

@@ -36,8 +36,14 @@ export function PolicyCard({ policy }: { policy: CancellationPolicy }) {
   );
 }
 
-/** One list row (fixed height for the virtualised list). */
-export const BOOKING_ROW_HEIGHT = 104;
+/** Who has to act before the deadline: the companion answers a request, the customer pays. */
+function dueText(item: BookingListItem, viewer: 'CUSTOMER' | 'COMPANION', left: string): string {
+  if (item.status === 'AWAITING_COMPANION') return viewer === 'COMPANION' ? listCopy.answerBy(left) : listCopy.otherAnswersBy(item.other_party, left);
+  return viewer === 'CUSTOMER' ? listCopy.payBy(left) : listCopy.otherPaysBy(item.other_party, left);
+}
+
+/** One list row (fixed height for the virtualised list): padding, the two-line top row, a gap and the badge row. */
+export const BOOKING_ROW_HEIGHT = 124;
 export const BookingRow = memo(function BookingRow({ item, viewer, onPress, now }: { item: BookingListItem; viewer: 'CUSTOMER' | 'COMPANION'; onPress: (id: string) => void; now: number }) {
   const s = statusView(item.status, viewer);
   const due = item.status === 'AWAITING_COMPANION' ? countdown(item.companion_response_due_at, now) : item.status === 'PAYMENT_PENDING' ? countdown(item.payment_due_at, now) : null;
@@ -53,8 +59,8 @@ export const BookingRow = memo(function BookingRow({ item, viewer, onPress, now 
       </View>
       <View style={styles.rowBottom}>
         <Badge kind={s.badge} label={s.label} />
-        {due && !due.expired ? <Text variant="caption" color={colors.warningText}>{item.status === 'AWAITING_COMPANION' ? listCopy.answerBy(due.label.replace(' left', '')) : listCopy.payBy(due.label.replace(' left', ''))}</Text> : null}
-        {item.venue_pending_approval ? <Text variant="caption" color={colors.textMuted}>{listCopy.venuePending}</Text> : null}
+        {due && !due.expired ? <Text variant="caption" color={colors.warningText} numberOfLines={1} style={{ flexShrink: 1 }}>{dueText(item, viewer, due.label.replace(' left', ''))}</Text> : null}
+        {item.venue_pending_approval ? <Text variant="caption" color={colors.textMuted} numberOfLines={1} style={{ flexShrink: 1 }}>{listCopy.venuePending}</Text> : null}
       </View>
     </Card>
   );
@@ -81,7 +87,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   strongRow: { marginTop: space.xs, paddingTop: space.sm, borderTopWidth: 1, borderTopColor: colors.border },
   rowTop: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  rowBottom: { flexDirection: 'row', alignItems: 'center', gap: space.sm, flexWrap: 'wrap' },
+  rowBottom: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   tl: { flexDirection: 'row', gap: space.sm, alignItems: 'flex-start' },
   dot: { width: 8, height: 8, borderRadius: 4, marginTop: 6, backgroundColor: colors.accent },
 });

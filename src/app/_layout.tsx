@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 import { Stack, useRouter, type Href } from 'expo-router';
 import * as Linking from 'expo-linking';
 import * as Notifications from 'expo-notifications';
@@ -47,14 +48,25 @@ function RootNavigator() {
   const url = Linking.useLinkingURL();
   const pending = useRef<string | null>(null);
 
+  // Once the splash is gone, a later check (e.g. "Try again" when offline) shows a spinner, not a blank screen.
+  // (A ref is enough: a later check re-renders anyway, because `status` changes to 'loading'.)
+  const splashGone = useRef(false);
   useEffect(() => {
-    if (status !== 'loading' && ready) SplashScreen.hideAsync();
+    if (status !== 'loading' && ready) {
+      SplashScreen.hideAsync();
+      splashGone.current = true;
+    }
   }, [status, ready]);
 
   // Remember a deep link (e.g. sydecrew://companion/identity from the web QR) until the user is signed in.
+  // Each URL is considered once, after the session is known: on a cold start while signed in, Expo Router
+  // has already opened it (queuing it would open it twice), and signing out must not bring an old link back.
+  const seenUrl = useRef<string | null>(null);
   useEffect(() => {
+    if (!url || url === seenUrl.current || status === 'loading') return;
+    seenUrl.current = url;
     const path = deepLinkPath(url);
-    if (path && !isPublicLink(path) && status !== 'authenticated') pending.current = path;
+    if (path && !isPublicLink(path) && status === 'anonymous') pending.current = path;
   }, [url, status]);
   useEffect(() => {
     if (status !== 'authenticated' || !user || user.is_staff) return;
@@ -92,7 +104,15 @@ function RootNavigator() {
     wasHeld.current = heldNow;
   }, [heldNow, user, preferred, router]);
 
-  if (status === 'loading' || !ready) return null; // the native splash stays up
+  if (status === 'loading' || !ready) {
+    // First start: the native splash stays up. Later checks: a spinner on the app background.
+    // eslint-disable-next-line react-hooks/refs -- read only to pick splash vs spinner; see above
+    return splashGone.current ? (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg }} accessibilityLabel="Loading">
+        <ActivityIndicator color={colors.textMuted} />
+      </View>
+    ) : null;
+  }
 
   const signedIn = status === 'authenticated' && !!user;
   const staff = signedIn && user.is_staff;

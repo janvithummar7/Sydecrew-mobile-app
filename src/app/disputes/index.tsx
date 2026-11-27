@@ -21,7 +21,7 @@ export default function Disputes() {
   return (
     <Screen>
       <StepHeader title={copy.title} subtitle={copy.intro} />
-      <DataState loading={q.loading} error={q.error} offline={q.offline} onRetry={q.reload} empty={!!q.data && items.length === 0} emptyTitle={copy.empty} emptyBody={copy.emptyBody}>
+      <DataState loading={q.loading} hasData={q.data != null} error={q.error} offline={q.offline} onRetry={q.reload} empty={!!q.data && items.length === 0} emptyTitle={copy.empty} emptyBody={copy.emptyBody}>
         <View style={{ gap: space.sm }}>
           {items.map((d) => (
             <Card key={d.id} onPress={() => router.push({ pathname: '/disputes/[id]', params: { id: d.id } })} accessibilityLabel={`${copy.booking(d.booking_ref)}, ${disputeStatus[d.status].label}`}>

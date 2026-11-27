@@ -1,5 +1,6 @@
+import { CALL_112_FAILED, openLink } from '@/lib/openLink';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Linking, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, space, alpha } from '@/theme';
 import { formatINR } from '@/lib/money';
@@ -48,7 +49,7 @@ export function SafetyCallout({ sos, compact }: { sos?: boolean; compact?: boole
         <Text key={p} variant="small" color={colors.textMuted}>{`• ${p}`}</Text>
       ))}
       {sos ? (
-        <Button variant="danger" icon={<Ionicons name="call" size={18} color={colors.dangerText} />} onPress={() => Linking.openURL('tel:112')} accessibilityHint={safety.call112Hint}>
+        <Button variant="danger" icon={<Ionicons name="call" size={18} color={colors.dangerText} />} onPress={() => openLink('tel:112', CALL_112_FAILED)} accessibilityHint={safety.call112Hint}>
           {safety.call112}
         </Button>
       ) : null}

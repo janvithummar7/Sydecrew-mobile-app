@@ -1,5 +1,5 @@
+import { openLink } from '@/lib/openLink';
 import { useState } from 'react';
-import { Linking } from 'react-native';
 import { Logo } from '@/components/ui/Brand';
 import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/States';
@@ -16,7 +16,7 @@ export default function Staff() {
     <Screen
       footer={
         <>
-          <Button onPress={() => Linking.openURL(`${SITE_URL}/admin`)}>Open the website</Button>
+          <Button onPress={() => openLink(`${SITE_URL}/admin`, { title: 'Could not open the website', message: `Open ${SITE_URL}/admin in your browser.` })}>Open the website</Button>
           <Button variant="ghost" loading={leaving} onPress={async () => { setLeaving(true); await signOut(); }}>Log out</Button>
         </>
       }

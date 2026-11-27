@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Modal as RNModal, Pressable, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Modal as RNModal, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useReducedMotion } from 'react-native-reanimated';
 import { colors, radius, space } from '@/theme';
@@ -12,7 +12,8 @@ export function Sheet({ visible, onClose, title, children, centered }: { visible
   const reduced = useReducedMotion();
   return (
     <RNModal visible={visible} transparent animationType={reduced ? 'none' : centered ? 'fade' : 'slide'} onRequestClose={onClose} statusBarTranslucent>
-      <View style={[styles.root, centered && styles.center]}>
+      {/* Inputs in a sheet (report notes, cancel reasons) stay above the keyboard on both platforms. */}
+      <KeyboardAvoidingView behavior="padding" style={[styles.root, centered && styles.center]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close" />
         <View style={[styles.panel, centered ? styles.dialog : { paddingBottom: insets.bottom + space.lg }]} accessibilityViewIsModal>
           <View style={styles.head}>
@@ -21,7 +22,7 @@ export function Sheet({ visible, onClose, title, children, centered }: { visible
           </View>
           {children}
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </RNModal>
   );
 }

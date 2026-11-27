@@ -38,6 +38,7 @@ export default function GoLive() {
     try {
       const res = await companionApi.goLive();
       setCompanion(res.companion);
+      if (router.canDismiss()) router.dismissAll();
       router.replace('/companion/dashboard');
     } catch (err) {
       if (err instanceof ApiError && err.code === 'SETUP_INCOMPLETE') {

@@ -1,5 +1,6 @@
+import { openLink } from '@/lib/openLink';
 import { useRef, useState } from 'react';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { BackBar } from '@/components/account/BackBar';
 import { OtpStep } from '@/components/account/OtpStep';
@@ -113,7 +114,7 @@ function ExportCard() {
 
   return (
     <Section title={copy.exportTitle} hint={copy.exportBody}>
-      <DataState loading={q.loading} error={q.error} offline={q.offline} onRetry={q.reload}>
+      <DataState loading={q.loading} hasData={q.data != null} error={q.error} offline={q.offline} onRetry={q.reload}>
         {v && q.data ? (
           <Card>
             {v.kind === 'preparing' ? <Text variant="small" color={colors.text} accessibilityLiveRegion="polite">{copy.exportPreparing}</Text> : null}
@@ -160,7 +161,7 @@ function ConsentsCard() {
 
   return (
     <Section title={copy.consentsTitle} hint={copy.consentsBody}>
-      <DataState loading={q.loading} error={q.error} offline={q.offline} onRetry={q.reload} empty={q.data?.consents.length === 0}>
+      <DataState loading={q.loading} hasData={q.data != null} error={q.error} offline={q.offline} onRetry={q.reload} empty={q.data?.consents.length === 0}>
         <Card>
           {(q.data?.consents ?? []).map((c) => (
             <View key={c.type} style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 44 }}>
@@ -246,7 +247,7 @@ function DeleteCard({ state: q, reason, setReason, onChallenge }: { state: Loade
 
   return (
     <Section title={copy.deleteTitle}>
-      <DataState loading={q.loading} error={q.error} offline={q.offline} onRetry={q.reload}>
+      <DataState loading={q.loading} hasData={q.data != null} error={q.error} offline={q.offline} onRetry={q.reload}>
         {v && q.data ? (
           <Card>
             {v.kind === 'scheduled' ? (
@@ -290,13 +291,13 @@ function GrievanceCard() {
   const g = q.data;
   return (
     <Section title={copy.grievanceTitle}>
-      <DataState loading={q.loading} error={q.error} offline={q.offline} onRetry={q.reload}>
+      <DataState loading={q.loading} hasData={q.data != null} error={q.error} offline={q.offline} onRetry={q.reload}>
         {g ? (
           <Card>
             {g.placeholder ? <Badge kind="needs-changes" label={legal.draftBadge} /> : null}
             <Text variant="small" color={colors.text}>{copy.grievanceBody(g.response_days)}</Text>
             <Text weight="600" color={colors.textStrong}>{g.name}</Text>
-            <TextButton onPress={() => void Linking.openURL(`mailto:${g.email}`)}>{g.email}</TextButton>
+            <TextButton onPress={() => openLink(`mailto:${g.email}`, { title: 'No email app found', message: `Write to ${g.email} from any email account.` })}>{g.email}</TextButton>
             {g.placeholder ? <Text variant="caption" color={colors.textMuted}>{copy.grievancePlaceholder}</Text> : null}
           </Card>
         ) : null}

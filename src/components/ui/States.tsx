@@ -69,8 +69,10 @@ export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
  * The four data states in one place: loading (skeleton), error (+ retry, or the
  * offline banner when the network is down), empty, and the content itself.
  */
-export function DataState({ loading, error, offline, empty, onRetry, children, emptyTitle, emptyBody }: {
+export function DataState({ loading, error, offline, empty, onRetry, children, emptyTitle, emptyBody, hasData = false }: {
   loading: boolean;
+  /** Something was loaded before: a failed refresh keeps it on screen under a banner instead of replacing it. */
+  hasData?: boolean;
   error?: string | null;
   offline?: boolean;
   empty?: boolean;
@@ -80,6 +82,14 @@ export function DataState({ loading, error, offline, empty, onRetry, children, e
   emptyBody?: string;
 }) {
   if (loading) return <SkeletonList />;
+  if (hasData && (offline || error)) {
+    return (
+      <>
+        {offline ? <OfflineBanner onRetry={onRetry} /> : <ErrorState message={error ?? ''} onRetry={onRetry} />}
+        {children}
+      </>
+    );
+  }
   if (offline) return <OfflineBanner onRetry={onRetry} />;
   if (error) return <ErrorState message={error} onRetry={onRetry} />;
   if (empty) return <EmptyState title={emptyTitle ?? copy.emptyTitle} body={emptyBody} />;

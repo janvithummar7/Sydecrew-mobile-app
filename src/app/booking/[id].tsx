@@ -1,3 +1,4 @@
+import { useLiveRefresh } from '@/lib/useLiveRefresh';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -60,6 +61,8 @@ export default function BookingDetail() {
     );
   }, [id]);
   useFocusEffect(load);
+  // On the day, check-in, the call window and the other side's progress change by themselves.
+  useLiveRefresh(b?.status === 'CONFIRMED' || b?.status === 'IN_PROGRESS', load);
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(t);

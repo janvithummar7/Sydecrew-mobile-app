@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { AppState, Linking, StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -26,7 +26,14 @@ export default function Capture() {
   const { side: raw } = useLocalSearchParams<{ side?: string }>();
   const side: Side = raw === 'BACK' || raw === 'SELFIE' ? raw : 'FRONT';
   const camera = useRef<CameraView>(null);
-  const [permission, requestPermission] = useCameraPermissions();
+  const [permission, requestPermission, getPermission] = useCameraPermissions();
+  // Back from Settings: read the permission again so the camera opens once it is allowed.
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'active') void getPermission();
+    });
+    return () => sub.remove();
+  }, [getPermission]);
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +60,15 @@ export default function Capture() {
       <SafeAreaView style={[styles.root, { padding: 24, gap: 16, justifyContent: 'center' }]}>
         <Text variant="title" color={colors.fog50} accessibilityRole="header">Camera access</Text>
         <Text color={colors.fog300}>Sydecrew needs the camera to photograph your ID and take your selfie. Photos go only to our verification team.</Text>
-        <Button onPress={requestPermission}>Allow camera</Button>
+        {permission.canAskAgain ? (
+          <Button onPress={requestPermission}>Allow camera</Button>
+        ) : (
+          <>
+            {/* Denied before: the phone will not ask again, so camera access is turned on in Settings. */}
+            <Text color={colors.fog300}>Camera access is off for Sydecrew. Turn it on in Settings, then come back.</Text>
+            <Button onPress={() => void Linking.openSettings().catch(() => undefined)}>Open Settings</Button>
+          </>
+        )}
         <Button variant="ghost" onPress={() => router.back()}>Not now</Button>
       </SafeAreaView>
     );

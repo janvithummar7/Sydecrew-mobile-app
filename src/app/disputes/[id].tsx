@@ -39,7 +39,7 @@ export default function DisputeScreen() {
   return (
     <Screen>
       <StepHeader title={d ? copy.booking(d.booking_ref) : copy.title} />
-      <DataState loading={q.loading} error={q.error} offline={q.offline} onRetry={q.reload}>
+      <DataState loading={q.loading} hasData={q.data != null} error={q.error} offline={q.offline} onRetry={q.reload}>
         {d ? <Body d={d} onChange={q.setData} /> : null}
       </DataState>
     </Screen>

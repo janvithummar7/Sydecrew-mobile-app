@@ -33,6 +33,8 @@ export default function Review() {
     try {
       const res = await companionApi.submit();
       setCompanion(res.companion);
+      // Submitted: the edit steps leave the history, so Back does not walk through them again.
+      if (router.canDismiss()) router.dismissAll();
       router.replace('/companion/status');
     } catch (err) {
       if (err instanceof ApiError && err.code === 'APPLICATION_INCOMPLETE') {

@@ -25,6 +25,7 @@ export function CancelSheet({ booking, visible, onClose, onDone }: { booking: Bo
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const sending = useRef(false);
+  const [tries, setTries] = useState(0);
 
   useEffect(() => {
     if (!visible) return;
@@ -36,7 +37,17 @@ export function CancelSheet({ booking, visible, onClose, onDone }: { booking: Bo
     return () => {
       live = false;
     };
-  }, [visible, booking.id]);
+  }, [visible, booking.id, tries]);
+
+  // Closing starts the next opening fresh: no old refund amount, reason, note or error.
+  const close = () => {
+    if (busy) return;
+    setPreview(null);
+    setError(null);
+    setReason(null);
+    setNote('');
+    onClose();
+  };
 
   const submit = async () => {
     if (!reason || sending.current) return;
@@ -45,19 +56,27 @@ export function CancelSheet({ booking, visible, onClose, onDone }: { booking: Bo
     try {
       const r = await bookingsApi.cancel(booking.id, { reason_code: reason, ...(note.trim() ? { note: note.trim() } : {}) });
       onDone(r.booking);
-      onClose();
-    } catch (err) {
-      setError(errorView(err).message);
-    } finally {
       sending.current = false;
       setBusy(false);
+      setPreview(null);
+      setReason(null);
+      setNote('');
+      onClose();
+      return;
+    } catch (err) {
+      setError(errorView(err).message);
     }
+    sending.current = false;
+    setBusy(false);
   };
 
   return (
-    <Sheet visible={visible} onClose={onClose} title={cancelCopy.title}>
-      <ScrollView contentContainerStyle={{ gap: space.md }}>
+    <Sheet visible={visible} onClose={close} title={cancelCopy.title}>
+      <ScrollView contentContainerStyle={{ gap: space.md }} keyboardShouldPersistTaps="handled">
         {error ? <Alert>{error}</Alert> : null}
+        {error && !preview ? (
+          <Button variant="secondary" onPress={() => { setError(null); setTries((n) => n + 1); }}>{cancelCopy.retry}</Button>
+        ) : null}
         {!preview && !error ? <SkeletonList rows={2} /> : null}
         {preview ? (
           <View style={{ gap: space.xs }} accessibilityRole="summary">
@@ -76,7 +95,7 @@ export function CancelSheet({ booking, visible, onClose, onDone }: { booking: Bo
         </ChipRow>
         <TextField label={cancelCopy.note} value={note} onChangeText={setNote} maxLength={1000} multiline />
         <Button variant="danger" onPress={submit} loading={busy} disabled={!reason || !preview}>{cancelCopy.confirm}</Button>
-        <Button variant="ghost" onPress={onClose}>{cancelCopy.keep}</Button>
+        <Button variant="ghost" onPress={close}>{cancelCopy.keep}</Button>
       </ScrollView>
     </Sheet>
   );

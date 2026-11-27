@@ -1,5 +1,5 @@
 import { memo, useCallback, useRef, useState } from 'react';
-import { FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
@@ -186,7 +186,7 @@ export default function Conversation() {
 
   return (
     <SafeAreaView style={styles.root} edges={['top', 'bottom', 'left', 'right']}>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={styles.flex} behavior="padding">
         <View style={styles.inner}>
           {header}
           {state.offline ? <View style={styles.pad}><OfflineBanner onRetry={() => void loadLatest()} /></View> : rt === 'polling' ? <Text variant="caption" color={colors.textSubtle} style={styles.pad}>{listCopy.polling}</Text> : null}

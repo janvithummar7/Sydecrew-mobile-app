@@ -21,8 +21,11 @@ test('IST formatting ignores the device time zone', () => {
   assert.equal(formatDateIST('2026-11-04T18:30:00Z'), '5 November 2026');
   assert.equal(todayIST(new Date('2026-11-04T18:30:00Z')), '2026-11-05');
   assert.equal(todayIST(new Date('2026-11-04T18:29:00Z')), '2026-11-04');
-  assert.match(formatDateTimeIST('2026-11-05T14:12:00Z'), /^5 Nov,? 7:42\s?pm$/i);
   const now = new Date('2026-11-05T10:00:00Z');
+  assert.match(formatDateTimeIST('2026-11-05T14:12:00Z', now), /^5 Nov,? 7:42\s?pm$/i);
+  // Another year (in India) shows the year: 31 Dec 2025 20:00 UTC is 1 Jan 2026 in India, so no year.
+  assert.match(formatDateTimeIST('2025-12-12T13:30:00Z', now), /^12 Dec 2025,? 7:00\s?pm$/i);
+  assert.match(formatDateTimeIST('2025-12-31T20:00:00Z', now), /^1 Jan,? 1:30\s?am$/i);
   assert.match(formatTimeIST('2026-11-05T14:12:00Z', now), /^7:42\s?pm$/i);
   assert.match(formatTimeIST('2026-11-03T14:12:00Z', now), /^3 Nov/);
   assert.equal(formatDateIST(null), '—');

@@ -1,3 +1,4 @@
+import { todayIST } from '@/lib/time';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -33,6 +34,15 @@ type Failure = { query: string; offline: boolean; message: string | null };
  */
 let lastOptions: DiscoveryOptions | null = null;
 let lastResult: Result | null = null;
+/** Whose cache it is: another account, another city or a new day (India time) starts it fresh. */
+let cacheOwner: string | null = null;
+function useCacheFor(owner: string) {
+  if (cacheOwner !== owner) {
+    cacheOwner = owner;
+    lastOptions = null;
+    lastResult = null;
+  }
+}
 
 /**
  * Discover (Feature 3, artboard "Discover companions"): LIVE companions in the
@@ -49,6 +59,8 @@ export default function Discover() {
   const router = useRouter();
   const params = useLocalSearchParams<Record<string, string | string[]>>();
   const { user } = useAuth();
+  const owner = `${user?.id ?? ''}:${user?.city_id ?? ''}:${todayIST()}`;
+  useCacheFor(owner);
   const [filters, setFilters] = useState<DiscoveryFilters>(() => (Object.keys(params).length ? queryToFilters(params) : lastResult ? queryToFilters(lastResult.query) : { ...EMPTY_FILTERS }));
   const [options, setOptions] = useState<DiscoveryOptions | null>(lastOptions);
   const [result, setResult] = useState<Result | null>(lastResult);
@@ -109,6 +121,16 @@ export default function Discover() {
   useEffect(() => {
     if (!lastOptions) void loadOptions();
   }, [loadOptions]);
+  // Still on screen when the account, city or day changes: drop the old results and options and load again.
+  const shownFor = useRef(owner);
+  useEffect(() => {
+    if (shownFor.current === owner) return;
+    shownFor.current = owner;
+    setResult(null);
+    setOptions(null);
+    void loadOptions();
+    void loadFirst(latest.current);
+  }, [owner, loadOptions, loadFirst]);
 
   const stale = !result || result.query !== query;
   const failedNow = failure?.query === query ? failure : null;

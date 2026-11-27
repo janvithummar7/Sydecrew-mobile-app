@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { StatusTimeline } from '@/components/ui/Misc';
 import { Card, LinkRow, LoadState, Pill, Section, StepHeader, dateIn } from '@/components/companion/Bits';
@@ -14,6 +14,7 @@ import { colors } from '@/theme';
 export default function Status() {
   const router = useRouter();
   const { companion, loading, error, refresh } = useCompanion();
+  const [openedAt] = useState(() => Date.now());
 
   // Fresh status whenever the screen is shown, and every 20 s while a check or review is running.
   useFocusEffect(
@@ -33,11 +34,15 @@ export default function Status() {
   const fixes = v?.fix_items ?? [];
   const stages = timelineStages(companion.status);
   const next = companion.next_step;
+  const canReapply = companion.status === 'REJECTED' && !companion.reapply_blocked && (!companion.reapply_after || new Date(companion.reapply_after).getTime() <= openedAt);
 
   const footer = isApproved(companion.status) ? (
     <Button onPress={() => router.replace(routeForStep(next))}>{companion.status === 'LIVE' || companion.status === 'PAUSED' ? 'Open your dashboard' : 'Set up your profile'}</Button>
   ) : ['DRAFT', 'NEEDS_CHANGES', 'REVERIFICATION_REQUIRED'].includes(companion.status) && next !== 'COOLDOWN' && next !== 'WAITING' ? (
     <Button onPress={() => router.push(next === 'FIX_REQUIRED' ? routeForStep(fixes[0]?.step ?? 'SUBMIT') : routeForStep(next))}>Continue</Button>
+  ) : canReapply ? (
+    // Rejected, not blocked, and any waiting period is over: the API accepts a new application.
+    <Button onPress={() => router.push('/companion/apply')}>Apply again</Button>
   ) : undefined;
 
   return (

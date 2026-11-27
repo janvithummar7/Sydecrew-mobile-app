@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react';
-import { View, type TextInputInstance } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState, View, type TextInputInstance } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { ChipRow, Chip, LoadState, Section, StepHeader } from '@/components/companion/Bits';
 import { Button, TextButton } from '@/components/ui/Button';
 import { Alert, DevHint } from '@/components/ui/Feedback';
@@ -29,7 +29,7 @@ const CONSENTS: [ConsentKey, string][] = [
 /** Companion terms + consents. DOB and area are asked only if the account does not have them yet. */
 export default function Apply() {
   const router = useRouter();
-  const { user, setUser } = useAuth();
+  const { user, setUser, refreshUser } = useAuth();
   const { options, loading, error, refresh } = useCompanion();
   const [consents, setConsents] = useState<Record<ConsentKey, boolean>>(Object.fromEntries(CONSENTS.map(([k]) => [k, false])) as Record<ConsentKey, boolean>);
   const [adult, setAdult] = useState(false);
@@ -38,7 +38,21 @@ export default function Apply() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [email, setEmail] = useState<{ sent?: boolean; devLink?: string }>({});
+  const [email, setEmail] = useState<{ sent?: boolean; devLink?: string; error?: string }>({});
+  // The link opens in the browser, so check again when they come back to this screen or to the app.
+  const unverified = Boolean(user && !user.email_verified);
+  useFocusEffect(
+    useCallback(() => {
+      if (unverified) void refreshUser();
+    }, [unverified, refreshUser]),
+  );
+  useEffect(() => {
+    if (!unverified) return undefined;
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'active') void refreshUser();
+    });
+    return () => sub.remove();
+  }, [unverified, refreshUser]);
   const submitting = useRef(false);
   const monthRef = useRef<TextInputInstance>(null);
   const yearRef = useRef<TextInputInstance>(null);
@@ -97,8 +111,13 @@ export default function Apply() {
             email.sent ? <Text variant="small" color={colors.fog50}>Link sent. Open it, then come back.</Text> : (
               <TextButton
                 onPress={async () => {
-                  const r = await authApi.resendEmail().catch(() => null);
-                  setEmail({ sent: true, devLink: r?.dev_link });
+                  try {
+                    const r = await authApi.resendEmail();
+                    if (r.already_verified) await refreshUser();
+                    else setEmail({ sent: true, devLink: r.dev_link });
+                  } catch (err) {
+                    setEmail({ error: err instanceof ApiError ? err.message : 'We could not send the link. Check your connection and try again.' });
+                  }
                 }}
               >
                 Send the link again
@@ -107,6 +126,8 @@ export default function Apply() {
           }
         >
           {`Verify your email (${user.email}) before you apply.`}
+          {email.error ? `
+${email.error}` : ''}
         </Alert>
       ) : null}
       {email.devLink ? <DevHint>{email.devLink}</DevHint> : null}

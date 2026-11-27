@@ -1,5 +1,6 @@
+import { CALL_112_FAILED, openLink } from '@/lib/openLink';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { BackBar } from '@/components/account/BackBar';
@@ -54,7 +55,7 @@ export default function Sos() {
   // While the desk has not acknowledged, check every 10 s when the socket is down.
   usePollingFallback(() => incident && !incident.acknowledged && !incident.marked_safe && refresh(), 10_000);
 
-  const call112 = () => void Linking.openURL(telUrl('112'));
+  const call112 = () => openLink(telUrl('112'), CALL_112_FAILED);
 
   const sendAlert = async () => {
     if (sending.current) return;
